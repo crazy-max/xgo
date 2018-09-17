@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://microbadger.com/images/crazymax/xgo"><img src="https://images.microbadger.com/badges/version/crazymax/xgo.svg?style=flat-square" alt="Version"></a>
-  <a href="https://travis-ci.org/crazy-max/docker-xgo"><img src="https://img.shields.io/travis/crazy-max/docker-xgo/master.svg?style=flat-square" alt="Build Status"></a>
+  <a href="https://travis-ci.org/crazy-max/xgo"><img src="https://img.shields.io/travis/crazy-max/xgo/master.svg?style=flat-square" alt="Build Status"></a>
   <a href="https://hub.docker.com/r/crazymax/xgo/"><img src="https://img.shields.io/docker/stars/crazymax/xgo.svg?style=flat-square" alt="Docker Stars"></a>
   <a href="https://hub.docker.com/r/crazymax/xgo/"><img src="https://img.shields.io/docker/pulls/crazymax/xgo.svg?style=flat-square" alt="Docker Pulls"></a>
   <a href="https://quay.io/repository/crazymax/xgo"><img src="https://quay.io/repository/crazymax/xgo/status?style=flat-square" alt="Docker Repository on Quay"></a>
