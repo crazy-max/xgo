@@ -26,10 +26,10 @@ var layers = []struct {
 	tag string
 	dir string
 }{
-	{"karalabe/xgo-base", "base"},
-	{"karalabe/xgo-1.6.2", "go-1.6.2"},
-	{"karalabe/xgo-1.6.x", "go-1.6.x"},
-	{"karalabe/xgo-latest", "go-latest"},
+	{"crazymax/xgo:base", "base"},
+	{"crazymax/xgo:1.6.2", "go-1.6.2"},
+	{"crazymax/xgo:1.6.x", "go-1.6.x"},
+	{"crazymax/xgo:latest", "go-latest"},
 	//{"karalabe/xgo-latest-ios", "go-latest-ios"}, // Non-public layer (XCode licensing)
 }
 
@@ -40,8 +40,8 @@ var tests = []struct {
 	args []string
 }{
 	// Tiny test cases to smoke test cross compilations
-	{"github.com/karalabe/xgo/tests/embedded_c", nil},
-	{"github.com/karalabe/xgo/tests/embedded_cpp", nil},
+	{"github.com/crazy-max/xgo/tests/embedded_c", nil},
+	{"github.com/crazy-max/xgo/tests/embedded_cpp", nil},
 
 	// Baseline projects to ensure minimal requirements
 	//{"github.com/project-iris/iris", nil}, // Deps failed, disable
