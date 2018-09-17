@@ -3,6 +3,4 @@
 #
 # Released under the MIT license.
 
-FROM karalabe/xgo-1.7.5
-
-MAINTAINER Péter Szilágyi <peterke@gmail.com>
+FROM crazymax/xgo:1.7.5

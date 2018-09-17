@@ -5,8 +5,6 @@
 
 FROM ubuntu:16.04
 
-MAINTAINER Péter Szilágyi <peterke@gmail.com>
-
 # Mark the image as xgo enabled to support xgo-in-xgo
 ENV XGO_IN_XGO 1
 
