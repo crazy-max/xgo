@@ -6,7 +6,7 @@
 FROM crazymax/xgo:base
 
 # Configure the root Go distribution and bootstrap based on it
-ENV GO_VERSION 1100
+ENV GO_VERSION 1110
 
 RUN \
   export ROOT_DIST=https://storage.googleapis.com/golang/go1.11.linux-amd64.tar.gz      && \
