@@ -3,4 +3,4 @@
 #
 # Released under the MIT license.
 
-FROM crazymax/xgo:1.10.1
+FROM crazymax/xgo:1.10.8
