@@ -3,7 +3,7 @@
 #
 # Released under the MIT license.
 
-FROM crazymax/xgo:base
+FROM karalabe/xgo-base
 
 # Clone and bootstrap the latest Go develop branch
 RUN $BOOTSTRAP_REPO master

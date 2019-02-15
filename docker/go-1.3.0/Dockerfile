@@ -3,7 +3,7 @@
 #
 # Released under the MIT license.
 
-FROM crazymax/xgo:base
+FROM karalabe/xgo-base
 
 # Configure the Go packages and bootstrap them
 RUN \
