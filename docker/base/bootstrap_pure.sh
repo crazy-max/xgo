@@ -63,5 +63,5 @@ GOOS=darwin GOARCH=386 CGO_ENABLED=1 CC=o32-clang go install std
 
 # Install xgo within the container to enable internal cross compilation
 echo "Installing xgo-in-xgo..."
-go get -u github.com/karalabe/xgo
+go get -u github.com/crazy-max/xgo
 ln -s /go/bin/xgo /usr/bin/xgo
