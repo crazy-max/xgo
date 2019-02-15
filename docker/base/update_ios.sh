@@ -45,6 +45,8 @@ rm -rf $sdk
 
 # Pull the iOS cross compiler tool and build the toolchain
 git clone https://github.com/tpoechtrager/cctools-port.git
+cd cctools-port
+git reset --hard ecb84d757b6f011543504967193375305ffa3b2f
 
 if [[ "`basename $1`" =~ ^iPhoneSimulator ]]; then
   rm -rf $IOS_SIM_NDK_AMD64
