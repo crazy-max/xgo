@@ -6,7 +6,42 @@
   <a href="https://quay.io/repository/crazymax/xgo"><img src="https://quay.io/repository/crazymax/xgo/status?style=flat-square" alt="Docker Repository on Quay"></a>
 </p>
 
-# xgo - Go CGO cross compiler
+# Fork
+
+This repository is a fork of [karalabe/xgo](https://github.com/karalabe/xgo) to push images and tags to an unique docker repository to make things more consistent for users.
+
+I use [travis](https://travis-ci.org/crazy-max/xgo/builds/429769403) and his [matrix expansion](https://docs.travis-ci.com/user/build-stages/matrix-expansion/) to build the images instead of using automated builds of Docker Hub (see my [.travis.yml](https://github.com/crazy-max/xgo/blob/master/.travis.yml)).
+
+If you launch a simple travis build, [only the base image will be built](https://github.com/crazy-max/xgo/blob/master/.travis.yml#L8-L11). If you want to build X images you have to trigger a custom build using this content:
+
+```yml
+matrix:
+  include:
+    - name: "xgo 1.10.0"
+      env:
+        - DOCKERFILE=./docker/go-1.10.0/Dockerfile
+        - BUILDPATH=./docker/go-1.10.0
+        - VERSION=1.10.0
+        - NOT_PUSH_LATEST=true
+    - name: "xgo 1.10.1"
+      env:
+        - DOCKERFILE=./docker/go-1.10.1/Dockerfile
+        - BUILDPATH=./docker/go-1.10.1
+        - VERSION=1.10.1
+        - NOT_PUSH_LATEST=true
+
+matrix:
+  include:
+    - name: "xgo 1.10.x"
+      env:
+        - DOCKERFILE=./docker/go-1.10.x/Dockerfile
+        - BUILDPATH=./docker/go-1.10.x
+        - VERSION=1.10.x
+        - NOT_PUSH_LATEST=false
+```
+> example with Go 1.10 images
+
+# About
 
 Although Go strives to be a cross platform language, cross compilation from one
 platform to another is not as simple as it could be, as you need the Go sources
