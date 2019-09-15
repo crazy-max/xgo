@@ -1,4 +1,4 @@
-# Go cross compiler (xgo): Go 1.11.5
+# Go cross compiler (xgo): Go 1.11.7
 # Copyright (c) 2018 Péter Szilágyi. All rights reserved.
 # Copyright (c) 2019 CrazyMax
 #
@@ -7,10 +7,10 @@
 FROM crazymax/xgo:base
 
 # Configure the root Go distribution and bootstrap based on it
-ENV GO_VERSION 1115
+ENV GO_VERSION 1117
 
 RUN \
-  export ROOT_DIST=https://storage.googleapis.com/golang/go1.11.5.linux-amd64.tar.gz    && \
-  export ROOT_DIST_SHA=ff54aafedff961eb94792487e827515da683d61a5f9482f668008832631e5d25 && \
+  export ROOT_DIST=https://storage.googleapis.com/golang/go1.11.7.linux-amd64.tar.gz    && \
+  export ROOT_DIST_SHA=db687814288b3b541c1754dfd4ecc2b8fd0d5e7995624945e3054a350ca573d8 && \
   \
 $BOOTSTRAP_PURE
