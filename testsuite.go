@@ -30,7 +30,6 @@ var layers = []struct {
 	{"crazymax/xgo:1.6.2", "go-1.6.2"},
 	{"crazymax/xgo:1.6.x", "go-1.6.x"},
 	{"crazymax/xgo:latest", "go-latest"},
-	//{"karalabe/xgo-latest-ios", "go-latest-ios"}, // Non-public layer (XCode licensing)
 }
 
 // tests defaines all the input test cases and associated arguments the cross
