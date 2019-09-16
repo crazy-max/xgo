@@ -12,7 +12,7 @@ on:
     paths:
       - 'docker/base/*'
     tags:
-      - base-*
+      - 'base-*'
 
 jobs:
   docker:
