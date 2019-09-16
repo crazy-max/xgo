@@ -1,5 +1,6 @@
 // Go CGO cross compiler
 // Copyright (c) 2014 Péter Szilágyi. All rights reserved.
+// Copyright (c) 2019 CrazyMax
 //
 // Released under the MIT license.
 
@@ -23,6 +24,7 @@ import (
 	appdir "github.com/ProtonMail/go-appdir"
 )
 
+var version = "dev"
 var depsCache = appdir.New("xgo").UserCache()
 
 // Cross compilation docker containers
@@ -76,6 +78,8 @@ type BuildFlags struct {
 }
 
 func main() {
+	fmt.Printf("Start xgo %s\n", version)
+
 	// Retrieve the CLI flags and the execution environment
 	flag.Parse()
 
