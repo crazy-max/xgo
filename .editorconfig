@@ -16,3 +16,6 @@ trim_trailing_whitespace = false
 
 [*.go]
 indent_style = tab
+
+[docker/**/latest]
+insert_final_newline = false
