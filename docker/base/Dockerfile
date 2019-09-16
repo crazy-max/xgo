@@ -1,5 +1,6 @@
 # Go cross compiler (xgo): Base cross-compilation layer
 # Copyright (c) 2014 Péter Szilágyi. All rights reserved.
+# Copyright (c) 2019 CrazyMax
 #
 # Released under the MIT license.
 
