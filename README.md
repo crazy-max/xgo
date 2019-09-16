@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://microbadger.com/images/crazymax/xgo"><img src="https://images.microbadger.com/badges/version/crazymax/xgo.svg?style=flat-square" alt="Version"></a>
-  <a href="https://github.com/crazy-max/xgo/actions"><img src="https://github.com/crazy-max/ddns-route53/workflows/xgo/badge.svg" alt="Build Status"></a>
+  <a href="https://github.com/crazy-max/xgo/actions"><img src="https://github.com/crazy-max/xgo/workflows/xgo/badge.svg" alt="Build Status"></a>
   <a href="https://travis-ci.com/crazy-max/xgo"><img src="https://img.shields.io/travis/com/crazy-max/xgo/master.svg?style=flat-square" alt="Build Status"></a>
   <a href="https://hub.docker.com/r/crazymax/xgo/"><img src="https://img.shields.io/docker/stars/crazymax/xgo.svg?style=flat-square" alt="Docker Stars"></a>
   <a href="https://hub.docker.com/r/crazymax/xgo/"><img src="https://img.shields.io/docker/pulls/crazymax/xgo.svg?style=flat-square" alt="Docker Pulls"></a>
