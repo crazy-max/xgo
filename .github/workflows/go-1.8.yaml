@@ -1,0 +1,84 @@
+name: go-1.8
+
+on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - '.github/workflows/go-1.8.yaml'
+      - 'docker/go-1.8/*'
+      - 'docker/go-1.8/*/*'
+  push:
+    branches:
+      - master
+    paths:
+      - '.github/workflows/go-1.8.yaml'
+      - 'docker/go-1.8/*'
+      - 'docker/go-1.8/*/*'
+    tags:
+      - 'go-1.8-*'
+
+jobs:
+  docker:
+    strategy:
+      matrix:
+        go_version:
+          - 1.8.0
+          - 1.8.1
+          - 1.8.2
+          - 1.8.3
+          - 1.8.4
+          - 1.8.5
+          - 1.8.6
+          - 1.8.7
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Dump GitHub env
+        run: |
+          env
+      -
+        name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          echo "$GITHUB_CONTEXT"
+      -
+        name: Checkout
+        uses: actions/checkout@v1
+      -
+        name: Get Latest
+        run: |
+          echo "##[set-env name=LATEST;]$(cat docker/go-1.8/latest)"
+      -
+        name: Docker Build
+        run: |
+          docker build \
+            --tag "crazymax/xgo:${{ matrix.go_version }}" \
+            --tag "quay.io/crazymax/xgo:${{ matrix.go_version }}" \
+            --file ./docker/go-1.8/go-${{ matrix.go_version }}/Dockerfile \
+            ./docker/go-1.8/go-${{ matrix.go_version }}
+          if [ "$LATEST" == "${{ matrix.go_version }}" ]; then
+            docker tag "crazymax/xgo:${{ matrix.go_version }}" "crazymax/xgo:1.8.x"
+            docker tag "quay.io/crazymax/xgo:${{ matrix.go_version }}" "crazymax/xgo:1.8.x"
+          fi
+      -
+        name: Docker Login
+        if: success() && startsWith(github.ref, 'refs/tags/go-1.8-')
+        env:
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          QUAY_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
+        run: |
+          echo "${DOCKER_PASSWORD}" | docker login --username crazymax --password-stdin
+          echo "${QUAY_PASSWORD}" | docker login quay.io --username crazymax --password-stdin
+      -
+        name: Docker Push
+        if: success() && startsWith(github.ref, 'refs/tags/go-1.8-')
+        run: |
+          docker push crazymax/xgo
+          docker push quay.io/crazymax/xgo
+      -
+        name: Clear
+        if: always()
+        run: |
+          rm -f ${HOME}/.docker/config.json
