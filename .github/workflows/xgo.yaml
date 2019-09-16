@@ -55,7 +55,7 @@ jobs:
           else
             echo GoReleaser Release
             ./bin/goreleaser release --skip-publish --rm-dist
-            rm -f dist/config.yaml
+            rm -f dist/CHANGELOG.md dist/config.yaml
           fi
           for folder in dist/*; do
             if [ -d ${folder} ]; then
