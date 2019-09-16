@@ -1,11 +1,5 @@
-# Go cross compiler (xgo): Go 1.6.3
-# Copyright (c) 2016 Péter Szilágyi. All rights reserved.
-#
-# Released under the MIT license.
-
 FROM crazymax/xgo:base
 
-# Configure the root Go distribution and bootstrap based on it
 ENV GO_VERSION 163
 
 RUN \

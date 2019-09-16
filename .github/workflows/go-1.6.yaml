@@ -6,12 +6,14 @@ on:
       - master
     paths:
       - '.github/workflows/go-1.6.yaml'
+      - 'docker/go-1.6/*'
       - 'docker/go-1.6/*/*'
   push:
     branches:
       - master
     paths:
       - '.github/workflows/go-1.6.yaml'
+      - 'docker/go-1.6/*'
       - 'docker/go-1.6/*/*'
     tags:
       - 'go-1.6-*'
