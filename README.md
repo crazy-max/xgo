@@ -3,7 +3,6 @@
   <a href="https://github.com/crazy-max/xgo/releases/latest"><img src="https://img.shields.io/github/downloads/crazy-max/xgo/total.svg?style=flat-square" alt="Total downloads"></a>
   <a href="https://hub.docker.com/r/crazymax/xgo/"><img src="https://img.shields.io/badge/dynamic/json.svg?label=version&query=$.results[1].name&url=https://hub.docker.com/v2/repositories/crazymax/xgo/tags&style=flat-square" alt="Latest Version"></a>
   <a href="https://github.com/crazy-max/xgo/actions"><img src="https://github.com/crazy-max/xgo/workflows/xgo/badge.svg" alt="Build Status"></a>
-  <a href="https://travis-ci.com/crazy-max/xgo"><img src="https://img.shields.io/travis/com/crazy-max/xgo/master.svg?style=flat-square" alt="Build Status"></a>
   <a href="https://hub.docker.com/r/crazymax/xgo/"><img src="https://img.shields.io/docker/stars/crazymax/xgo.svg?style=flat-square" alt="Docker Stars"></a>
   <a href="https://hub.docker.com/r/crazymax/xgo/"><img src="https://img.shields.io/docker/pulls/crazymax/xgo.svg?style=flat-square" alt="Docker Pulls"></a>
   <a href="https://quay.io/repository/crazymax/xgo"><img src="https://quay.io/repository/crazymax/xgo/status?style=flat-square" alt="Docker Repository on Quay"></a>
@@ -13,38 +12,11 @@
 
 # Fork
 
-This repository is a fork of [karalabe/xgo](https://github.com/karalabe/xgo) to push images and tags to an unique docker repository to make things more consistent for users.
+This repository is a fork of [karalabe/xgo](https://github.com/karalabe/xgo) to push images and [tags to an unique docker repository](https://hub.docker.com/r/crazymax/xgo/tags/?page=1&ordering=last_updated) to make things more consistent for users.
 
-I use [travis](https://travis-ci.org/crazy-max/xgo/builds/429769403) and his [matrix expansion](https://docs.travis-ci.com/user/build-stages/matrix-expansion/) to build the images instead of using automated builds of Docker Hub (see my [.travis.yml](https://github.com/crazy-max/xgo/blob/master/.travis.yml)).
+I use [GitHub Actions](https://github.com/crazy-max/xgo/actions) and his [matrix strategy](https://help.github.com/en/articles/workflow-syntax-for-github-actions#jobsjob_idstrategymatrix) to build the images instead of using automated builds of Docker Hub (see [workflows](.github/workflows) folder).
 
-If you launch a simple travis build, [only the base image will be built](https://github.com/crazy-max/xgo/blob/master/.travis.yml#L8-L11). If you want to build X images you have to trigger a custom build using this content:
-
-```yml
-matrix:
-  include:
-    - name: "xgo 1.10.0"
-      env:
-        - DOCKERFILE=./docker/go-1.10.0/Dockerfile
-        - BUILDPATH=./docker/go-1.10.0
-        - VERSION=1.10.0
-        - NOT_PUSH_LATEST=true
-    - name: "xgo 1.10.1"
-      env:
-        - DOCKERFILE=./docker/go-1.10.1/Dockerfile
-        - BUILDPATH=./docker/go-1.10.1
-        - VERSION=1.10.1
-        - NOT_PUSH_LATEST=true
-
-matrix:
-  include:
-    - name: "xgo 1.10.x"
-      env:
-        - DOCKERFILE=./docker/go-1.10.x/Dockerfile
-        - BUILDPATH=./docker/go-1.10.x
-        - VERSION=1.10.x
-        - NOT_PUSH_LATEST=false
-```
-> example with Go 1.10 images
+This also creates a [standalone xgo executable](https://github.com/crazy-max/xgo/releases) that can be used on many platforms.
 
 # About
 
