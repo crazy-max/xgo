@@ -4,9 +4,15 @@ on:
   pull_request:
     branches:
       - master
+    paths:
+      - '*'
+      - '!/docker'
   push:
     branches:
       - master
+    paths:
+      - '*'
+      - '!/docker'
     tags:
       - v*
 
