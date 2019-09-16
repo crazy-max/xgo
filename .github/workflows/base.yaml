@@ -1,0 +1,67 @@
+name: base
+
+on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - 'docker/base/*'
+  push:
+    branches:
+      - master
+    paths:
+      - 'docker/base/*'
+    tags:
+      - base-*
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Dump GitHub env
+        run: |
+          env
+      -
+        name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          echo "$GITHUB_CONTEXT"
+      -
+        name: Set VERSION
+        if: startsWith(github.ref, 'refs/tags/base-')
+        run: |
+          echo "##[set-env name=VERSION;]${GITHUB_REF#refs/tags/base-}"
+      -
+        name: Checkout
+        uses: actions/checkout@v1
+      -
+        name: Docker Build
+        run: |
+          docker build \
+            --tag "crazymax/xgo:base" \
+            --tag "crazymax/xgo:base-${VERSION:-dev}" \
+            --tag "quay.io/crazymax/xgo:base" \
+            --tag "quay.io/crazymax/xgo:base-${VERSION:-dev}" \
+            --file ./docker/base/Dockerfile ./docker/base
+      -
+        name: Docker Login
+        if: success() && startsWith(github.ref, 'refs/tags/base-')
+        env:
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          QUAY_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
+        run: |
+          echo "${DOCKER_PASSWORD}" | docker login --username crazymax --password-stdin
+          echo "${QUAY_PASSWORD}" | docker login quay.io --username crazymax --password-stdin
+      -
+        name: Docker Push
+        if: success() && startsWith(github.ref, 'refs/tags/base-')
+        run: |
+          docker push crazymax/xgo
+          docker push quay.io/crazymax/xgo
+      -
+        name: Clear
+        if: always()
+        run: |
+          rm -f ${HOME}/.docker/config.json
