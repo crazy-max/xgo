@@ -11,7 +11,7 @@ on:
       - v*
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     steps:
       -
@@ -31,7 +31,7 @@ jobs:
           echo "##[set-env name=TAG_NAME;]${GITHUB_REF#refs/tags/}"
       -
         name: Set up Go
-        uses: actions/setup-go@v1
+        uses: actions/setup-go@master
         with:
           go-version: 1.12.4
       -
@@ -42,7 +42,7 @@ jobs:
           echo "##[add-path]$(dirname $GITHUB_WORKSPACE)/bin"
       -
         name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@master
       -
         name: GoReleaser
         env:
