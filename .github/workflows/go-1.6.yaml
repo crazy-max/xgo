@@ -1,31 +1,30 @@
-name: go-1.5
+name: go-1.6
 
 on:
   pull_request:
     branches:
       - master
     paths:
-      - '.github/workflows/go-1.5.yaml'
-      - 'docker/go-1.5/*/*'
+      - '.github/workflows/go-1.6.yaml'
+      - 'docker/go-1.6/*/*'
   push:
     branches:
       - master
     paths:
-      - '.github/workflows/go-1.5.yaml'
-      - 'docker/go-1.5/*/*'
+      - '.github/workflows/go-1.6.yaml'
+      - 'docker/go-1.6/*/*'
     tags:
-      - 'go-1.5-*'
+      - 'go-1.6-*'
 
 jobs:
   docker:
     strategy:
       matrix:
         go_version:
-          - 1.5.0
-          - 1.5.1
-          - 1.5.2
-          - 1.5.3
-          - 1.5.4
+          - 1.6.0
+          - 1.6.1
+          - 1.6.2
+          - 1.6.3
     runs-on: ubuntu-latest
     steps:
       -
@@ -44,22 +43,22 @@ jobs:
       -
         name: Get Latest
         run: |
-          echo "##[set-env name=LATEST;]$(cat docker/go-1.5/latest)"
+          echo "##[set-env name=LATEST;]$(cat docker/go-1.6/latest)"
       -
         name: Docker Build
         run: |
           docker build \
             --tag "crazymax/xgo:${{ matrix.go_version }}" \
             --tag "quay.io/crazymax/xgo:${{ matrix.go_version }}" \
-            --file ./docker/go-1.5/go-${{ matrix.go_version }}/Dockerfile \
-            ./docker/go-1.5/go-${{ matrix.go_version }}
+            --file ./docker/go-1.6/go-${{ matrix.go_version }}/Dockerfile \
+            ./docker/go-1.6/go-${{ matrix.go_version }}
           if [ "$LATEST" == "${{ matrix.go_version }}" ]; then
-            docker tag "crazymax/xgo:${{ matrix.go_version }}" "crazymax/xgo:1.5.x"
-            docker tag "quay.io/crazymax/xgo:${{ matrix.go_version }}" "crazymax/xgo:1.5.x"
+            docker tag "crazymax/xgo:${{ matrix.go_version }}" "crazymax/xgo:1.6.x"
+            docker tag "quay.io/crazymax/xgo:${{ matrix.go_version }}" "crazymax/xgo:1.6.x"
           fi
       -
         name: Docker Login
-        if: success() && startsWith(github.ref, 'refs/tags/go-1.5-')
+        if: success() && startsWith(github.ref, 'refs/tags/go-1.6-')
         env:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           QUAY_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
@@ -68,7 +67,7 @@ jobs:
           echo "${QUAY_PASSWORD}" | docker login quay.io --username crazymax --password-stdin
       -
         name: Docker Push
-        if: success() && startsWith(github.ref, 'refs/tags/go-1.5-')
+        if: success() && startsWith(github.ref, 'refs/tags/go-1.6-')
         run: |
           docker push crazymax/xgo
           docker push quay.io/crazymax/xgo
