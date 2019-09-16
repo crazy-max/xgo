@@ -41,8 +41,8 @@ jobs:
       -
         name: Get Latest
         run: |
-          echo $(cat docker/go-1.5/latest)
-          echo "##[set-env name=LATEST;]$(cat docker/go-1.5/latest)"
+          echo $(cat ${GITHUB_WORKSPACE}/docker/go-1.5/latest)
+          echo "##[set-env name=LATEST;]$(cat ${GITHUB_WORKSPACE}/docker/go-1.5/latest)"
       -
         name: Checkout
         uses: actions/checkout@v1
