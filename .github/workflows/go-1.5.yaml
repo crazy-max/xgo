@@ -41,7 +41,8 @@ jobs:
       -
         name: Get Latest
         run: |
-          echo "##[set-env name=LATEST;]$(cat ./docker/go-1.5/latest)"
+          echo $(cat docker/go-1.5/latest)
+          echo "##[set-env name=LATEST;]$(cat docker/go-1.5/latest)"
       -
         name: Checkout
         uses: actions/checkout@v1
@@ -51,7 +52,7 @@ jobs:
           docker build \
             --tag "crazymax/xgo:${{ matrix.go_version }}" \
             --tag "quay.io/crazymax/xgo:${{ matrix.go_version }}" \
-            --file ./docker/go-1.5/go-${{ matrix.go_version }}/Dockerfile
+            --file ./docker/go-1.5/go-${{ matrix.go_version }}/Dockerfile \
             ./docker/go-1.5/go-${{ matrix.go_version }}
           if [ "$LATEST" == "${{ matrix.go_version }}" ]; then
             docker tag "crazymax/xgo:${{ matrix.go_version }}" "crazymax/xgo:1.5.x"
