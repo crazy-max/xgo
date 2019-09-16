@@ -5,11 +5,13 @@ on:
     branches:
       - master
     paths:
+      - '.github/workflows/base.yaml'
       - 'docker/base/*'
   push:
     branches:
       - master
     paths:
+      - '.github/workflows/base.yaml'
       - 'docker/base/*'
     tags:
       - 'base-*'
