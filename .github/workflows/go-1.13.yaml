@@ -70,6 +70,7 @@ jobs:
         name: Docker Push
         if: success() && startsWith(github.ref, 'refs/tags/go-1.13-')
         run: |
+          docker image rm crazymax/xgo:base
           docker push crazymax/xgo
           docker push quay.io/crazymax/xgo
       -
