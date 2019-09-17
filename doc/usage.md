@@ -6,10 +6,8 @@ Simply specify the import path you want to build, and xgo will do the rest:
     ...
 
     $ ls -al
-    -rwxr-xr-x  1 root  root    9995000 Nov 24 16:44 iris-android-16-arm
     -rwxr-xr-x  1 root  root    6776500 Nov 24 16:44 iris-darwin-10.6-386
     -rwxr-xr-x  1 root  root    8755532 Nov 24 16:44 iris-darwin-10.6-amd64
-    -rwxr-xr-x  1 root  root    7114176 Nov 24 16:45 iris-ios-5.0-arm
     -rwxr-xr-x  1 root  root   10135248 Nov 24 16:44 iris-linux-386
     -rwxr-xr-x  1 root  root   12598472 Nov 24 16:44 iris-linux-amd64
     -rwxr-xr-x  1 root  root   10040464 Nov 24 16:44 iris-linux-arm

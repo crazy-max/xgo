@@ -57,7 +57,6 @@ maintain separate build environments to do it.
   * [Package selection](doc/usage/package-selection.md)
   * [Limit build targets](doc/usage/limit-build-targets.md)
   * [Platform versions](doc/usage/platform-versions.md)
-  * [Mobile libraries](doc/usage/mobile-libraries.md)
   * [CGO dependencies](doc/usage/cgo-dependencies.md)
 
 ## How can I help ?

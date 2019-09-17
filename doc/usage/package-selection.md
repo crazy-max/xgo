@@ -11,10 +11,8 @@ parameter to select the exact package within, honoring any prior *branch* and
     ...
 
     $ ls -al
-    -rwxr-xr-x  1 root  root   4194956 Nov 24 16:38 goimports-android-16-arm
     -rwxr-xr-x  1 root  root   4164448 Nov 24 16:38 goimports-darwin-10.6-386
     -rwxr-xr-x  1 root  root   5223584 Nov 24 16:38 goimports-darwin-10.6-amd64
-    -rwxr-xr-x  1 root  root   3222848 Nov 24 16:39 goimports-ios-5.0-arm
     -rwxr-xr-x  1 root  root   4217184 Nov 24 16:38 goimports-linux-386
     -rwxr-xr-x  1 root  root   5295768 Nov 24 16:38 goimports-linux-amd64
     -rwxr-xr-x  1 root  root   4233120 Nov 24 16:38 goimports-linux-arm

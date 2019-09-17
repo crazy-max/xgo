@@ -8,10 +8,8 @@ the desired branch name through the `--branch` argument.
     ...
 
     $ ls -al
-    -rwxr-xr-x  1 root  root   4171248 Nov 24 16:40 goimports-android-16-arm
     -rwxr-xr-x  1 root  root   4139868 Nov 24 16:40 goimports-darwin-10.6-386
     -rwxr-xr-x  1 root  root   5186720 Nov 24 16:40 goimports-darwin-10.6-amd64
-    -rwxr-xr-x  1 root  root   3202364 Nov 24 16:40 goimports-ios-5.0-arm
     -rwxr-xr-x  1 root  root   4189456 Nov 24 16:40 goimports-linux-386
     -rwxr-xr-x  1 root  root   5264136 Nov 24 16:40 goimports-linux-amd64
     -rwxr-xr-x  1 root  root   4209416 Nov 24 16:40 goimports-linux-arm
