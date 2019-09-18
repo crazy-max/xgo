@@ -34,6 +34,7 @@ var dockerDist = "crazymax/xgo:"
 // Command line arguments to fine tune the compilation
 var (
 	goVersion   = flag.String("go", "latest", "Go release to use for cross compilation")
+	goProxy     = flag.String("goproxy", "", "Set a Global Proxy for Go Modules")
 	srcPackage  = flag.String("pkg", "", "Sub-package to build if not root import")
 	srcRemote   = flag.String("remote", "", "Version control remote repository to build")
 	srcBranch   = flag.String("branch", "", "Version control branch to build")
@@ -302,6 +303,9 @@ func compile(image string, config *ConfigFlags, flags *BuildFlags, folder string
 	}
 	if usesModules {
 		args = append(args, []string{"-e", "GO111MODULE=on"}...)
+		if *goProxy != "" {
+			args = append(args, []string{"-e", fmt.Sprintf("GOPROXY=%s", *goProxy)}...)
+		}
 		args = append(args, []string{"-v", os.Getenv("GOPATH") + ":/go"}...)
 
 		// Map this repository to the /source folder
