@@ -20,12 +20,10 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-
-	appdir "github.com/ProtonMail/go-appdir"
 )
 
 var version = "dev"
-var depsCache = appdir.New("xgo").UserCache()
+var depsCache = filepath.Join(os.TempDir(), "xgo-cache")
 
 // Cross compilation docker containers
 var dockerBase = "crazymax/xgo:base"
