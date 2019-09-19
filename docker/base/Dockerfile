@@ -14,6 +14,7 @@ ENV XGO_IN_XGO 1
 # Configure the Go environment, since it's not going to change
 ENV PATH   /usr/local/go/bin:$PATH
 ENV GOPATH /go
+ENV GOCACHE /go-build
 
 # Inject the remote file fetcher and checksum verifier
 ADD fetch.sh /fetch.sh
