@@ -306,7 +306,9 @@ func compile(image string, config *ConfigFlags, flags *BuildFlags, folder string
 		if *goProxy != "" {
 			args = append(args, []string{"-e", fmt.Sprintf("GOPROXY=%s", *goProxy)}...)
 		}
-		args = append(args, []string{"-v", os.Getenv("GOPATH") + ":/go"}...)
+		if os.Getenv("GOPATH") != "" {
+			args = append(args, []string{"-v", os.Getenv("GOPATH") + ":/go"}...)
+		}
 
 		// Map this repository to the /source folder
 		absRepository, err := filepath.Abs(config.Repository)
