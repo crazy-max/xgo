@@ -21,25 +21,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       -
-        name: Dump GitHub env
+        name: Prepare
+        id: prepare
         run: |
-          env
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            echo ::set-output name=tag_name::${GITHUB_REF#refs/tags/}
+          fi
       -
-        name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: |
-          echo "$GITHUB_CONTEXT"
-      -
-        name: Set TAG_NAME
-        if: startsWith(github.ref, 'refs/tags/')
-        run: |
-          echo "##[set-env name=TAG_NAME;]${GITHUB_REF#refs/tags/}"
-      -
+        # https://github.com/actions/setup-go
         name: Set up Go
         uses: actions/setup-go@master
         with:
-          go-version: 1.12.4
+          go-version: 1.12.10
       -
         name: Set GOPATH
         # temporary fix (see https://github.com/actions/setup-go/issues/14)
@@ -47,41 +40,27 @@ jobs:
           echo "##[set-env name=GOPATH;]$(dirname $GITHUB_WORKSPACE)"
           echo "##[add-path]$(dirname $GITHUB_WORKSPACE)/bin"
       -
+        # https://github.com/actions/checkout
         name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@v1
       -
+        # https://github.com/goreleaser/goreleaser-action
         name: GoReleaser
-        env:
-          GORELEASER_VERSION: 0.118.0
-        run: |
-          curl -sfL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | sh -s v${GORELEASER_VERSION}
-          if [[ -z "$TAG_NAME" ]]; then
-            echo GoReleaser Snapshot
-            ./bin/goreleaser release --snapshot --rm-dist
-          else
-            echo GoReleaser Release
-            ./bin/goreleaser release --skip-publish --rm-dist
-            rm -f dist/CHANGELOG.md dist/config.yaml
-          fi
-          for folder in dist/*; do
-            if [ -d ${folder} ]; then
-              filename=$(basename $folder)
-              if [[ $filename == *"windows"* ]]; then
-                filename=${filename}.exe
-              fi
-              for xgo in ${folder}/*; do
-                mv "${xgo}" "dist/${filename}.tmp"
-                rm -rf "${folder}"
-                mv "dist/${filename}.tmp" "dist/${filename}"
-              done
-            fi
-          done
+        uses: goreleaser/goreleaser-action@v1
+        with:
+          version: latest
+          args: release --skip-publish --rm-dist
       -
+        # https://github.com/softprops/action-gh-release
         name: GitHub Release
-        if: success() && startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v1
+        if: success() && startsWith(github.ref, 'refs/tags/')
+        with:
+          draft: true
+          files: |
+            dist/checksums.txt
+            dist/*.tar.gz
+            dist/*.zip
+          name: ${{ steps.prepare.outputs.tag_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          go get -u github.com/tcnksm/ghr
-          ghr --version
-          ghr -n ${TAG_NAME} -draft ${TAG_NAME} dist/
