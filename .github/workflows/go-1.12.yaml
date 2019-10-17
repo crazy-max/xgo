@@ -35,6 +35,7 @@ jobs:
           - 1.12.9
           - 1.12.10
           - 1.12.11
+          - 1.12.12
     runs-on: ubuntu-latest
     steps:
       -

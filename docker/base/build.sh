@@ -147,9 +147,13 @@ USR_LOCAL_CONTENTS=`ls /usr/local`
 # Configure some global build parameters
 NAME=`basename $1/$PACK`
 
-# Extract name from module name
+# Go module-based builds error with 'cannot find main module'
+# when $PACK is defined
 if [[ "$USEMODULES" = true ]]; then
+  PACK_RELPATH=""
   NAME=`sed -n 's/module\ \(.*\)/\1/p' /source/go.mod`
+else
+  PACK_RELPATH="./$PACK"
 fi
 
 # Pack relative path
