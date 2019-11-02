@@ -3,18 +3,20 @@ name: xgo
 on:
   pull_request:
     branches:
-      - master
+      - 'master'
     paths:
-      - '*'
-      - '!/docker'
+      - '.github/workflows/xgo.yaml'
+      - 'tests/**'
+      - '*.go'
   push:
     branches:
-      - master
-    paths:
-      - '*'
-      - '!/docker'
+      - 'master'
     tags:
-      - v*
+      - 'v*'
+    paths:
+      - '.github/workflows/xgo.yaml'
+      - 'tests/**'
+      - '*.go'
 
 jobs:
   release:

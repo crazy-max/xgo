@@ -3,18 +3,16 @@ name: go-1.6
 on:
   pull_request:
     branches:
-      - master
+      - 'master'
     paths:
       - '.github/workflows/go-1.6.yaml'
-      - 'docker/go-1.6/*'
-      - 'docker/go-1.6/*/*'
+      - 'docker/go-1.6/**'
   push:
     branches:
-      - master
+      - 'master'
     paths:
       - '.github/workflows/go-1.6.yaml'
-      - 'docker/go-1.6/*'
-      - 'docker/go-1.6/*/*'
+      - 'docker/go-1.6/**'
     tags:
       - 'go-1.6-*'
 
