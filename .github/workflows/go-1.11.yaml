@@ -64,7 +64,7 @@ jobs:
           QUAY_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
         run: |
           echo "${DOCKER_PASSWORD}" | docker login --username crazymax --password-stdin
-          echo "${QUAY_PASSWORD}" | docker login quay.io --username crazymax --password-stdin
+          echo "${QUAY_PASSWORD}" | docker login quay.io --username crazymax+github --password-stdin
       -
         name: Docker Push
         if: success() && startsWith(github.ref, 'refs/tags/go-1.11-')
