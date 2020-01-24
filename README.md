@@ -4,7 +4,6 @@
   <a href="https://github.com/crazy-max/xgo/actions"><img src="https://github.com/crazy-max/xgo/workflows/xgo/badge.svg" alt="Build Status"></a>
   <a href="https://hub.docker.com/r/crazymax/xgo/"><img src="https://img.shields.io/docker/stars/crazymax/xgo.svg?style=flat-square" alt="Docker Stars"></a>
   <a href="https://hub.docker.com/r/crazymax/xgo/"><img src="https://img.shields.io/docker/pulls/crazymax/xgo.svg?style=flat-square" alt="Docker Pulls"></a>
-  <a href="https://quay.io/repository/crazymax/xgo"><img src="https://quay.io/repository/crazymax/xgo/status?style=flat-square" alt="Docker Repository on Quay"></a>
   <br /><a href="https://github.com/sponsors/crazy-max"><img src="https://img.shields.io/badge/sponsor-crazy--max-181717.svg?logo=github&style=flat-square" alt="Become a sponsor"></a>
   <a href="https://www.paypal.me/crazyws"><img src="https://img.shields.io/badge/donate-paypal-00457c.svg?logo=paypal&style=flat-square" alt="Donate Paypal"></a>
 </p>
