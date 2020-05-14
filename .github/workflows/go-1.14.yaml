@@ -24,6 +24,7 @@ jobs:
           - 1.14.0
           - 1.14.1
           - 1.14.2
+          - 1.14.3
     runs-on: ubuntu-latest
     steps:
       -
