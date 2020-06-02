@@ -30,30 +30,20 @@ jobs:
             echo ::set-output name=tag_name::${GITHUB_REF#refs/tags/}
           fi
       -
-        # https://github.com/actions/setup-go
         name: Set up Go
         uses: actions/setup-go@master
         with:
-          go-version: 1.12.10
+          go-version: 1.13
       -
-        name: Set GOPATH
-        # temporary fix (see https://github.com/actions/setup-go/issues/14)
-        run: |
-          echo "##[set-env name=GOPATH;]$(dirname $GITHUB_WORKSPACE)"
-          echo "##[add-path]$(dirname $GITHUB_WORKSPACE)/bin"
-      -
-        # https://github.com/actions/checkout
         name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       -
-        # https://github.com/goreleaser/goreleaser-action
         name: GoReleaser
-        uses: goreleaser/goreleaser-action@v1
+        uses: goreleaser/goreleaser-action@v2
         with:
           version: latest
           args: release --skip-publish --rm-dist
       -
-        # https://github.com/softprops/action-gh-release
         name: GitHub Release
         uses: softprops/action-gh-release@v1
         if: success() && startsWith(github.ref, 'refs/tags/')
