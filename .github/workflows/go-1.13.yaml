@@ -33,6 +33,7 @@ jobs:
           - 1.13.9
           - 1.13.10
           - 1.13.11
+          - 1.13.12
     runs-on: ubuntu-latest
     steps:
       -
