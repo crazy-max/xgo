@@ -1,7 +1,7 @@
 <p align="center">
   <a href="https://github.com/crazy-max/xgo/releases/latest"><img src="https://img.shields.io/github/release/crazy-max/xgo.svg?style=flat-square" alt="GitHub release"></a>
   <a href="https://github.com/crazy-max/xgo/releases/latest"><img src="https://img.shields.io/github/downloads/crazy-max/xgo/total.svg?style=flat-square" alt="Total downloads"></a>
-  <a href="https://github.com/crazy-max/xgo/actions"><img src="https://github.com/crazy-max/xgo/workflows/xgo/badge.svg" alt="Build Status"></a>
+  <a href="https://github.com/crazy-max/xgo/actions?workflow=build"><img src="https://img.shields.io/github/workflow/status/crazy-max/xgo/build?label=build&logo=github&style=flat-square" alt="Build Status"></a>
   <a href="https://hub.docker.com/r/crazymax/xgo/"><img src="https://img.shields.io/docker/stars/crazymax/xgo.svg?style=flat-square" alt="Docker Stars"></a>
   <a href="https://hub.docker.com/r/crazymax/xgo/"><img src="https://img.shields.io/docker/pulls/crazymax/xgo.svg?style=flat-square" alt="Docker Pulls"></a>
   <br /><a href="https://github.com/sponsors/crazy-max"><img src="https://img.shields.io/badge/sponsor-crazy--max-181717.svg?logo=github&style=flat-square" alt="Become a sponsor"></a>

@@ -1,25 +1,21 @@
-name: xgo
+name: build
 
 on:
   pull_request:
     branches:
       - 'master'
-    paths:
-      - '.github/workflows/xgo.yaml'
-      - 'tests/**'
-      - '*.go'
+    paths-ignore:
+      - '**.md'
   push:
     branches:
       - 'master'
     tags:
       - 'v*'
-    paths:
-      - '.github/workflows/xgo.yaml'
-      - 'tests/**'
-      - '*.go'
+    paths-ignore:
+      - '**.md'
 
 jobs:
-  release:
+  xgo:
     runs-on: ubuntu-latest
     steps:
       -
