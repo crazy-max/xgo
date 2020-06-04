@@ -8,4 +8,4 @@ updates:
       timezone: "Europe/Paris"
     labels:
       - ":game_die: dependencies"
-      - ":robot: bot" 
+      - ":robot: bot"
