@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.4.0, base-2.0.0 (2020/06/27)
+## 0.4.0, base-2.0.0, go-1.14-r6, go-1.13-r15, go-1.12-r11 (2020/06/27)
 
 * Update dependencies
 * Now based on Debian 10
