@@ -46,9 +46,7 @@ jobs:
         with:
           draft: true
           files: |
-            dist/checksums.txt
-            dist/*.tar.gz
-            dist/*.zip
+            dist/*
           name: ${{ steps.prepare.outputs.tag_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
