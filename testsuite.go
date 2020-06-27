@@ -1,8 +1,3 @@
-// Go CGO cross compiler
-// Copyright (c) 2016 Péter Szilágyi. All rights reserved.
-//
-// Released under the MIT license.
-
 // This is a manual test suite to run the cross compiler against various known
 // projects, codebases and repositories to ensure at least a baseline guarantee
 // that things work as they supposed to.

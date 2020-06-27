@@ -1,9 +1,3 @@
-// Go CGO cross compiler
-// Copyright (c) 2014 Péter Szilágyi. All rights reserved.
-// Copyright (c) 2019 CrazyMax
-//
-// Released under the MIT license.
-
 // Wrapper around the GCO cross compiler docker container.
 package main
 
