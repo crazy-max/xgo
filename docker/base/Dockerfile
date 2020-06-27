@@ -1,76 +1,116 @@
-# Go cross compiler (xgo): Base cross-compilation layer
-# Copyright (c) 2014 Péter Szilágyi. All rights reserved.
-# Copyright (c) 2019 CrazyMax
-#
-# Released under the MIT license.
+FROM debian:buster
 
-FROM ubuntu:18.04
+ENV XGO_IN_XGO="1"\
+  DEBIAN_FRONTEND="noninteractive" \
+  PATH="/usr/local/go/bin:$PATH" \
+  GOPATH="/go" \
+  GOCACHE="/go-build"
 
-LABEL maintainer="Péter Szilágyi <peterke@gmail.com>"
-
-# Mark the image as xgo enabled to support xgo-in-xgo
-ENV XGO_IN_XGO 1
-
-# Configure the Go environment, since it's not going to change
-ENV PATH   /usr/local/go/bin:$PATH
-ENV GOPATH /go
-ENV GOCACHE /go-build
-
-# Inject the remote file fetcher and checksum verifier
 ADD fetch.sh /fetch.sh
 ENV FETCH /fetch.sh
 RUN chmod +x $FETCH
 
-# Make sure apt-get is up to date and dependent packages are installed
-RUN \
-  apt-get update && \
-  apt-get install -y automake autogen build-essential ca-certificates                    \
-    gcc-5-arm-linux-gnueabi g++-5-arm-linux-gnueabi libc6-dev-armel-cross                \
-    gcc-5-arm-linux-gnueabihf g++-5-arm-linux-gnueabihf libc6-dev-armhf-cross            \
-    gcc-5-aarch64-linux-gnu g++-5-aarch64-linux-gnu libc6-dev-arm64-cross                \
-    gcc-5-mips-linux-gnu g++-5-mips-linux-gnu libc6-dev-mips-cross                       \
-    gcc-5-mipsel-linux-gnu g++-5-mipsel-linux-gnu libc6-dev-mipsel-cross                 \
-    gcc-5-mips64-linux-gnuabi64 g++-5-mips64-linux-gnuabi64 libc6-dev-mips64-cross       \
-    gcc-5-mips64el-linux-gnuabi64 g++-5-mips64el-linux-gnuabi64 libc6-dev-mips64el-cross \
-    gcc-5-multilib g++-5-multilib gcc-mingw-w64 g++-mingw-w64 clang llvm-dev             \
-    gcc-6-arm-linux-gnueabi g++-6-arm-linux-gnueabi libc6-dev-armel-cross                \
-    gcc-6-arm-linux-gnueabihf g++-6-arm-linux-gnueabihf libc6-dev-armhf-cross            \
-    gcc-6-aarch64-linux-gnu g++-6-aarch64-linux-gnu libc6-dev-arm64-cross                \
-    gcc-6-mips-linux-gnu g++-6-mips-linux-gnu libc6-dev-mips-cross                       \
-    gcc-6-mipsel-linux-gnu g++-6-mipsel-linux-gnu libc6-dev-mipsel-cross                 \
-    gcc-6-mips64-linux-gnuabi64 g++-6-mips64-linux-gnuabi64 libc6-dev-mips64-cross       \
-    gcc-6-mips64el-linux-gnuabi64 g++-6-mips64el-linux-gnuabi64 libc6-dev-mips64el-cross \
-    gcc-6-multilib gcc-7-multilib g++-6-multilib gcc-mingw-w64 g++-mingw-w64 clang llvm-dev \
-    libtool libxml2-dev uuid-dev libssl-dev swig openjdk-8-jdk pkg-config patch \
-    make xz-utils cpio wget zip unzip p7zip git mercurial bzr texinfo help2man cmake     \
-    --no-install-recommends
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+    autogen \
+    automake \
+    bash \
+    build-essential \
+    bzr \
+    ca-certificates \
+    clang \
+    cmake \
+    cpio \
+    g++-*-aarch64-linux-gnu \
+    g++-*-arm-linux-gnueabi \
+    g++-*-arm-linux-gnueabihf \
+    g++-*-mips-linux-gnu \
+    g++-*-mipsel-linux-gnu \
+    g++-*-mips64-linux-gnuabi64 \
+    g++-*-mips64el-linux-gnuabi64 \
+    g++-*-multilib \
+    g++-mingw-w64 \
+    gcc-*-aarch64-linux-gnu \
+    gcc-*-arm-linux-gnueabi \
+    gcc-*-arm-linux-gnueabihf \
+    gcc-*-mips-linux-gnu \
+    gcc-*-mipsel-linux-gnu \
+    gcc-*-mips64-linux-gnuabi64 \
+    gcc-*-mips64el-linux-gnuabi64 \
+    gcc-*-multilib \
+    gcc-mingw-w64 \
+    git \
+    help2man \
+    libc*-dev-arm64-cross \
+    libc*-dev-armel-cross \
+    libc*-dev-armhf-cross \
+    libc*-dev-mips-cross \
+    libc*-dev-mipsel-cross \
+    libc*-dev-mips64-cross \
+    libc*-dev-mips64el-cross \
+    libssl-dev \
+    libtool \
+    libxml2-dev \
+    llvm-dev \
+    lzma-dev \
+    make \
+    mercurial \
+    p7zip \
+    patch \
+    pkg-config \
+    swig \
+    texinfo \
+    tzdata \
+    unzip \
+    uuid-dev \
+    wget \
+    xz-utils \
+    zip \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+  && find /var/log -type f | while read f; do echo -ne '' > $f; done;
+
+RUN apt-get update \
+  && apt-get install -y \
+    gnupg2 \
+    software-properties-common \
+  && wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add - \
+  && add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ \
+  && apt-get update \
+  && apt-get install -y adoptopenjdk-8-hotspot \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+  && find /var/log -type f | while read f; do echo -ne '' > $f; done;
 
 # Fix any stock package issues
 RUN ln -s /usr/include/asm-generic /usr/include/asm
 
 # Add patches directory for patching later
 ADD patches /patches
-# Configure the container for OSX cross compilation
-ENV OSX_SDK MacOSX10.11.sdk
-ENV OSX_SDK_PATH https://s3.dockerproject.org/darwin/v2/$OSX_SDK.tar.xz
 
-# Make libxar known to the ld64 and cctools build
-ENV LD_LIBRARY_PATH=/osxcross/target/lib
+# Configure the container for OSX cross compilation and make libxar known to the ld64 and cctools build
+ENV LD_LIBRARY_PATH="/osxcross/target/lib" \
+  OSX_SDK="MacOSX10.11.sdk"
+ENV OSX_SDK_PATH="https://s3.dockerproject.org/darwin/v2/$OSX_SDK.tar.xz" \
+  OSX_SDK_SUM="dd228a335194e3392f1904ce49aff1b1da26ca62" \
+  OSX_CROSS_COMMIT="88cb6e8d0d7675cae7c8a2d66c11f58237101df0"
 
 # Download the osx sdk and build the osx toolchain
 # We download the osx sdk, patch it and pack it again to be able to throw the patched version at osxcross
-RUN \
-  $FETCH $OSX_SDK_PATH dd228a335194e3392f1904ce49aff1b1da26ca62 && \
-  tar -xf `basename $OSX_SDK_PATH` && rm -f `basename $OSX_SDK_PATH`
-ADD patch.tar.xz $OSX_SDK/usr/include/c++
-RUN tar -cf - $OSX_SDK/ | xz -c - > $OSX_SDK.tar.xz && rm -rf $OSX_SDK
+RUN $FETCH $OSX_SDK_PATH $OSX_SDK_SUM \
+  && tar -xf `basename $OSX_SDK_PATH` \
+  && rm -f `basename $OSX_SDK_PATH`
+ADD patch.tar.xz "$OSX_SDK/usr/include/c++"
+RUN tar -cf - $OSX_SDK/ | xz -c - > $OSX_SDK.tar.xz \
+  && rm -rf $OSX_SDK
 
 # Actually build the toolchain
-RUN \
-  git clone https://github.com/tpoechtrager/osxcross.git && \
-  cd osxcross && git checkout 88cb6e8d0d7675cae7c8a2d66c11f58237101df0 && cd ../ && \
-  mv  $OSX_SDK.tar.xz /osxcross/tarballs/ && \
-  OSX_VERSION_MIN=10.10 UNATTENDED=1 LD_LIBRARY_PATH=/osxcross/target/lib /osxcross/build.sh
+RUN git clone https://github.com/tpoechtrager/osxcross.git \
+  && cd osxcross \
+  && git checkout $OSX_CROSS_COMMIT \
+  && cd ../ \
+  && mv  $OSX_SDK.tar.xz /osxcross/tarballs/ \
+  && OSX_VERSION_MIN=10.10 UNATTENDED=1 LD_LIBRARY_PATH=/osxcross/target/lib /osxcross/build.sh
 
 ENV PATH /osxcross/target/bin:$PATH
 
@@ -89,4 +129,5 @@ ADD build.sh /build.sh
 ENV BUILD /build.sh
 RUN chmod +x $BUILD
 
-ENTRYPOINT ["/build.sh"]
+ENV CC_CXX_VERSION="8"
+ENTRYPOINT [ "/build.sh" ]
