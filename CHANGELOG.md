@@ -4,6 +4,7 @@
 
 * Update dependencies
 * Now based on Debian 10
+* Remove Go 1.6, 1.7, 1.8, 1.9, 1.10, 1.11 support
 
 ## go-1.13-r14, go-1.14-r5 (2020/05/15)
 
