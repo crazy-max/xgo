@@ -1,9 +1,13 @@
 # Changelog
 
+## base-2.0.1, go-1.14-r7, go-1.13-r16, go-1.12-r12 (2020/06/28)
+
+* Fix libc
+
 ## 0.4.0, base-2.0.0, go-1.14-r6, go-1.13-r15, go-1.12-r11 (2020/06/27)
 
 * Update dependencies
-* Now based on Debian 10
+* Now based on Debian
 * Remove Go 1.6, 1.7, 1.8, 1.9, 1.10, 1.11 support
 
 ## go-1.13-r14, go-1.14-r5 (2020/05/15)

@@ -1,4 +1,4 @@
-FROM debian:buster
+FROM debian:stretch
 
 ENV XGO_IN_XGO="1"\
   DEBIAN_FRONTEND="noninteractive" \
@@ -55,6 +55,7 @@ RUN apt-get update \
     lzma-dev \
     make \
     mercurial \
+    openjdk-8-jdk \
     p7zip \
     patch \
     pkg-config \
@@ -66,18 +67,6 @@ RUN apt-get update \
     wget \
     xz-utils \
     zip \
-  && apt-get clean \
-  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-  && find /var/log -type f | while read f; do echo -ne '' > $f; done;
-
-RUN apt-get update \
-  && apt-get install -y \
-    gnupg2 \
-    software-properties-common \
-  && wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add - \
-  && add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ \
-  && apt-get update \
-  && apt-get install -y adoptopenjdk-8-hotspot \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
   && find /var/log -type f | while read f; do echo -ne '' > $f; done;
@@ -129,5 +118,5 @@ ADD build.sh /build.sh
 ENV BUILD /build.sh
 RUN chmod +x $BUILD
 
-ENV CC_CXX_VERSION="8"
+ENV CC_CXX_VERSION="6"
 ENTRYPOINT [ "/build.sh" ]
