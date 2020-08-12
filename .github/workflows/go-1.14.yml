@@ -47,7 +47,6 @@ jobs:
             ./docker/go-1.14/go-${{ matrix.go_version }}
           if [ "$LATEST" == "${{ matrix.go_version }}" ]; then
             docker tag "crazymax/xgo:${{ matrix.go_version }}" "crazymax/xgo:1.14.x"
-            docker tag "crazymax/xgo:${{ matrix.go_version }}" "crazymax/xgo:latest"
           fi
       -
         name: Docker Login
