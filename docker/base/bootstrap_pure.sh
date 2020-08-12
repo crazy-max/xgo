@@ -58,8 +58,10 @@ GOOS=windows GOARCH=386 CGO_ENABLED=1 CC=i686-w64-mingw32-gcc go install std
 echo "Bootstrapping darwin/amd64..."
 GOOS=darwin GOARCH=amd64 CGO_ENABLED=1 CC=o64-clang go install std
 
-echo "Bootstrapping darwin/386..."
-GOOS=darwin GOARCH=386 CGO_ENABLED=1 CC=o32-clang go install std
+if [ "$GO_VERSION" -lt 1150 ]; then
+  echo "Bootstrapping darwin/386..."
+  GOOS=darwin GOARCH=386 CGO_ENABLED=1 CC=o32-clang go install std
+fi
 
 # Install xgo within the container to enable internal cross compilation
 echo "Installing xgo-in-xgo..."
