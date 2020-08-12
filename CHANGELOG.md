@@ -1,5 +1,11 @@
 # Changelog
 
+## base-2.1.0, go-1.15-r1 (2020/08/12)
+
+* Go 1.15.0
+* Remove `darwin/386` support for Go 1.15
+* Remove Go 1.13 support
+
 ## go-1.13-r19, go-1.14-r10 (2020/08/07)
 
 * Go 1.13.15, 1.14.7
