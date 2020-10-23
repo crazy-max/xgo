@@ -14,7 +14,7 @@ This repository is a fork of [karalabe/xgo](https://github.com/karalabe/xgo) to 
 
 I use [GitHub Actions](https://github.com/crazy-max/xgo/actions) and his [matrix strategy](https://help.github.com/en/articles/workflow-syntax-for-github-actions#jobsjob_idstrategymatrix) to build the images instead of using automated builds of Docker Hub (see [workflows](.github/workflows) folder).
 
-This also creates a [standalone xgo executable](https://github.com/crazy-max/xgo/releases) that can be used on many platforms.
+This also creates a [standalone xgo executable](https://github.com/crazy-max/xgo/releases/latest) that can be used on many platforms.
 
 ## About
 
