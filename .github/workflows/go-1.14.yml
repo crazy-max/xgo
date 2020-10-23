@@ -31,6 +31,7 @@ jobs:
           - 1.14.7
           - 1.14.8
           - 1.14.9
+          - 1.14.10
     runs-on: ubuntu-latest
     steps:
       -
