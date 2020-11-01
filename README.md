@@ -10,11 +10,20 @@
 
 ## Fork
 
-This repository is a fork of [karalabe/xgo](https://github.com/karalabe/xgo) to push images and [tags to an unique docker repository](https://hub.docker.com/r/crazymax/xgo/tags/?page=1&ordering=last_updated) to make things more consistent for users.
+This repository is a fork of [karalabe/xgo](https://github.com/karalabe/xgo) to push images and tags to a single
+docker repository on several registries to make things more consistent for users:
 
-I use [GitHub Actions](https://github.com/crazy-max/xgo/actions) and his [matrix strategy](https://help.github.com/en/articles/workflow-syntax-for-github-actions#jobsjob_idstrategymatrix) to build the images instead of using automated builds of Docker Hub (see [workflows](.github/workflows) folder).
+| Registry                                                                                         | Image                           |
+|--------------------------------------------------------------------------------------------------|---------------------------------|
+| [Docker Hub](https://hub.docker.com/r/crazymax/xgo/)                                            | `crazymax/xgo`                 |
+| [GitHub Container Registry](https://github.com/users/crazy-max/packages/container/package/xgo)  | `ghcr.io/crazy-max/xgo`        |
 
-This also creates a [standalone xgo executable](https://github.com/crazy-max/xgo/releases/latest) that can be used on many platforms.
+I use [GitHub Actions](https://github.com/crazy-max/xgo/actions) and his
+[matrix strategy](https://help.github.com/en/articles/workflow-syntax-for-github-actions#jobsjob_idstrategymatrix) to
+build the images instead of using automated builds of Docker Hub (see [workflows](.github/workflows) folder).
+
+This also creates a [standalone xgo executable](https://github.com/crazy-max/xgo/releases/latest) that can be used on
+many platforms.
 
 ## About
 
@@ -58,9 +67,12 @@ maintain separate build environments to do it.
   * [Platform versions](doc/usage/platform-versions.md)
   * [CGO dependencies](doc/usage/cgo-dependencies.md)
 
-## How can I help ?
+## How can I help?
 
-All kinds of contributions are welcome :raised_hands:! The most basic way to show your support is to star :star2: the project, or to raise issues :speech_balloon: You can also support this project by [**becoming a sponsor on GitHub**](https://github.com/sponsors/crazy-max) :clap: or by making a [Paypal donation](https://www.paypal.me/crazyws) to ensure this journey continues indefinitely! :rocket:
+All kinds of contributions are welcome :raised_hands:! The most basic way to show your support is to star :star2:
+the project, or to raise issues :speech_balloon: You can also support this project by
+[**becoming a sponsor on GitHub**](https://github.com/sponsors/crazy-max) :clap: or by making
+a [Paypal donation](https://www.paypal.me/crazyws) to ensure this journey continues indefinitely! :rocket:
 
 Thanks again for your support, it is much appreciated! :pray:
 
