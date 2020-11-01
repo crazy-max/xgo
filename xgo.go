@@ -20,8 +20,7 @@ var version = "dev"
 var depsCache = filepath.Join(os.TempDir(), "xgo-cache")
 
 // Cross compilation docker containers
-var dockerBase = "crazymax/xgo:base"
-var dockerDist = "crazymax/xgo:"
+var dockerDist = "crazymax/xgo"
 
 // Command line arguments to fine tune the compilation
 var (
@@ -35,7 +34,8 @@ var (
 	crossDeps   = flag.String("deps", "", "CGO dependencies (configure/make based archives)")
 	crossArgs   = flag.String("depsargs", "", "CGO dependency configure arguments")
 	targets     = flag.String("targets", "*/*", "Comma separated targets to build for")
-	dockerImage = flag.String("image", "", "Use custom docker image instead of official distribution")
+	dockerRepo  = flag.String("docker-repo", "", "Use custom docker repo instead of official distribution")
+	dockerImage = flag.String("docker-image", "", "Use custom docker image instead of official distribution")
 )
 
 // ConfigFlags is a simple set of flags to define the environment and dependencies.
@@ -94,9 +94,11 @@ func main() {
 			log.Fatalf("👉 Usage: %s [options] <go import path>", os.Args[0])
 		}
 		// Select the image to use, either official or custom
-		image = dockerDist + *goVersion
+		image = fmt.Sprintf("%s:%s", dockerDist, *goVersion)
 		if *dockerImage != "" {
 			image = *dockerImage
+		} else if *dockerRepo != "" {
+			image = fmt.Sprintf("%s:%s", *dockerRepo, *goVersion)
 		}
 		// Check that all required images are available
 		found, err := checkDockerImage(image)

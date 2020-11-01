@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.0 (2020/11/01)
+
+* Allow to use custom xgo base repo with `docker-repo` flag
+* Rename `image` flag to `docker-image` to avoid confusion
+
 ## go-1.14-r13, go-1.15-r4 (2020/10/24)
 
 * Go 1.14.10, 1.15.3
