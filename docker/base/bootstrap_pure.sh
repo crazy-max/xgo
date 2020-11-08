@@ -47,6 +47,12 @@ if [ $GO_VERSION -ge 180 ]; then
 
   echo "Bootstrapping linux/mipsle..."
   GOOS=linux GOARCH=mipsle CGO_ENABLED=1 CC=mipsel-linux-gnu-gcc-$CC_CXX_VERSION go install std
+
+  echo "Bootstrapping linux/ppc64le..."
+  GOOS=linux GOARCH=ppc64le CGO_ENABLED=1 CC=powerpc64le-linux-gnu-gcc-$CC_CXX_VERSION go install std
+
+  echo "Bootstrapping linux/s390x..."
+  GOOS=linux GOARCH=s390x CGO_ENABLED=1 CC=s390x-linux-gnu-gcc-$CC_CXX_VERSION go install std
 fi
 
 echo "Bootstrapping windows/amd64..."

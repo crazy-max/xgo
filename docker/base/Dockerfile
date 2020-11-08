@@ -29,6 +29,8 @@ RUN apt-get update \
     g++-*-mips64-linux-gnuabi64 \
     g++-*-mips64el-linux-gnuabi64 \
     g++-*-multilib \
+    g++-*-powerpc64le-linux-gnu \
+    g++-*-s390x-linux-gnu \
     g++-mingw-w64 \
     gcc-*-aarch64-linux-gnu \
     gcc-*-arm-linux-gnueabi \
@@ -38,6 +40,8 @@ RUN apt-get update \
     gcc-*-mips64-linux-gnuabi64 \
     gcc-*-mips64el-linux-gnuabi64 \
     gcc-*-multilib \
+    gcc-*-powerpc64le-linux-gnu \
+    gcc-*-s390x-linux-gnu \
     gcc-mingw-w64 \
     git \
     help2man \
@@ -48,6 +52,8 @@ RUN apt-get update \
     libc*-dev-mipsel-cross \
     libc*-dev-mips64-cross \
     libc*-dev-mips64el-cross \
+    libc*-dev-ppc64el-cross \
+    libc*-dev-s390x-cross \
     libssl-dev \
     libtool \
     libxml2-dev \
