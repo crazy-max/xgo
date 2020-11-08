@@ -1,4 +1,5 @@
-FROM crazymax/xgo:base
+ARG BASE_IMAGE=crazymax/xgo:base
+FROM ${BASE_IMAGE}
 
 ENV GO_VERSION 11410
 
