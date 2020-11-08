@@ -1,6 +1,6 @@
 # Changelog
 
-## base-2.2.0, go-1.13-r20, go-1.14-r15, go-1.15-r6 (2020/11/08)
+## base-2.2.0, go-1.14-r15, go-1.15-r6 (2020/11/08)
 
 * Add support for `linux/ppc64le` and `linux/s390x` archs (#18)
 
