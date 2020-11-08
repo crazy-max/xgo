@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=crazymax/xgo:base
+ARG BASE_IMAGE=ghcr.io/crazy-max/xgo:base
 FROM ${BASE_IMAGE}
 
 ENV GO_VERSION 1140
