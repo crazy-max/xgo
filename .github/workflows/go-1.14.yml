@@ -39,10 +39,6 @@ jobs:
         name: Checkout
         uses: actions/checkout@v2
       -
-        name: Get Latest
-        run: |
-          echo "##[set-env name=LATEST;]$(cat docker/go-1.14/latest)"
-      -
         name: Docker Build
         run: |
           docker build \
@@ -50,7 +46,7 @@ jobs:
             --tag "ghcr.io/crazy-max/xgo:${{ matrix.go_version }}" \
             --file ./docker/go-1.14/go-${{ matrix.go_version }}/Dockerfile \
             ./docker/go-1.14/go-${{ matrix.go_version }}
-          if [ "$LATEST" == "${{ matrix.go_version }}" ]; then
+          if [ "$(cat docker/go-1.14/latest)" == "${{ matrix.go_version }}" ]; then
             docker tag "crazymax/xgo:${{ matrix.go_version }}" "crazymax/xgo:1.14.x"
           fi
       -
