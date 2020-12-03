@@ -18,7 +18,7 @@ on:
 
 env:
   BASE_IMAGE: ghcr.io/crazy-max/xgo:base
-  LATEST: 1.15.5
+  LATEST: 1.15.6
 
 jobs:
   docker:
@@ -31,6 +31,7 @@ jobs:
           - 1.15.3
           - 1.15.4
           - 1.15.5
+          - 1.15.6
     runs-on: ubuntu-latest
     steps:
       -
