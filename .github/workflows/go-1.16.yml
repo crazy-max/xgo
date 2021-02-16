@@ -1,39 +1,31 @@
-name: go-1.15
+name: go-1.16
 
 on:
   pull_request:
     branches:
       - 'master'
     paths:
-      - '.github/workflows/go-1.15.yaml'
-      - 'docker/go-1.15/**'
+      - '.github/workflows/go-1.16.yaml'
+      - 'docker/go-1.16/**'
   push:
     branches:
       - 'master'
     paths:
-      - '.github/workflows/go-1.15.yaml'
-      - 'docker/go-1.15/**'
+      - '.github/workflows/go-1.16.yaml'
+      - 'docker/go-1.16/**'
     tags:
-      - 'go-1.15-*'
+      - 'go-1.16-*'
 
 env:
   BASE_IMAGE: ghcr.io/crazy-max/xgo:base
-  LATEST: 1.15.8
+  LATEST: 1.16.0
 
 jobs:
   docker:
     strategy:
       matrix:
         go_version:
-          - 1.15.0
-          - 1.15.1
-          - 1.15.2
-          - 1.15.3
-          - 1.15.4
-          - 1.15.5
-          - 1.15.6
-          - 1.15.7
-          - 1.15.8
+          - 1.16.0
     runs-on: ubuntu-latest
     steps:
       -
@@ -45,7 +37,8 @@ jobs:
         run: |
           TAGS="--tag crazymax/xgo:${{ matrix.go_version }} --tag ghcr.io/crazy-max/xgo:${{ matrix.go_version }}"
           if [ "${{ env.LATEST }}" = "${{ matrix.go_version }}" ]; then
-            TAGS="${TAGS} --tag crazymax/xgo:1.15.x --tag ghcr.io/crazy-max/xgo:1.15.x"
+            TAGS="${TAGS} --tag crazymax/xgo:1.16.x --tag crazymax/xgo:latest"
+            TAGS="${TAGS} --tag ghcr.io/crazy-max/xgo:1.16.x --tag ghcr.io/crazy-max/xgo:latest"
           fi
           echo ::set-output name=tags::${TAGS}
       -
@@ -53,18 +46,18 @@ jobs:
         run: |
           docker build ${{ steps.prep.outputs.tags }} \
             --build-arg "BASE_IMAGE=${{ env.BASE_IMAGE }}" \
-            --file "./docker/go-1.15/go-${{ matrix.go_version }}/Dockerfile" \
-            "./docker/go-1.15/go-${{ matrix.go_version }}"
+            --file "./docker/go-1.16/go-${{ matrix.go_version }}/Dockerfile" \
+            "./docker/go-1.16/go-${{ matrix.go_version }}"
       -
         name: Login to DockerHub
-        if: startsWith(github.ref, 'refs/tags/go-1.15-')
+        if: startsWith(github.ref, 'refs/tags/go-1.16-')
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       -
         name: Login to GHCR
-        if: startsWith(github.ref, 'refs/tags/go-1.15-')
+        if: startsWith(github.ref, 'refs/tags/go-1.16-')
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
@@ -72,7 +65,7 @@ jobs:
           password: ${{ secrets.GHCR_TOKEN }}
       -
         name: Docker Push
-        if: startsWith(github.ref, 'refs/tags/go-1.15-')
+        if: startsWith(github.ref, 'refs/tags/go-1.16-')
         run: |
           docker image rm ${{ env.BASE_IMAGE }}
           docker push crazymax/xgo
