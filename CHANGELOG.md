@@ -3,6 +3,8 @@
 ## go-1.16-r0 (2021/02/16)
 
 * Go 1.16
+* Remove Go 1.14 support
+* Use docker build push action
 
 ## go-1.14-r20, go-1.15-r11 (2021/02/06)
 
