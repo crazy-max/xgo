@@ -1,32 +1,61 @@
-name: base
+name: go
 
 on:
   pull_request:
     branches:
       - 'master'
     paths:
-      - '.github/workflows/base.yml'
-      - 'docker/base/**'
+      - '.github/workflows/go.yml'
+      - 'docker/go/**'
   push:
     branches:
       - 'master'
     paths:
-      - '.github/workflows/base.yml'
-      - 'docker/base/**'
+      - '.github/workflows/go.yml'
+      - 'docker/go/**'
     tags:
-      - 'base-*'
+      - 'go-*'
 
 env:
   DOCKERHUB_SLUG: crazymax/xgo
   GHCR_SLUG: ghcr.io/crazy-max/xgo
+  BASE_IMAGE: ghcr.io/crazy-max/xgo:base
+  LATEST_116: 1.16.1
+  LATEST_115: 1.15.9
 
 jobs:
-  build:
+  docker:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go_version:
+          - 1.15.0
+          - 1.15.1
+          - 1.15.2
+          - 1.15.3
+          - 1.15.4
+          - 1.15.5
+          - 1.15.6
+          - 1.15.7
+          - 1.15.8
+          - 1.15.9
+          - 1.16.0
+          - 1.16.1
     steps:
       -
         name: Checkout
         uses: actions/checkout@v2
+      -
+        name: Prepare
+        run: |
+          TAGS="${{ matrix.go_version }}"
+          if [ "${{ env.LATEST_116 }}" = "${{ matrix.go_version }}" ]; then
+            TAGS="${TAGS},1.16.x"
+            TAGS="${TAGS},latest"
+          elif [ "${{ env.LATEST_115 }}" = "${{ matrix.go_version }}" ]; then
+            TAGS="${TAGS},1.15.x"
+          fi
+          echo "TAGS=${TAGS}" >> $GITHUB_ENV
       -
         name: Docker meta
         id: docker_meta
@@ -36,22 +65,23 @@ jobs:
             ${{ env.DOCKERHUB_SLUG }}
             ${{ env.GHCR_SLUG }}
           tag-custom: |
-            base
+            ${{ env.TAGS }}
           tag-custom-only: true
           label-custom: |
             org.opencontainers.image.title=xgo
             org.opencontainers.image.description=Go CGO cross compiler
+            org.opencontainers.image.version=go-${{ matrix.go_version }}
             org.opencontainers.image.vendor=CrazyMax
       -
         name: Login to DockerHub
-        if: startsWith(github.ref, 'refs/tags/base-')
+        if: startsWith(github.ref, 'refs/tags/go-')
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       -
         name: Login to GHCR
-        if: startsWith(github.ref, 'refs/tags/base-')
+        if: startsWith(github.ref, 'refs/tags/go-')
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
@@ -64,5 +94,7 @@ jobs:
           files: |
             ./docker-bake.hcl
             ${{ steps.docker_meta.outputs.bake-file }}
-          targets: base
-          push: ${{ startsWith(github.ref, 'refs/tags/base-') }}
+          targets: go-${{ matrix.go_version }}
+          push: ${{ startsWith(github.ref, 'refs/tags/go-') }}
+        env:
+          BASE_IMAGE: ${{ env.BASE_IMAGE }}

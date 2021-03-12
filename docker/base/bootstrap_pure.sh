@@ -8,8 +8,8 @@
 #
 # Environment variables for remote bootstrapping:
 #   FETCH         - Remote file fetcher and checksum verifier (injected by image)
-#   ROOT_DIST     - 64 bit Linux Go binary distribution package
-#   ROOT_DIST_SHA - 64 bit Linux Go distribution package checksum
+#   GO_DIST_URL   - 64 bit Linux Go binary distribution package url
+#   GO_DIST_SHA   - 64 bit Linux Go distribution package checksum
 #
 # Environment variables for local bootstrapping:
 #   GOROOT - Path to the lready installed Go runtime
@@ -17,10 +17,10 @@ set -e
 
 # Download, verify and install the root distribution if pulled remotely
 if [ "$GOROOT" == "" ]; then
-  $FETCH $ROOT_DIST $ROOT_DIST_SHA
+  $FETCH $GO_DIST_URL $GO_DIST_SHA
 
-  tar -C /usr/local -xzf `basename $ROOT_DIST`
-  rm -f `basename $ROOT_DIST`
+  tar -C /usr/local -xzf `basename $GO_DIST_URL`
+  rm -f `basename $GO_DIST_URL`
 
   export GOROOT=/usr/local/go
 fi
