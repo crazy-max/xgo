@@ -1,18 +1,7 @@
 name: go
 
 on:
-  pull_request:
-    branches:
-      - 'master'
-    paths:
-      - '.github/workflows/go.yml'
-      - 'docker/go/**'
   push:
-    branches:
-      - 'master'
-    paths:
-      - '.github/workflows/go.yml'
-      - 'docker/go/**'
     tags:
       - 'go-*'
 
