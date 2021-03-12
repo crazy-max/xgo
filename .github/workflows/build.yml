@@ -43,6 +43,7 @@ jobs:
           targets: base
           set: |
             *.tags=xgo:base
+            *.output=
             *.cache-from=type=local,src=/tmp/.xgo-cache
             *.cache-to=type=local,dest=/tmp/.xgo-cache-new
       -
@@ -111,7 +112,7 @@ jobs:
 
   base:
     runs-on: ubuntu-latest
-    needs: [ precache ]
+    needs: [ test ]
     steps:
       -
         name: Checkout
@@ -178,7 +179,7 @@ jobs:
 
   go:
     runs-on: ubuntu-latest
-    needs: [ precache ]
+    needs: [ test ]
     env:
       LATEST_116: 1.16.1
       LATEST_115: 1.15.9
