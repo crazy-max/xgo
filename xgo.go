@@ -235,6 +235,7 @@ func compile(image string, config *ConfigFlags, flags *BuildFlags, folder string
 			log.Fatalf("❌ No $GOPATH is set or forwarded to xgo")
 		}
 		if !usesModules {
+			os.Setenv("GO111MODULE", "off")
 			for _, gopath := range strings.Split(os.Getenv("GOPATH"), string(os.PathListSeparator)) {
 				// Since docker sandboxes volumes, resolve any symlinks manually
 				sources := filepath.Join(gopath, "src")
@@ -338,6 +339,17 @@ func compileContained(config *ConfigFlags, flags *BuildFlags, folder string) err
 	local := strings.HasPrefix(config.Repository, string(filepath.Separator)) || strings.HasPrefix(config.Repository, ".")
 	if local {
 		config.Repository = resolveImportPath(config.Repository)
+
+		// Resolve the repository import path from the file path
+		config.Repository = resolveImportPath(config.Repository)
+
+		// Determine if this is a module-based repository
+		var modFile = config.Repository + "/go.mod"
+		_, err := os.Stat(modFile)
+		usesModules := !os.IsNotExist(err)
+		if !usesModules {
+			os.Setenv("GO111MODULE", "off")
+		}
 	}
 	// Fine tune the original environment variables with those required by the build script
 	env := []string{
