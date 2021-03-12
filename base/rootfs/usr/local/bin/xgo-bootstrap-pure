@@ -72,9 +72,3 @@ if [ $GO_VERSION -ge 1160 ]; then
   echo "Bootstrapping darwin/arm64..."
   GOOS=darwin GOARCH=arm64 CGO_ENABLED=1 CC=o64-clang go install std
 fi
-
-# Install xgo within the container to enable internal cross compilation
-echo "Installing xgo-in-xgo..."
-cd /usr/local/src/xgo/
-GO111MODULE=off go build -o /go/bin/xgo
-ln -s /go/bin/xgo /usr/bin/xgo

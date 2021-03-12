@@ -82,7 +82,7 @@ ARG OSX_SDK_URL
 RUN wget -q $OSX_SDK_URL \
   && tar -xf $(basename $OSX_SDK_URL) \
   && rm -f $(basename $OSX_SDK_URL)
-ADD base/patch.tar.xz "$OSX_SDK/usr/include/c++"
+ADD patch.tar.xz "$OSX_SDK/usr/include/c++"
 RUN tar -cf - $OSX_SDK/ | xz -c - > $OSX_SDK.tar.xz \
   && rm -rf $OSX_SDK
 
@@ -101,8 +101,7 @@ ENV XGO_IN_XGO="1"\
   PATH="/usr/local/go/bin:$PATH" \
   GOPATH="/go" \
   GOCACHE="/go-build"
-COPY base/rootfs /
-COPY xgo.go /usr/local/src/xgo/xgo.go
+COPY rootfs /
 
 ARG CC_CXX_VERSION
 ENV CC_CXX_VERSION=${CC_CXX_VERSION}

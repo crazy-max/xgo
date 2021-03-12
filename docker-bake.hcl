@@ -1,3 +1,18 @@
+// xgo base image
+variable "BASE_IMAGE" {
+  default = "ghcr.io/crazy-max/xgo:base"
+}
+
+// GitHub reference as defined in GitHub Actions (eg. refs/head/master))
+variable "GITHUB_REF" {
+  default = ""
+}
+
+// Special target: https://github.com/crazy-max/ghaction-docker-meta#bake-definition
+target "ghaction-docker-meta" {
+  tags = ["xgo:local"]
+}
+
 group "default" {
   targets = ["base"]
 }
@@ -6,10 +21,6 @@ group "default" {
 #
 #
 
-variable "BASE_IMAGE" {
-  default = "ghcr.io/crazy-max/xgo:base"
-}
-
 target "base-image" {
   args = {
     BASE_IMAGE = BASE_IMAGE
@@ -17,9 +28,43 @@ target "base-image" {
 }
 
 target "base" {
+  inherits = ["ghaction-docker-meta"]
   dockerfile = "./base/Dockerfile"
   tags = ["xgo:base"]
   output = ["type=docker"]
+}
+
+#
+#
+#
+
+target "git-ref" {
+  args = {
+    GIT_REF = GITHUB_REF
+  }
+}
+
+target "artifact" {
+  inherits = ["git-ref", "ghaction-docker-meta"]
+  target = "xgo-artifact"
+  output = ["./dist"]
+}
+
+target "artifact-all" {
+  inherits = ["artifact"]
+  platforms = [
+    "linux/amd64",
+    "linux/arm/v5",
+    "linux/arm/v6",
+    "linux/arm/v7",
+    "linux/arm64",
+    "linux/386",
+    "linux/ppc64le",
+    "linux/s390x",
+    "windows/amd64",
+    "windows/386",
+    "darwin/amd64"
+  ]
 }
 
 #
@@ -61,8 +106,8 @@ target "test-cpp" {
 #
 
 target "go" {
-  inherits = ["base-image"]
-  context = "./go"
+  inherits = ["base-image", "git-ref", "ghaction-docker-meta"]
+  target = "go"
 }
 
 target "go-1.16" {
