@@ -17,24 +17,26 @@ on subsequent calls.
 A complex sample for such a scenario is building the Ethereum CLI node, which has
 the GNU Multiple Precision Arithmetic Library as it's dependency.
 
-    $ xgo --deps=https://gmplib.org/download/gmp/gmp-6.1.0.tar.bz2  \
-        --targets=windows/* github.com/ethereum/go-ethereum/cmd/geth
-    ...
+```shell
+$ xgo --deps=https://gmplib.org/download/gmp/gmp-6.1.0.tar.bz2 --targets=windows/* github.com/ethereum/go-ethereum/cmd/geth
+...
+ls -al
+```
+```text
+-rwxr-xr-x 1 root root 16315679 Nov 24 16:39 geth-windows-4.0-386.exe
+-rwxr-xr-x 1 root root 19452036 Nov 24 16:38 geth-windows-4.0-amd64.exe
+```
 
-    $ ls -al
-    -rwxr-xr-x 1 root root 16315679 Nov 24 16:39 geth-windows-4.0-386.exe
-    -rwxr-xr-x 1 root root 19452036 Nov 24 16:38 geth-windows-4.0-amd64.exe
+Some trivial arguments may be passed to the dependencies' configure script via `--depsargs`.
 
-Some trivial arguments may be passed to the dependencies' configure script via
-`--depsargs`.
-
-    $ xgo --deps=https://gmplib.org/download/gmp/gmp-6.1.0.tar.bz2  \
-        --targets=ios/* --depsargs=--disable-assembly               \
-        github.com/ethereum/go-ethereum/cmd/geth
-    ...
-
-    $ ls -al
-    -rwxr-xr-x 1 root root 14804160 Nov 24 16:32 geth-ios-5.0-arm
+```shell
+xgo --deps=https://gmplib.org/download/gmp/gmp-6.1.0.tar.bz2 --targets=ios/* --depsargs=--disable-assembly github.com/ethereum/go-ethereum/cmd/geth
+...
+ls -al
+```
+```text
+-rwxr-xr-x 1 root root 14804160 Nov 24 16:32 geth-ios-5.0-arm
+```
 
 Note, that since xgo needs to cross compile the dependencies for each platform
 and architecture separately, build time can increase significantly.
