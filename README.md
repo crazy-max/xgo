@@ -76,6 +76,9 @@ BASE_IMAGE=xgo:base docker buildx bake go-1.16
 
 # Tests (c, cpp and gorm)
 BASE_IMAGE=xgo:1.16 docker buildx bake tests
+
+# Create xgo artifacts in ./dist
+docker buildx bake artifact-all
 ```
 
 ## Documentation
