@@ -85,10 +85,11 @@ ADD patches /patches
 
 # Configure the container for OSX cross compilation and make libxar known to the ld64 and cctools build
 ENV LD_LIBRARY_PATH="/osxcross/target/lib" \
-  OSX_SDK="MacOSX10.11.sdk"
-ENV OSX_SDK_PATH="https://s3.dockerproject.org/darwin/v2/$OSX_SDK.tar.xz" \
-  OSX_SDK_SUM="dd228a335194e3392f1904ce49aff1b1da26ca62" \
-  OSX_CROSS_COMMIT="88cb6e8d0d7675cae7c8a2d66c11f58237101df0"
+  OSX_VERSION="11.1" \
+  OSX_SDK="MacOSX11.1.sdk"
+ENV OSX_SDK_PATH="https://github.com/larskanis/MacOSX-SDKs/releases/download/${OSX_VERSION}/${OSX_SDK}.tar.xz" \
+  OSX_SDK_SUM="cba4eb0add14db320cd63bd0fc9c1ffb9ef236c1" \
+  OSX_CROSS_COMMIT="035cc170338b7b252e3f13b0e3ccbf4411bffc41"
 
 # Download the osx sdk and build the osx toolchain
 # We download the osx sdk, patch it and pack it again to be able to throw the patched version at osxcross
@@ -102,7 +103,7 @@ RUN tar -cf - $OSX_SDK/ | xz -c - > $OSX_SDK.tar.xz \
 # Actually build the toolchain
 RUN git clone https://github.com/tpoechtrager/osxcross.git \
   && cd osxcross \
-  && git checkout $OSX_CROSS_COMMIT \
+  && git reset --hard $OSX_CROSS_COMMIT \
   && cd ../ \
   && mv  $OSX_SDK.tar.xz /osxcross/tarballs/ \
   && OSX_VERSION_MIN=10.10 UNATTENDED=1 LD_LIBRARY_PATH=/osxcross/target/lib /osxcross/build.sh
