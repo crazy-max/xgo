@@ -1,4 +1,4 @@
-FROM debian:stretch
+FROM debian:buster
 
 ENV XGO_IN_XGO="1"\
   DEBIAN_FRONTEND="noninteractive" \
@@ -61,7 +61,7 @@ RUN apt-get update \
     lzma-dev \
     make \
     mercurial \
-    openjdk-8-jdk \
+    openjdk-11-jdk \
     p7zip \
     patch \
     pkg-config \
@@ -124,5 +124,5 @@ ADD build.sh /build.sh
 ENV BUILD /build.sh
 RUN chmod +x $BUILD
 
-ENV CC_CXX_VERSION="6"
+ENV CC_CXX_VERSION="8"
 ENTRYPOINT [ "/build.sh" ]
