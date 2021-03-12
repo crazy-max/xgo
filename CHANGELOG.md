@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.6.0, go-1.16-r2, go-1.15-r13 (2021/03/10)
+
+* Add support for `darwin/arm64` (Apple M1 Chip)
+* MacOSX SDK 11.1
+* Debian Buster (#22)
+* Switch to `goreleaser-xx` for artifacts
+* Container dev workflow
+* Switch to buildx bake
+* Merged and enhanced Dockerfiles
+* Merge GHA workflows
+* Build xgo from working tree
+* Disable go modules if `go.mod` does not exist
+* Add gorm test
+* Refactor testing
+* Doc format
+
 ## go-1.16-r1, go-1.15-r12 (2021/03/10)
 
 * Go 1.16.1, 1.15.9
