@@ -19,7 +19,7 @@ env:
   GHCR_SLUG: ghcr.io/crazy-max/xgo
 
 jobs:
-  init:
+  precache:
     runs-on: ubuntu-latest
     steps:
       -
@@ -43,15 +43,8 @@ jobs:
           targets: base
           set: |
             *.tags=xgo:base
-            *.output=type=docker,dest=/tmp/base.tar
             *.cache-from=type=local,src=/tmp/.xgo-cache
             *.cache-to=type=local,dest=/tmp/.xgo-cache-new
-      -
-        name: Upload base image
-        uses: actions/upload-artifact@v2
-        with:
-          name: base
-          path: /tmp/base.tar
       -
         # FIXME: https://github.com/docker/build-push-action/issues/252
         name: Move cache
@@ -61,7 +54,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    needs: [ init ]
+    needs: [ precache ]
     strategy:
       fail-fast: false
       matrix:
@@ -77,21 +70,27 @@ jobs:
         name: Checkout
         uses: actions/checkout@v2
       -
+        name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.xgo-cache
+          key: ${{ runner.os }}-xgo-base-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-xgo-base-
+      -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
         with:
           driver: docker
       -
-        name: Download base image
-        uses: actions/download-artifact@v2
+        name: Build base
+        uses: docker/bake-action@v1
         with:
-          name: base
-          path: /tmp
-      -
-        name: Load Docker image
-        run: |
-          docker load --input /tmp/base.tar
-          docker image inspect xgo:base
+          targets: base
+          set: |
+            *.tags=xgo:base
+            *.output=type=docker
+            *.cache-from=type=local,src=/tmp/.xgo-cache
       -
         name: Bootstrap ${{ matrix.go_version }}
         uses: docker/bake-action@v1
@@ -112,7 +111,7 @@ jobs:
 
   base:
     runs-on: ubuntu-latest
-    needs: [ test ]
+    needs: [ precache ]
     steps:
       -
         name: Checkout
@@ -179,7 +178,7 @@ jobs:
 
   go:
     runs-on: ubuntu-latest
-    needs: [ test ]
+    needs: [ precache ]
     env:
       LATEST_116: 1.16.1
       LATEST_115: 1.15.9
@@ -204,21 +203,27 @@ jobs:
         name: Checkout
         uses: actions/checkout@v2
       -
-        name: Download base image
-        uses: actions/download-artifact@v2
+        name: Cache Docker layers
+        uses: actions/cache@v2
         with:
-          name: base
-          path: /tmp
-      -
-        name: Load Docker image
-        run: |
-          docker load --input /tmp/base.tar
-          docker image inspect xgo:base
+          path: /tmp/.xgo-cache
+          key: ${{ runner.os }}-xgo-base-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-xgo-base-
       -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
         with:
           driver: docker
+      -
+        name: Build base
+        uses: docker/bake-action@v1
+        with:
+          targets: base
+          set: |
+            *.tags=xgo:base
+            *.output=type=docker
+            *.cache-from=type=local,src=/tmp/.xgo-cache
       -
         name: Prepare
         run: |
