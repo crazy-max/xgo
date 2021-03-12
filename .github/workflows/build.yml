@@ -112,7 +112,7 @@ jobs:
 
   base:
     runs-on: ubuntu-latest
-    needs: [ test ]
+    needs: [ precache ]
     steps:
       -
         name: Checkout
@@ -179,7 +179,7 @@ jobs:
 
   go:
     runs-on: ubuntu-latest
-    needs: [ test ]
+    needs: [ precache ]
     env:
       LATEST_116: 1.16.1
       LATEST_115: 1.15.9
@@ -286,7 +286,7 @@ jobs:
 
   xgo:
     runs-on: ubuntu-latest
-    needs: [ test ]
+    needs: [ precache ]
     steps:
       -
         name: Checkout
