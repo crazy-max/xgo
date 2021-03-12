@@ -84,10 +84,10 @@ ENV XGO_IN_XGO="1"\
 RUN ln -s /usr/include/asm-generic /usr/include/asm
 
 # Add patches directory for patching later
-ADD docker/base/patches /patches
+ADD base/patches /patches
 
 # Fetch helper
-ADD docker/base/fetch.sh /fetch.sh
+ADD base/fetch.sh /fetch.sh
 ENV FETCH /fetch.sh
 RUN chmod +x $FETCH
 
@@ -100,7 +100,7 @@ ARG OSX_SDK_SUM
 RUN $FETCH $OSX_SDK_PATH $OSX_SDK_SUM \
   && tar -xf `basename $OSX_SDK_PATH` \
   && rm -f `basename $OSX_SDK_PATH`
-ADD docker/base/patch.tar.xz "$OSX_SDK/usr/include/c++"
+ADD base/patch.tar.xz "$OSX_SDK/usr/include/c++"
 RUN tar -cf - $OSX_SDK/ | xz -c - > $OSX_SDK.tar.xz \
   && rm -rf $OSX_SDK
 
@@ -116,7 +116,7 @@ RUN git clone https://github.com/tpoechtrager/osxcross.git \
 ENV PATH="/osxcross/target/bin:$PATH"
 
 # Inject the new Go root distribution downloader and bootstrapper
-ADD docker/base/bootstrap_pure.sh /bootstrap_pure.sh
+ADD base/bootstrap_pure.sh /bootstrap_pure.sh
 ENV BOOTSTRAP_PURE="/bootstrap_pure.sh"
 RUN chmod +x $BOOTSTRAP_PURE
 
@@ -124,12 +124,12 @@ RUN chmod +x $BOOTSTRAP_PURE
 ADD xgo.go /usr/local/src/xgo/xgo.go
 
 # Inject the C dependency cross compiler
-ADD docker/base/build_deps.sh /build_deps.sh
+ADD base/build_deps.sh /build_deps.sh
 ENV BUILD_DEPS /build_deps.sh
 RUN chmod +x $BUILD_DEPS
 
 # Inject the container entry point, the build script
-ADD docker/base/build.sh /build.sh
+ADD base/build.sh /build.sh
 ENV BUILD /build.sh
 RUN chmod +x $BUILD
 

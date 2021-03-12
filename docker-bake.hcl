@@ -17,7 +17,7 @@ target "base-image" {
 }
 
 target "base" {
-  dockerfile = "./docker/base/Dockerfile"
+  dockerfile = "./base/Dockerfile"
   tags = ["xgo:base"]
   output = ["type=docker"]
 }
@@ -62,7 +62,7 @@ target "test-cpp" {
 
 target "go" {
   inherits = ["base-image"]
-  context = "./docker/go"
+  context = "./go"
 }
 
 target "go-1.16" {
