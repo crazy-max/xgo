@@ -29,7 +29,7 @@ target "base-image" {
 
 target "base" {
   inherits = ["ghaction-docker-meta"]
-  dockerfile = "./base/Dockerfile"
+  context = "./base"
   tags = ["xgo:base"]
   output = ["type=docker"]
 }
