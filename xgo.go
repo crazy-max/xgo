@@ -20,7 +20,7 @@ var version = "dev"
 var depsCache = filepath.Join(os.TempDir(), "xgo-cache")
 
 // Cross compilation docker containers
-var dockerDist = "crazymax/xgo"
+var dockerDist = "ghcr.io/crazy-max/xgo"
 
 // Command line arguments to fine tune the compilation
 var (
