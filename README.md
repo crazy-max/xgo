@@ -68,11 +68,11 @@ Build xgo yourself using Docker [`buildx bake`](https://github.com/docker/buildx
 git clone https://github.com/crazy-max/xgo.git xgo
 cd xgo
 
-# Build base image and output to docker with xgo:base tag (default)
-docker buildx bake base
+# Build base image and output to docker with xgo:base tag
+docker buildx bake --set *.tags=xgo:base base
 
 # Build go-1.16 image and output to docker with xgo:1.16 tag
-BASE_IMAGE=xgo:base docker buildx bake go-1.16
+BASE_IMAGE=xgo:base docker buildx bake --set *.tags=xgo:1.16 go-1.16
 
 # Tests (c, cpp and gorm)
 BASE_IMAGE=xgo:1.16 docker buildx bake tests

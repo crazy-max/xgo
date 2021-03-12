@@ -30,7 +30,6 @@ target "base-image" {
 target "base" {
   inherits = ["ghaction-docker-meta"]
   context = "./base"
-  tags = ["xgo:base"]
   output = ["type=docker"]
 }
 
@@ -108,16 +107,15 @@ target "test-cpp" {
 target "go" {
   inherits = ["base-image", "git-ref", "ghaction-docker-meta"]
   target = "go"
+  output = ["type=docker"]
 }
 
 target "go-1.16" {
   inherits = ["go-1.16.1"]
-  tags = ["xgo:1.16"]
 }
 
 target "go-1.16.1" {
   inherits = ["go"]
-  tags = ["xgo:1.16.1"]
   args = {
     GO_VERSION = "1161"
     GO_DIST_URL = "https://golang.org/dl/go1.16.1.linux-amd64.tar.gz"
@@ -127,7 +125,6 @@ target "go-1.16.1" {
 
 target "go-1.16.0" {
   inherits = ["go"]
-  tags = ["xgo:1.16.0"]
   args = {
     GO_VERSION = "1160"
     GO_DIST_URL = "https://golang.org/dl/go1.16.linux-amd64.tar.gz"
@@ -137,12 +134,10 @@ target "go-1.16.0" {
 
 target "go-1.15" {
   inherits = ["go-1.15.9"]
-  tags = ["xgo:1.15"]
 }
 
 target "go-1.15.9" {
   inherits = ["go"]
-  tags = ["xgo:1.15.9"]
   args = {
     GO_VERSION = "1159"
     GO_DIST_URL = "https://golang.org/dl/go1.15.9.linux-amd64.tar.gz"
@@ -152,7 +147,6 @@ target "go-1.15.9" {
 
 target "go-1.15.8" {
   inherits = ["go"]
-  tags = ["xgo:1.15.8"]
   args = {
     GO_VERSION = "1158"
     GO_DIST_URL = "https://golang.org/dl/go1.15.8.linux-amd64.tar.gz"
@@ -162,7 +156,6 @@ target "go-1.15.8" {
 
 target "go-1.15.7" {
   inherits = ["go"]
-  tags = ["xgo:1.15.7"]
   args = {
     GO_VERSION = "1157"
     GO_DIST_URL = "https://golang.org/dl/go1.15.7.linux-amd64.tar.gz"
@@ -172,7 +165,6 @@ target "go-1.15.7" {
 
 target "go-1.15.6" {
   inherits = ["go"]
-  tags = ["xgo:1.15.6"]
   args = {
     GO_VERSION = "1156"
     GO_DIST_URL = "https://golang.org/dl/go1.15.6.linux-amd64.tar.gz"
@@ -182,7 +174,6 @@ target "go-1.15.6" {
 
 target "go-1.15.5" {
   inherits = ["go"]
-  tags = ["xgo:1.15.5"]
   args = {
     GO_VERSION = "1155"
     GO_DIST_URL = "https://golang.org/dl/go1.15.5.linux-amd64.tar.gz"
@@ -192,7 +183,6 @@ target "go-1.15.5" {
 
 target "go-1.15.4" {
   inherits = ["go"]
-  tags = ["xgo:1.15.4"]
   args = {
     GO_VERSION = "1154"
     GO_DIST_URL = "https://golang.org/dl/go1.15.4.linux-amd64.tar.gz"
@@ -202,7 +192,6 @@ target "go-1.15.4" {
 
 target "go-1.15.3" {
   inherits = ["go"]
-  tags = ["xgo:1.15.3"]
   args = {
     GO_VERSION = "1153"
     GO_DIST_URL = "https://golang.org/dl/go1.15.3.linux-amd64.tar.gz"
@@ -212,7 +201,6 @@ target "go-1.15.3" {
 
 target "go-1.15.2" {
   inherits = ["go"]
-  tags = ["xgo:1.15.2"]
   args = {
     GO_VERSION = "1152"
     GO_DIST_URL = "https://golang.org/dl/go1.15.2.linux-amd64.tar.gz"
@@ -222,7 +210,6 @@ target "go-1.15.2" {
 
 target "go-1.15.1" {
   inherits = ["go"]
-  tags = ["xgo:1.15.1"]
   args = {
     GO_VERSION = "1151"
     GO_DIST_URL = "https://golang.org/dl/go1.15.1.linux-amd64.tar.gz"
@@ -232,7 +219,6 @@ target "go-1.15.1" {
 
 target "go-1.15.0" {
   inherits = ["go"]
-  tags = ["xgo:1.15.0"]
   args = {
     GO_VERSION = "1150"
     GO_DIST_URL = "https://golang.org/dl/go1.15.linux-amd64.tar.gz"
