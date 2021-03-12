@@ -1,11 +1,9 @@
-ARG OSX_VERSION="11.1"
-ARG OSX_SDK="MacOSX11.1.sdk"
-ARG OSX_SDK_PATH="https://github.com/larskanis/MacOSX-SDKs/releases/download/${OSX_VERSION}/${OSX_SDK}.tar.xz"
-ARG OSX_SDK_SUM="cba4eb0add14db320cd63bd0fc9c1ffb9ef236c1"
-ARG OSX_CROSS_COMMIT="035cc170338b7b252e3f13b0e3ccbf4411bffc41"
 ARG CC_CXX_VERSION="8"
+ARG OSX_SDK="MacOSX11.1.sdk"
+ARG OSX_SDK_URL="https://github.com/larskanis/MacOSX-SDKs/releases/download/11.1/${OSX_SDK}.tar.xz"
+ARG OSX_CROSS_COMMIT="035cc170338b7b252e3f13b0e3ccbf4411bffc41"
 
-FROM debian:buster
+FROM debian:buster AS base
 ARG CC_CXX_VERSION
 ENV DEBIAN_FRONTEND="noninteractive"
 RUN apt-get update \
@@ -19,6 +17,7 @@ RUN apt-get update \
     clang \
     cmake \
     cpio \
+    curl \
     g++-${CC_CXX_VERSION}-aarch64-linux-gnu \
     g++-${CC_CXX_VERSION}-arm-linux-gnueabi \
     g++-${CC_CXX_VERSION}-arm-linux-gnueabihf \
@@ -73,38 +72,20 @@ RUN apt-get update \
     zip \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+  && ln -s /usr/include/asm-generic /usr/include/asm \
   && find /var/log -type f | while read f; do echo -ne '' > $f; done;
 
-ENV XGO_IN_XGO="1"\
-  PATH="/usr/local/go/bin:$PATH" \
-  GOPATH="/go" \
-  GOCACHE="/go-build"
-
-# Fix any stock package issues
-RUN ln -s /usr/include/asm-generic /usr/include/asm
-
-# Add patches directory for patching later
-ADD base/patches /patches
-
-# Fetch helper
-ADD base/fetch.sh /fetch.sh
-ENV FETCH /fetch.sh
-RUN chmod +x $FETCH
-
-# Download the osx sdk and build the osx toolchain
-# We download the osx sdk, patch it and pack it again to be able to throw the patched version at osxcross
+FROM base AS osx
 ARG OSX_VERSION
 ARG OSX_SDK
-ARG OSX_SDK_PATH
-ARG OSX_SDK_SUM
-RUN $FETCH $OSX_SDK_PATH $OSX_SDK_SUM \
-  && tar -xf `basename $OSX_SDK_PATH` \
-  && rm -f `basename $OSX_SDK_PATH`
+ARG OSX_SDK_URL
+RUN wget -q $OSX_SDK_URL \
+  && tar -xf $(basename $OSX_SDK_URL) \
+  && rm -f $(basename $OSX_SDK_URL)
 ADD base/patch.tar.xz "$OSX_SDK/usr/include/c++"
 RUN tar -cf - $OSX_SDK/ | xz -c - > $OSX_SDK.tar.xz \
   && rm -rf $OSX_SDK
 
-# Actually build the toolchain
 ENV LD_LIBRARY_PATH="/osxcross/target/lib"
 ARG OSX_CROSS_COMMIT
 RUN git clone https://github.com/tpoechtrager/osxcross.git \
@@ -115,24 +96,14 @@ RUN git clone https://github.com/tpoechtrager/osxcross.git \
   && OSX_VERSION_MIN=10.10 UNATTENDED=1 LD_LIBRARY_PATH=${LD_LIBRARY_PATH} /osxcross/build.sh
 ENV PATH="/osxcross/target/bin:$PATH"
 
-# Inject the new Go root distribution downloader and bootstrapper
-ADD base/bootstrap_pure.sh /bootstrap_pure.sh
-ENV BOOTSTRAP_PURE="/bootstrap_pure.sh"
-RUN chmod +x $BOOTSTRAP_PURE
-
-# Copy xgo within the container to enable internal cross compilation
-ADD xgo.go /usr/local/src/xgo/xgo.go
-
-# Inject the C dependency cross compiler
-ADD base/build_deps.sh /build_deps.sh
-ENV BUILD_DEPS /build_deps.sh
-RUN chmod +x $BUILD_DEPS
-
-# Inject the container entry point, the build script
-ADD base/build.sh /build.sh
-ENV BUILD /build.sh
-RUN chmod +x $BUILD
+FROM osx
+ENV XGO_IN_XGO="1"\
+  PATH="/usr/local/go/bin:$PATH" \
+  GOPATH="/go" \
+  GOCACHE="/go-build"
+COPY base/rootfs /
+COPY xgo.go /usr/local/src/xgo/xgo.go
 
 ARG CC_CXX_VERSION
 ENV CC_CXX_VERSION=${CC_CXX_VERSION}
-ENTRYPOINT [ "/build.sh" ]
+ENTRYPOINT [ "xgo-build" ]

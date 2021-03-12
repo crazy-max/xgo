@@ -3,7 +3,7 @@
 # Contains a simple fetcher to download a file from a remote URL and verify its
 # SHA1 or SHA256 checksum (selected based on provided length).
 #
-# Usage: fetch.sh <remote URL> <SHA1/SHA256 checksum>
+# Usage: xgo-fetch <remote URL> <SHA1/SHA256 checksum>
 set -e
 
 # Skip the download if no operands specified

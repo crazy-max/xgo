@@ -1,29 +1,21 @@
-<p align="center">
-  <a href="https://github.com/crazy-max/xgo/releases/latest"><img src="https://img.shields.io/github/release/crazy-max/xgo.svg?style=flat-square" alt="GitHub release"></a>
-  <a href="https://github.com/crazy-max/xgo/releases/latest"><img src="https://img.shields.io/github/downloads/crazy-max/xgo/total.svg?style=flat-square" alt="Total downloads"></a>
-  <a href="https://github.com/crazy-max/xgo/actions?workflow=build"><img src="https://img.shields.io/github/workflow/status/crazy-max/xgo/build?label=build&logo=github&style=flat-square" alt="Build Status"></a>
-  <a href="https://hub.docker.com/r/crazymax/xgo/"><img src="https://img.shields.io/docker/stars/crazymax/xgo.svg?style=flat-square" alt="Docker Stars"></a>
-  <a href="https://hub.docker.com/r/crazymax/xgo/"><img src="https://img.shields.io/docker/pulls/crazymax/xgo.svg?style=flat-square" alt="Docker Pulls"></a>
-  <br /><a href="https://github.com/sponsors/crazy-max"><img src="https://img.shields.io/badge/sponsor-crazy--max-181717.svg?logo=github&style=flat-square" alt="Become a sponsor"></a>
-  <a href="https://www.paypal.me/crazyws"><img src="https://img.shields.io/badge/donate-paypal-00457c.svg?logo=paypal&style=flat-square" alt="Donate Paypal"></a>
-</p>
+[![GitHub release](https://img.shields.io/github/release/crazy-max/xgo.svg?style=flat-square)](https://github.com/crazy-max/xgo/releases/latest)
+[![Total downloads](https://img.shields.io/github/downloads/crazy-max/xgo/total.svg?style=flat-square)](https://github.com/crazy-max/xgo/releases/latest)
+[![Build Status](https://img.shields.io/github/workflow/status/crazy-max/xgo/build?label=build&logo=github&style=flat-square)](https://github.com/crazy-max/xgo/actions?query=workflow%3Abuild)
+[![Docker Stars](https://img.shields.io/docker/stars/crazymax/xgo.svg?style=flat-square&logo=docker)](https://hub.docker.com/r/crazymax/xgo/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/crazymax/xgo.svg?style=flat-square&logo=docker)](https://hub.docker.com/r/crazymax/xgo/)
+[![Go Report Card](https://goreportcard.com/badge/github.com/crazy-max/xgo)](https://goreportcard.com/report/github.com/crazy-max/xgo)
 
-## Fork
+[![Become a sponsor](https://img.shields.io/badge/sponsor-crazy--max-181717.svg?logo=github&style=flat-square)](https://github.com/sponsors/crazy-max)
+[![Donate Paypal](https://img.shields.io/badge/donate-paypal-00457c.svg?logo=paypal&style=flat-square)](https://www.paypal.me/crazyws)
 
-This repository is a fork of [karalabe/xgo](https://github.com/karalabe/xgo) to push images and tags to a single
-docker repository on several registries to make things more consistent for users:
+___
 
-| Registry                                                                                         | Image                           |
-|--------------------------------------------------------------------------------------------------|---------------------------------|
-| [Docker Hub](https://hub.docker.com/r/crazymax/xgo/)                                            | `crazymax/xgo`                 |
-| [GitHub Container Registry](https://github.com/users/crazy-max/packages/container/package/xgo)  | `ghcr.io/crazy-max/xgo`        |
-
-I use [GitHub Actions](https://github.com/crazy-max/xgo/actions) and his
-[matrix strategy](https://help.github.com/en/articles/workflow-syntax-for-github-actions#jobsjob_idstrategymatrix) to
-build the images instead of using automated builds of Docker Hub (see [workflows](.github/workflows) folder).
-
-This also creates a [standalone xgo executable](https://github.com/crazy-max/xgo/releases/latest) that can be used on
-many platforms.
+* [About](#about)
+* [Fork](#fork)
+* [Build](#Build)
+* [Documentation](#documentation)
+* [How can I help?](#how-can-i-help)
+* [Lisence](#license)
 
 ## About
 
@@ -51,6 +43,40 @@ CGO itself, which isn't trivial since you need access to OS specific headers and
 libraries. This becomes very annoying when you need access only to some trivial
 OS specific functionality (e.g. query the CPU load), but need to configure and
 maintain separate build environments to do it.
+
+## Fork
+
+This repository is a fork of [karalabe/xgo](https://github.com/karalabe/xgo) to push images and tags to a single
+docker repository on several registries to make things more consistent for users:
+
+| Registry                                                                                         | Image                           |
+|--------------------------------------------------------------------------------------------------|---------------------------------|
+| [Docker Hub](https://hub.docker.com/r/crazymax/xgo/)                                            | `crazymax/xgo`                 |
+| [GitHub Container Registry](https://github.com/users/crazy-max/packages/container/package/xgo)  | `ghcr.io/crazy-max/xgo`        |
+
+I use [GitHub Actions](https://github.com/crazy-max/xgo/actions) to  build the images instead of using automated
+builds of Docker Hub (see [build workflow](.github/workflows/build.yml)).
+
+This also creates a [standalone xgo executable](https://github.com/crazy-max/xgo/releases/latest) that can be used on
+many platforms.
+
+## Build
+
+Build xgo yourself using Docker [`buildx bake`](https://github.com/docker/buildx):
+
+```shell
+git clone https://github.com/crazy-max/xgo.git xgo
+cd xgo
+
+# Build base image and output to docker with xgo:base tag (default)
+docker buildx bake base
+
+# Build go-1.16 image and output to docker with xgo:1.16 tag
+BASE_IMAGE=xgo:base docker buildx bake go-1.16
+
+# Tests (c, cpp and gorm)
+BASE_IMAGE=xgo:1.16 docker buildx bake tests
+```
 
 ## Documentation
 
