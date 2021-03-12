@@ -27,6 +27,7 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         go_version:
           - 1.15.0
