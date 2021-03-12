@@ -120,6 +120,10 @@ ADD docker/base/bootstrap_pure.sh /bootstrap_pure.sh
 ENV BOOTSTRAP_PURE="/bootstrap_pure.sh"
 RUN chmod +x $BOOTSTRAP_PURE
 
+# Copy xgo sources within the container to enable internal cross compilation
+ADD go.mod /usr/local/src/xgo/go.mod
+ADD xgo.go /usr/local/src/xgo/xgo.go
+
 # Inject the C dependency cross compiler
 ADD docker/base/build_deps.sh /build_deps.sh
 ENV BUILD_DEPS /build_deps.sh

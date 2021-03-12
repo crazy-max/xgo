@@ -76,5 +76,6 @@ fi
 
 # Install xgo within the container to enable internal cross compilation
 echo "Installing xgo-in-xgo..."
-go get -u github.com/crazy-max/xgo
+cd /usr/local/src/xgo/
+go build -o /go/bin/xgo
 ln -s /go/bin/xgo /usr/bin/xgo
