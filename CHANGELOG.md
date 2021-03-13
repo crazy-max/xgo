@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.6.0, go-r13 (2021/03/13)
+## 0.6.0 (2021/03/13)
 
 * Add support for `darwin/arm64` (Apple M1 Chip)
 * MacOSX SDK 11.1
