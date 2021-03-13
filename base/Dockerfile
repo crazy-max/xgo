@@ -102,6 +102,8 @@ ENV XGO_IN_XGO="1"\
   GOPATH="/go" \
   GOCACHE="/go-build"
 COPY rootfs /
+RUN curl -sSLk https://raw.githubusercontent.com/fsaintjacques/semver-tool/master/src/semver -o /usr/local/bin/semver \
+  && chmod +x /usr/local/bin/semver
 
 ARG CC_CXX_VERSION
 ENV CC_CXX_VERSION=${CC_CXX_VERSION}

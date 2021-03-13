@@ -5,8 +5,6 @@ ARG PROJECT="gorm"
 
 FROM ${BASE_IMAGE} AS base
 WORKDIR /src
-
-FROM base
 ARG PROJECT
 RUN --mount=type=bind,source=.,target=/src,rw \
   --mount=type=cache,target=/go/pkg/mod \

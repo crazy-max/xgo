@@ -30,8 +30,8 @@ COPY --from=xgo-build /out/*.zip /
 
 FROM ${BASE_IMAGE} AS go
 ARG GO_VERSION
-ARG GO_DIST_URL
 ARG GO_DIST_SHA
+ARG GO_DIST_URL="https://golang.org/dl/go${GO_VERSION}.linux-amd64.tar.gz"
 ENV GO_VERSION=${GO_VERSION}
 COPY --from=xgo-build /usr/local/bin/xgo /usr/local/bin/xgo
 RUN xgo-bootstrap-pure
