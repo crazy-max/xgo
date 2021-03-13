@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.2 (2021/03/13)
+
+* Go 1.16.2, 1.15.10
+* Fix semver comparison
+
 ## 0.6.1 (2021/03/13)
 
 * Fix `images.go` job
