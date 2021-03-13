@@ -30,6 +30,11 @@ target "base-image" {
 target "base" {
   inherits = ["ghaction-docker-meta"]
   context = "./base"
+}
+
+target "base-local" {
+  inherits = ["base"]
+  tags = ["xgo:base"]
   output = ["type=docker"]
 }
 
@@ -107,7 +112,6 @@ target "test-cpp" {
 target "go" {
   inherits = ["base-image", "git-ref", "ghaction-docker-meta"]
   target = "go"
-  output = ["type=docker"]
 }
 
 target "go-1.16" {

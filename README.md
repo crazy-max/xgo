@@ -69,10 +69,13 @@ git clone https://github.com/crazy-max/xgo.git xgo
 cd xgo
 
 # Build base image and output to docker with xgo:base tag
-docker buildx bake --set *.tags=xgo:base base
+docker buildx bake base-local
 
 # Build go-1.16 image and output to docker with xgo:1.16 tag
-BASE_IMAGE=xgo:base docker buildx bake --set *.tags=xgo:1.16 go-1.16
+BASE_IMAGE=xgo:base docker buildx bake \
+  --set "*.tags=xgo:1.16" \
+  --set "*.output=type=docker" \
+  go-1.16
 
 # Tests (c, cpp and gorm)
 BASE_IMAGE=xgo:1.16 docker buildx bake tests
