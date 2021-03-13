@@ -115,7 +115,16 @@ target "go" {
 }
 
 target "go-1.16" {
-  inherits = ["go-1.16.1"]
+  inherits = ["go-1.16.2"]
+}
+
+target "go-1.16.2" {
+  inherits = ["go"]
+  args = {
+    GO_VERSION = "1162"
+    GO_DIST_URL = "https://golang.org/dl/go1.16.2.linux-amd64.tar.gz"
+    GO_DIST_SHA = "542e936b19542e62679766194364f45141fde55169db2d8d01046555ca9eb4b8"
+  }
 }
 
 target "go-1.16.1" {
@@ -137,7 +146,16 @@ target "go-1.16.0" {
 }
 
 target "go-1.15" {
-  inherits = ["go-1.15.9"]
+  inherits = ["go-1.15.10"]
+}
+
+target "go-1.15.10" {
+  inherits = ["go"]
+  args = {
+    GO_VERSION = "11510"
+    GO_DIST_URL = "https://golang.org/dl/go1.15.10.linux-amd64.tar.gz"
+    GO_DIST_SHA = "4aa1267517df32f2bf1cc3d55dfc27d0c6b2c2b0989449c96dd19273ccca051d"
+  }
 }
 
 target "go-1.15.9" {
