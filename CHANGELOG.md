@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.1 (2021/03/13)
+
+* Fix `images.go` job
+
 ## 0.6.0 (2021/03/13)
 
 * Add support for `darwin/arm64` (Apple M1 Chip)

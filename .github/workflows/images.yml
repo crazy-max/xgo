@@ -162,3 +162,4 @@ jobs:
             ./docker-bake.hcl
             ${{ steps.docker_meta.outputs.bake-file }}
           targets: go-${{ matrix.go_version }}
+          push: true
