@@ -46,6 +46,11 @@ function extension {
   fi
 }
 
+# Fix last digit
+if [ "$(echo "$GO_VERSION" | tr -cd '.' | wc -c)" != "2" ]; then
+  export GO_VERSION="${GO_VERSION}.0"
+fi
+
 # Detect if we are using go modules
 if [[ "$GO111MODULE" == "on" || "$GO111MODULE" == "auto" ]]; then
   USEMODULES=true

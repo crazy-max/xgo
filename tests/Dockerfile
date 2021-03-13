@@ -1,5 +1,4 @@
 # syntax=docker/dockerfile:1.2
-
 ARG BASE_IMAGE=ghcr.io/crazy-max/xgo:1.16.x
 ARG PROJECT="gorm"
 

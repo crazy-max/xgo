@@ -14,6 +14,11 @@
 #   GOROOT - Path to the lready installed Go runtime
 set -e
 
+# Fix last digit
+if [ "$(echo "$GO_VERSION" | tr -cd '.' | wc -c)" != "2" ]; then
+  export GO_VERSION="${GO_VERSION}.0"
+fi
+
 # Download, verify and install the root distribution if pulled remotely
 if [ "$GOROOT" == "" ]; then
   xgo-fetch $GO_DIST_URL $GO_DIST_SHA
