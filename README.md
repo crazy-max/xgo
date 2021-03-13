@@ -55,7 +55,7 @@ docker repository on several registries to make things more consistent for users
 | [GitHub Container Registry](https://github.com/users/crazy-max/packages/container/package/xgo)  | `ghcr.io/crazy-max/xgo`        |
 
 I use [GitHub Actions](https://github.com/crazy-max/xgo/actions) to  build the images instead of using automated
-builds of Docker Hub (see [build workflow](.github/workflows/build.yml)).
+builds of Docker Hub (see [workflows](.github/workflows)).
 
 This also creates a [standalone xgo executable](https://github.com/crazy-max/xgo/releases/latest) that can be used on
 many platforms.

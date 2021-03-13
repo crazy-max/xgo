@@ -9,6 +9,7 @@
 * Container dev workflow
 * Switch to buildx bake
 * Merged and enhanced Dockerfiles
+* Merge base and go workflows
 * Build xgo from working tree
 * Disable go modules if `go.mod` does not exist
 * Add gorm test
