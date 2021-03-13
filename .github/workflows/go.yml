@@ -3,7 +3,7 @@ name: go
 on:
   push:
     tags:
-      - 'go-*'
+      - 'v*'
 
 env:
   DOCKERHUB_SLUG: crazymax/xgo
