@@ -224,11 +224,15 @@ func compile(image string, config *ConfigFlags, flags *BuildFlags, folder string
 	if strings.HasPrefix(config.Repository, string(filepath.Separator)) || strings.HasPrefix(config.Repository, ".") {
 		// Resolve the repository import path from the file path
 		config.Repository = resolveImportPath(config.Repository)
+		log.Printf("INFO: Root path is %s", config.Repository)
 
 		// Determine if this is a module-based repository
 		var modFile = config.Repository + "/go.mod"
 		_, err := os.Stat(modFile)
 		usesModules = !os.IsNotExist(err)
+		if !usesModules {
+			log.Println("INFO: Don't use go modules (go.mod not found)")
+		}
 
 		// Iterate over all the local libs and export the mount points
 		if os.Getenv("GOPATH") == "" && !usesModules {
@@ -338,10 +342,9 @@ func compileContained(config *ConfigFlags, flags *BuildFlags, folder string) err
 	// If a local build was requested, resolve the import path
 	local := strings.HasPrefix(config.Repository, string(filepath.Separator)) || strings.HasPrefix(config.Repository, ".")
 	if local {
-		config.Repository = resolveImportPath(config.Repository)
-
 		// Resolve the repository import path from the file path
 		config.Repository = resolveImportPath(config.Repository)
+		log.Printf("INFO: Root path is %s", config.Repository)
 
 		// Determine if this is a module-based repository
 		var modFile = config.Repository + "/go.mod"
@@ -349,6 +352,7 @@ func compileContained(config *ConfigFlags, flags *BuildFlags, folder string) err
 		usesModules := !os.IsNotExist(err)
 		if !usesModules {
 			os.Setenv("GO111MODULE", "off")
+			log.Println("INFO: Don't use go modules (go.mod not found)")
 		}
 	}
 	// Fine tune the original environment variables with those required by the build script
