@@ -83,21 +83,40 @@ target "test" {
 target "test-gorm" {
   inherits = ["test"]
   args = {
-    PROJECT = "gorm"
+    PROJECT = "./gorm"
+    BRANCH = ""
   }
 }
 
 target "test-c" {
   inherits = ["test"]
   args = {
-    PROJECT = "c"
+    PROJECT = "./c"
+    BRANCH = ""
   }
 }
 
 target "test-cpp" {
   inherits = ["test"]
   args = {
-    PROJECT = "cpp"
+    PROJECT = "./cpp"
+    BRANCH = ""
+  }
+}
+
+target "test-ffmerger" {
+  inherits = ["test"]
+  args = {
+    PROJECT = "github.com/crazy-max/firefox-history-merger"
+    BRANCH = "master"
+  }
+}
+
+target "test-goethereum" {
+  inherits = ["test"]
+  args = {
+    PROJECT = "github.com/ethereum/go-ethereum/cmd/geth"
+    BRANCH = "master"
   }
 }
 

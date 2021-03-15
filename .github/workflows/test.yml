@@ -27,6 +27,8 @@ jobs:
           - c
           - cpp
           - gorm
+          - ffmerger
+          - goethereum
     steps:
       -
         name: Checkout
