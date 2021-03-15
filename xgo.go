@@ -160,6 +160,7 @@ func main() {
 		Arguments:    *crossArgs,
 		Targets:      strings.Split(*targets, ","),
 	}
+	log.Printf("DBG: config: %+v", config)
 	flags := &BuildFlags{
 		Verbose: *buildVerbose,
 		Steps:   *buildSteps,
@@ -168,6 +169,7 @@ func main() {
 		LdFlags: *buildLdFlags,
 		Mode:    *buildMode,
 	}
+	log.Printf("DBG: flags: %+v", flags)
 	folder, err := os.Getwd()
 	if err != nil {
 		log.Fatalf("ERROR: Failed to retrieve the working directory: %v.", err)
@@ -224,14 +226,13 @@ func compile(image string, config *ConfigFlags, flags *BuildFlags, folder string
 	if strings.HasPrefix(config.Repository, string(filepath.Separator)) || strings.HasPrefix(config.Repository, ".") {
 		// Resolve the repository import path from the file path
 		config.Repository = resolveImportPath(config.Repository)
-		log.Printf("INFO: Root path is %s", config.Repository)
 
 		// Determine if this is a module-based repository
 		var modFile = config.Repository + "/go.mod"
 		_, err := os.Stat(modFile)
 		usesModules = !os.IsNotExist(err)
 		if !usesModules {
-			log.Println("INFO: Don't use go modules (go.mod not found)")
+			log.Println("INFO: go.mod not found. Skipping go modules")
 		}
 
 		// Iterate over all the local libs and export the mount points
@@ -280,7 +281,7 @@ func compile(image string, config *ConfigFlags, flags *BuildFlags, folder string
 		}
 	}
 	// Assemble and run the cross compilation command
-	log.Printf("INFO: Cross compiling %s...", config.Repository)
+	log.Printf("INFO: Cross compiling %s package...", config.Repository)
 
 	args := []string{
 		"run", "--rm",
@@ -313,7 +314,7 @@ func compile(image string, config *ConfigFlags, flags *BuildFlags, folder string
 		}
 		args = append(args, []string{"-v", absRepository + ":/source"}...)
 
-		log.Printf("INFO: Enabled Go module support")
+		log.Println("INFO: go.mod not found. Skipping go modules")
 
 		// Check whether it has a vendor folder, and if so, use it
 		vendorPath := absRepository + "/vendor"
@@ -344,7 +345,6 @@ func compileContained(config *ConfigFlags, flags *BuildFlags, folder string) err
 	if local {
 		// Resolve the repository import path from the file path
 		config.Repository = resolveImportPath(config.Repository)
-		log.Printf("INFO: Root path is %s", config.Repository)
 
 		// Determine if this is a module-based repository
 		var modFile = config.Repository + "/go.mod"
@@ -375,7 +375,7 @@ func compileContained(config *ConfigFlags, flags *BuildFlags, folder string) err
 		env = append(env, "EXT_GOPATH=/non-existent-path-to-signal-local-build")
 	}
 	// Assemble and run the local cross compilation command
-	log.Printf("INFO: Cross compiling %s...", config.Repository)
+	log.Printf("INFO: Cross compiling %s package...", config.Repository)
 
 	cmd := exec.Command("xgo-build", config.Repository)
 	cmd.Env = append(os.Environ(), env...)

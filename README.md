@@ -75,7 +75,7 @@ docker buildx bake base-local
 # Build go-1.16 image and output to docker with xgo:1.16 tag
 BASE_IMAGE=xgo:base docker buildx bake --set "*.tags=xgo:1.16" --set "*.output=type=docker" go-1.16
 
-# Tests (c, cpp and gorm)
+# Tests
 BASE_IMAGE=xgo:1.16 docker buildx bake test-c
 BASE_IMAGE=xgo:1.16 docker buildx bake test-cpp
 BASE_IMAGE=xgo:1.16 docker buildx bake test-gorm
