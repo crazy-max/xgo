@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.4 (2021/03/16)
+
+* Skip go modules while fetching repo
+* More tests
+
 ## 0.6.3 (2021/03/15)
 
 * Enhance logging
