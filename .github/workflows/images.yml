@@ -38,16 +38,15 @@ jobs:
         uses: docker/setup-buildx-action@v1
       -
         name: Docker meta
-        id: docker_meta
-        uses: crazy-max/ghaction-docker-meta@v1
+        id: meta
+        uses: crazy-max/ghaction-docker-meta@v2
         with:
           images: |
             ${{ env.DOCKERHUB_SLUG }}
             ${{ env.GHCR_SLUG }}
-          tag-custom: |
+          tags: |
             base
-          tag-custom-only: true
-          label-custom: |
+          labels: |
             org.opencontainers.image.title=xgo
             org.opencontainers.image.description=Go CGO cross compiler
             org.opencontainers.image.vendor=CrazyMax
@@ -72,7 +71,7 @@ jobs:
         with:
           files: |
             ./docker-bake.hcl
-            ${{ steps.docker_meta.outputs.bake-file }}
+            ${{ steps.meta.outputs.bake-file }}
           targets: base
           set: |
             *.cache-from=type=local,src=/tmp/.xgo-cache
@@ -120,26 +119,26 @@ jobs:
         uses: docker/setup-buildx-action@v1
       -
         name: Prepare
+        id: prep
         run: |
+          NL=$'\n'
           TAGS="${{ matrix.go_version }}"
           if [ "${{ env.LATEST_116 }}" = "${{ matrix.go_version }}" ]; then
-            TAGS="${TAGS},1.16.x,latest"
+            TAGS="${TAGS}${NL}1.16.x${NL}latest"
           elif [ "${{ env.LATEST_115 }}" = "${{ matrix.go_version }}" ]; then
-            TAGS="${TAGS},1.15.x"
+            TAGS="${TAGS}${NL}1.15.x"
           fi
-          echo "TAGS=${TAGS}" >> $GITHUB_ENV
+          echo "::set-output name=tags::${TAGS}"
       -
         name: Docker meta
-        id: docker_meta
-        uses: crazy-max/ghaction-docker-meta@v1
+        id: meta
+        uses: crazy-max/ghaction-docker-meta@v2
         with:
           images: |
             ${{ env.DOCKERHUB_SLUG }}
             ${{ env.GHCR_SLUG }}
-          tag-custom: |
-            ${{ env.TAGS }}
-          tag-custom-only: true
-          label-custom: |
+          tags: ${{ steps.prep.outputs.tags }}
+          labels: |
             org.opencontainers.image.title=xgo (go-${{ matrix.go_version }})
             org.opencontainers.image.description=Go CGO cross compiler
             org.opencontainers.image.vendor=CrazyMax
@@ -162,6 +161,6 @@ jobs:
         with:
           files: |
             ./docker-bake.hcl
-            ${{ steps.docker_meta.outputs.bake-file }}
+            ${{ steps.meta.outputs.bake-file }}
           targets: go-${{ matrix.go_version }}
           push: true
