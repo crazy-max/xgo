@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.5 (2021/04/11)
+
+* Go 1.16.3, 1.15.11
+
 ## 0.6.4 (2021/03/16)
 
 * Skip go modules while fetching repo
