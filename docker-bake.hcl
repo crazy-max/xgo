@@ -130,7 +130,7 @@ target "go" {
 }
 
 target "go-1.16" {
-  inherits = ["go-1.16.2"]
+  inherits = ["go-1.16.3"]
 }
 
 target "go-1.16.3" {
