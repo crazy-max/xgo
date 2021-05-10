@@ -8,8 +8,8 @@ variable "GITHUB_REF" {
   default = ""
 }
 
-// Special target: https://github.com/crazy-max/ghaction-docker-meta#bake-definition
-target "ghaction-docker-meta" {
+// Special target: https://github.com/docker/metadata-action#bake-definition
+target "docker-metadata-action" {
   tags = ["xgo:local"]
 }
 
@@ -28,7 +28,7 @@ target "base-image" {
 }
 
 target "base" {
-  inherits = ["ghaction-docker-meta"]
+  inherits = ["docker-metadata-action"]
   context = "./base"
 }
 
@@ -49,7 +49,7 @@ target "git-ref" {
 }
 
 target "artifact" {
-  inherits = ["git-ref", "ghaction-docker-meta"]
+  inherits = ["git-ref", "docker-metadata-action"]
   target = "xgo-artifact"
   output = ["./dist"]
 }
@@ -125,7 +125,7 @@ target "test-goethereum" {
 #
 
 target "go" {
-  inherits = ["base-image", "git-ref", "ghaction-docker-meta"]
+  inherits = ["base-image", "git-ref", "docker-metadata-action"]
   target = "go"
 }
 
