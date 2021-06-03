@@ -130,7 +130,23 @@ target "go" {
 }
 
 target "go-1.16" {
-  inherits = ["go-1.16.3"]
+  inherits = ["go-1.16.5"]
+}
+
+target "go-1.16.5" {
+  inherits = ["go"]
+  args = {
+    GO_VERSION = "1.16.5"
+    GO_DIST_SHA = "b12c23023b68de22f74c0524f10b753e7b08b1504cb7e417eccebdd3fae49061"
+  }
+}
+
+target "go-1.16.4" {
+  inherits = ["go"]
+  args = {
+    GO_VERSION = "1.16.4"
+    GO_DIST_SHA = "7154e88f5a8047aad4b80ebace58a059e36e7e2e4eb3b383127a28c711b4ff59"
+  }
 }
 
 target "go-1.16.3" {
@@ -166,7 +182,23 @@ target "go-1.16.0" {
 }
 
 target "go-1.15" {
-  inherits = ["go-1.15.11"]
+  inherits = ["go-1.15.13"]
+}
+
+target "go-1.15.13" {
+  inherits = ["go"]
+  args = {
+    GO_VERSION = "1.15.13"
+    GO_DIST_SHA = "3d3beec5fc66659018e09f40abb7274b10794229ba7c1e8bdb7d8ca77b656a13"
+  }
+}
+
+target "go-1.15.12" {
+  inherits = ["go"]
+  args = {
+    GO_VERSION = "1.15.12"
+    GO_DIST_SHA = "bbdb935699e0b24d90e2451346da76121b2412d30930eabcd80907c230d098b7"
+  }
 }
 
 target "go-1.15.11" {
