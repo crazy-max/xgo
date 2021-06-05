@@ -22,7 +22,9 @@ RUN --mount=type=bind,target=/src,rw \
     --ldflags="-s -w -X 'main.version={{.Version}}'" \
     --files="CHANGELOG.md" \
     --files="LICENSE" \
-    --files="README.md"
+    --files="README.md" \
+    --replacements="386=i386" \
+    --replacements="amd64=x86_64"
 
 FROM scratch AS xgo-artifact
 COPY --from=xgo-build /out/*.tar.gz /
