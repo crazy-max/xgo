@@ -318,6 +318,7 @@ func compile(image string, config *ConfigFlags, flags *BuildFlags, folder string
 			log.Printf("INFO: Using vendored Go module dependencies")
 		}
 	} else {
+		args = append(args, []string{"-e", "GO111MODULE=off"}...)
 		for i := 0; i < len(locals); i++ {
 			args = append(args, []string{"-v", fmt.Sprintf("%s:%s:ro", locals[i], mounts[i])}...)
 		}
