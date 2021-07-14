@@ -1,9 +1,10 @@
-ARG CC_CXX_VERSION="8"
+ARG DEBIAN_VERSION="bullseye"
+ARG CC_CXX_VERSION="10"
 ARG OSX_SDK="MacOSX11.1.sdk"
 ARG OSX_SDK_URL="https://github.com/larskanis/MacOSX-SDKs/releases/download/11.1/${OSX_SDK}.tar.xz"
 ARG OSX_CROSS_COMMIT="035cc170338b7b252e3f13b0e3ccbf4411bffc41"
 
-FROM debian:buster AS base
+FROM debian:${DEBIAN_VERSION} AS base
 ARG CC_CXX_VERSION
 ENV DEBIAN_FRONTEND="noninteractive"
 RUN apt-get update \
@@ -27,6 +28,7 @@ RUN apt-get update \
     g++-${CC_CXX_VERSION}-mips64el-linux-gnuabi64 \
     g++-${CC_CXX_VERSION}-multilib \
     g++-${CC_CXX_VERSION}-powerpc64le-linux-gnu \
+    g++-${CC_CXX_VERSION}-riscv64-linux-gnu \
     g++-${CC_CXX_VERSION}-s390x-linux-gnu \
     g++-mingw-w64 \
     gcc-${CC_CXX_VERSION}-aarch64-linux-gnu \
@@ -38,6 +40,7 @@ RUN apt-get update \
     gcc-${CC_CXX_VERSION}-mips64el-linux-gnuabi64 \
     gcc-${CC_CXX_VERSION}-multilib \
     gcc-${CC_CXX_VERSION}-powerpc64le-linux-gnu \
+    gcc-${CC_CXX_VERSION}-riscv64-linux-gnu \
     gcc-${CC_CXX_VERSION}-s390x-linux-gnu \
     gcc-mingw-w64 \
     git \
@@ -50,6 +53,7 @@ RUN apt-get update \
     libc*-dev-mips64-cross \
     libc*-dev-mips64el-cross \
     libc*-dev-ppc64el-cross \
+    libc*-dev-riscv64-cross \
     libc*-dev-s390x-cross \
     libssl-dev \
     libtool \
