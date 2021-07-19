@@ -15,7 +15,7 @@ ___
 * [Fork](#fork)
 * [Build](#Build)
 * [Documentation](#documentation)
-* [How can I help?](#how-can-i-help)
+* [Contributing](#contributing)
 * [Lisence](#license)
 
 ## About
@@ -99,12 +99,13 @@ docker buildx bake artifact-all
   * [Platform versions](doc/usage/platform-versions.md)
   * [CGO dependencies](doc/usage/cgo-dependencies.md)
 
-## How can I help?
+## Contributing
 
-All kinds of contributions are welcome :raised_hands:! The most basic way to show your support is to star :star2:
-the project, or to raise issues :speech_balloon: You can also support this project by
-[**becoming a sponsor on GitHub**](https://github.com/sponsors/crazy-max) :clap: or by making
-a [Paypal donation](https://www.paypal.me/crazyws) to ensure this journey continues indefinitely! :rocket:
+Want to contribute? Awesome! The most basic way to show your support is to star :star2: the project,
+or to raise issues :speech_balloon:.
+
+You can also support this project by [**becoming a sponsor on GitHub**](https://github.com/sponsors/crazy-max) or by
+making a [Paypal donation](https://www.paypal.me/crazyws) to ensure this journey continues indefinitely!
 
 Thanks again for your support, it is much appreciated! :pray:
 
