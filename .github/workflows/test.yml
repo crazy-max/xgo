@@ -21,7 +21,6 @@ jobs:
       fail-fast: false
       matrix:
         go_version:
-          - 1.15
           - 1.16
         case:
           - c
