@@ -129,6 +129,18 @@ target "go" {
   target = "go"
 }
 
+target "go-1.17" {
+  inherits = ["go-1.17.0"]
+}
+
+target "go-1.17.0" {
+  inherits = ["go"]
+  args = {
+    GO_VERSION = "1.17"
+    GO_DIST_SHA = "6bf89fc4f5ad763871cf7eac80a2d594492de7a818303283f1366a7f6a30372d"
+  }
+}
+
 target "go-1.16" {
   inherits = ["go-1.16.7"]
 }

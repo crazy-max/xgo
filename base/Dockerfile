@@ -1,9 +1,11 @@
-ARG CC_CXX_VERSION="8"
+ARG DEBIAN_VERSION="bullseye-slim"
+ARG CC_CXX_VERSION="10"
 ARG OSX_SDK="MacOSX11.1.sdk"
 ARG OSX_SDK_URL="https://github.com/larskanis/MacOSX-SDKs/releases/download/11.1/${OSX_SDK}.tar.xz"
 ARG OSX_CROSS_COMMIT="035cc170338b7b252e3f13b0e3ccbf4411bffc41"
+#ARG LLVM_MINGW_URL="https://github.com/mstorsjo/llvm-mingw/releases/download/20210816/llvm-mingw-20210816-msvcrt-ubuntu-18.04-x86_64.tar.xz"
 
-FROM debian:buster AS base
+FROM debian:${DEBIAN_VERSION}
 ARG CC_CXX_VERSION
 ENV DEBIAN_FRONTEND="noninteractive"
 RUN apt-get update \
@@ -27,8 +29,8 @@ RUN apt-get update \
     g++-${CC_CXX_VERSION}-mips64el-linux-gnuabi64 \
     g++-${CC_CXX_VERSION}-multilib \
     g++-${CC_CXX_VERSION}-powerpc64le-linux-gnu \
+    g++-${CC_CXX_VERSION}-riscv64-linux-gnu \
     g++-${CC_CXX_VERSION}-s390x-linux-gnu \
-    g++-mingw-w64 \
     gcc-${CC_CXX_VERSION}-aarch64-linux-gnu \
     gcc-${CC_CXX_VERSION}-arm-linux-gnueabi \
     gcc-${CC_CXX_VERSION}-arm-linux-gnueabihf \
@@ -38,8 +40,8 @@ RUN apt-get update \
     gcc-${CC_CXX_VERSION}-mips64el-linux-gnuabi64 \
     gcc-${CC_CXX_VERSION}-multilib \
     gcc-${CC_CXX_VERSION}-powerpc64le-linux-gnu \
+    gcc-${CC_CXX_VERSION}-riscv64-linux-gnu \
     gcc-${CC_CXX_VERSION}-s390x-linux-gnu \
-    gcc-mingw-w64 \
     git \
     help2man \
     libc*-dev-arm64-cross \
@@ -50,6 +52,7 @@ RUN apt-get update \
     libc*-dev-mips64-cross \
     libc*-dev-mips64el-cross \
     libc*-dev-ppc64el-cross \
+    libc*-dev-riscv64-cross \
     libc*-dev-s390x-cross \
     libssl-dev \
     libtool \
@@ -75,7 +78,7 @@ RUN apt-get update \
   && ln -s /usr/include/asm-generic /usr/include/asm \
   && find /var/log -type f | while read f; do echo -ne '' > $f; done;
 
-FROM base AS osx
+# osx toolchain
 ARG OSX_VERSION
 ARG OSX_SDK
 ARG OSX_SDK_URL
@@ -96,14 +99,27 @@ RUN git clone https://github.com/tpoechtrager/osxcross.git \
   && OSX_VERSION_MIN=10.10 UNATTENDED=1 LD_LIBRARY_PATH=${LD_LIBRARY_PATH} /osxcross/build.sh
 ENV PATH="/osxcross/target/bin:$PATH"
 
-FROM osx
+# mingw
+#ARG LLVM_MINGW_URL
+#RUN wget -qO- "${LLVM_MINGW_URL}" | tar xJvf - --strip 1 -C /usr/
+RUN apt-get update \
+  && apt-get install -y \
+    g++-mingw-w64 \
+    gcc-mingw-w64 \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* \
+  && find /var/log -type f | while read f; do echo -ne '' > $f; done;
+
+# semver tool
+RUN curl -sSLk https://raw.githubusercontent.com/fsaintjacques/semver-tool/master/src/semver -o /usr/local/bin/semver \
+  && chmod +x /usr/local/bin/semver
+
 ENV XGO_IN_XGO="1"\
   PATH="/usr/local/go/bin:$PATH" \
   GOPATH="/go" \
   GOCACHE="/go-build"
+WORKDIR /
 COPY rootfs /
-RUN curl -sSLk https://raw.githubusercontent.com/fsaintjacques/semver-tool/master/src/semver -o /usr/local/bin/semver \
-  && chmod +x /usr/local/bin/semver
 
 ARG CC_CXX_VERSION
 ENV CC_CXX_VERSION=${CC_CXX_VERSION}
