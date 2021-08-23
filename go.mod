@@ -1,3 +1,3 @@
 module github.com/crazy-max/xgo
 
-go 1.16
+go 1.17

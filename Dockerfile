@@ -5,7 +5,7 @@ ARG GO_DIST_URL
 ARG GO_DIST_SHA
 
 FROM --platform=${BUILDPLATFORM:-linux/amd64} crazymax/goreleaser-xx:latest AS goreleaser-xx
-FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.16-alpine AS xgo-base
+FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.17-alpine AS xgo-base
 COPY --from=goreleaser-xx / /
 RUN apk add --no-cache ca-certificates curl file gcc git linux-headers musl-dev tar
 WORKDIR /src

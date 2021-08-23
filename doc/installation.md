@@ -13,3 +13,9 @@ a lightweight Go wrapper was written on top of it.
 ```shell
 go get github.com/crazy-max/xgo
 ```
+
+For go 1.17 or up, `go get` is deprecated, so you'll have to use this command:
+
+```shell
+go install github.com/crazy-max/xgo
+```

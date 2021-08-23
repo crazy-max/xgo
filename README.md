@@ -47,23 +47,25 @@ maintain separate build environments to do it.
 
 ## Fork
 
-This repository is a fork of [karalabe/xgo](https://github.com/karalabe/xgo) to push images and tags to a single
-docker repository on several registries to make things more consistent for users:
+This repository is a fork of [karalabe/xgo](https://github.com/karalabe/xgo) to
+push images and tags to a single docker repository on several registries to make
+things more consistent for users:
 
 | Registry                                                                                         | Image                           |
 |--------------------------------------------------------------------------------------------------|---------------------------------|
 | [Docker Hub](https://hub.docker.com/r/crazymax/xgo/)                                            | `crazymax/xgo`                 |
 | [GitHub Container Registry](https://github.com/users/crazy-max/packages/container/package/xgo)  | `ghcr.io/crazy-max/xgo`        |
 
-I use [GitHub Actions](https://github.com/crazy-max/xgo/actions) to  build the images instead of using automated
-builds of Docker Hub (see [workflows](.github/workflows)).
+I use [GitHub Actions](https://github.com/crazy-max/xgo/actions) to build the
+images instead of using automated builds of Docker Hub
+(see [workflows](.github/workflows)).
 
-This also creates a [standalone xgo executable](https://github.com/crazy-max/xgo/releases/latest) that can be used on
-many platforms.
+This also creates a [standalone xgo executable](https://github.com/crazy-max/xgo/releases/latest)
+that can be used on many platforms.
 
 ## Build
 
-Build xgo yourself using Docker [`buildx bake`](https://github.com/docker/buildx):
+Build xgo yourself using Docker [`buildx bake`](https://github.com/docker/buildx/blob/master/docs/reference/buildx_bake.md):
 
 ```shell
 git clone https://github.com/crazy-max/xgo.git xgo
@@ -101,9 +103,11 @@ docker buildx bake artifact-all
 
 ## Contributing
 
-Want to contribute? Awesome! The most basic way to show your support is to star the project, or to raise issues. You
-can also support this project by [**becoming a sponsor on GitHub**](https://github.com/sponsors/crazy-max) or by making
-a [Paypal donation](https://www.paypal.me/crazyws) to ensure this journey continues indefinitely!
+Want to contribute? Awesome! The most basic way to show your support is to star
+the project, or to raise issues. You can also support this project by
+[**becoming a sponsor on GitHub**](https://github.com/sponsors/crazy-max) or by
+making a [Paypal donation](https://www.paypal.me/crazyws) to ensure this journey
+continues indefinitely!
 
 Thanks again for your support, it is much appreciated! :pray:
 
