@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.7.1 (2021/08/29)
+
+* Fix missing Docker tags
+
+## 0.7.0 (2021/08/23)
+
+* Go 1.17 (#38)
+  * Drop 1.15 support
+  * Add `linux/riscv64` support
+  * xgo built against Go 1.17
+  * Debian Bullseye
+  * Update gorm example
+
 ## 0.6.9 (2021/08/22)
 
 * Go 1.16.7, 1.15.15
