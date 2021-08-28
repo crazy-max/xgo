@@ -113,17 +113,25 @@ jobs:
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       -
-        name: Prepare
-        id: prep
-        run: |
-          NL=$'\n'
-          TAGS="${{ matrix.go_version }}"
-          if [ "${{ env.LATEST_117 }}" = "${{ matrix.go_version }}" ]; then
-            TAGS="${TAGS}${NL}1.17.x${NL}latest"
-          elif [ "${{ env.LATEST_116 }}" = "${{ matrix.go_version }}" ]; then
-            TAGS="${TAGS}${NL}1.16.x"
-          fi
-          echo "::set-output name=tags::${TAGS}"
+        name: Tags
+        id: tags
+        uses: actions/github-script@v4
+        with:
+          result-encoding: string
+          script: |
+            const os = require('os');
+            const tags = ["${{ matrix.go_version }}"];
+            switch ("${{ matrix.go_version }}") {
+              case "${{ env.LATEST_117 }}": {
+                tags.push("1.17.x", "1.17", "latest");
+                break;
+              }
+              case "${{ env.LATEST_116 }}": {
+                tags.push("1.16.x", "1.16");
+                break;
+              }
+            }
+            return tags.join(os.EOL);
       -
         name: Docker meta
         id: meta
@@ -132,7 +140,7 @@ jobs:
           images: |
             ${{ env.DOCKERHUB_SLUG }}
             ${{ env.GHCR_SLUG }}
-          tags: ${{ steps.prep.outputs.tags }}
+          tags: ${{ steps.tags.outputs.result }}
           labels: |
             org.opencontainers.image.title=xgo (go-${{ matrix.go_version }})
             org.opencontainers.image.description=Go CGO cross compiler
