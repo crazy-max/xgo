@@ -224,24 +224,34 @@ func compile(image string, config *ConfigFlags, flags *BuildFlags, folder string
 	locals, mounts, paths := []string{}, []string{}, []string{}
 	var usesModules bool
 	if strings.HasPrefix(config.Repository, string(filepath.Separator)) || strings.HasPrefix(config.Repository, ".") {
-		// Resolve the repository import path from the file path
-		config.Repository = resolveImportPath(config.Repository)
-
-		// Determine if this is a module-based repository
-		var modFile = config.Repository + "/go.mod"
-		_, err := os.Stat(modFile)
-		usesModules = !os.IsNotExist(err)
+		if fileExists(filepath.Join(config.Repository, "go.mod")) {
+			usesModules = true
+		}
+		if !usesModules {
+			// Resolve the repository import path from the file path
+			config.Repository = resolveImportPath(config.Repository)
+			if fileExists(filepath.Join(config.Repository, "go.mod")) {
+				usesModules = true
+			}
+		}
 		if !usesModules {
 			log.Println("INFO: go.mod not found. Skipping go modules")
 		}
 
-		// Iterate over all the local libs and export the mount points
-		if os.Getenv("GOPATH") == "" && !usesModules {
-			log.Fatalf("ERROR: No $GOPATH is set or forwarded to xgo")
+		gopathEnv := os.Getenv("GOPATH")
+		if gopathEnv == "" && !usesModules {
+			log.Printf("INFO: No $GOPATH is set - defaulting to %s", build.Default.GOPATH)
+			gopathEnv = build.Default.GOPATH
 		}
+
+		// Iterate over all the local libs and export the mount points
+		if gopathEnv == "" && !usesModules {
+			log.Fatalf("INFO: No $GOPATH is set or forwarded to xgo")
+		}
+
 		if !usesModules {
 			os.Setenv("GO111MODULE", "off")
-			for _, gopath := range strings.Split(os.Getenv("GOPATH"), string(os.PathListSeparator)) {
+			for _, gopath := range strings.Split(gopathEnv, string(os.PathListSeparator)) {
 				// Since docker sandboxes volumes, resolve any symlinks manually
 				sources := filepath.Join(gopath, "src")
 				filepath.Walk(sources, func(path string, info os.FileInfo, err error) error {
@@ -303,6 +313,7 @@ func compile(image string, config *ConfigFlags, flags *BuildFlags, folder string
 	}
 	if usesModules {
 		args = append(args, []string{"-e", "GO111MODULE=on"}...)
+		args = append(args, []string{"-v", build.Default.GOPATH + ":/go"}...)
 		if *goProxy != "" {
 			args = append(args, []string{"-e", fmt.Sprintf("GOPROXY=%s", *goProxy)}...)
 		}
@@ -313,8 +324,6 @@ func compile(image string, config *ConfigFlags, flags *BuildFlags, folder string
 			log.Fatalf("ERROR: Failed to locate requested module repository: %v.", err)
 		}
 		args = append(args, []string{"-v", absRepository + ":/source"}...)
-
-		log.Println("INFO: go.mod not found. Skipping go modules")
 
 		// Check whether it has a vendor folder, and if so, use it
 		vendorPath := absRepository + "/vendor"
@@ -347,9 +356,7 @@ func compileContained(config *ConfigFlags, flags *BuildFlags, folder string) err
 		config.Repository = resolveImportPath(config.Repository)
 
 		// Determine if this is a module-based repository
-		var modFile = config.Repository + "/go.mod"
-		_, err := os.Stat(modFile)
-		usesModules := !os.IsNotExist(err)
+		usesModules := fileExists(filepath.Join(config.Repository, "go.mod"))
 		if !usesModules {
 			os.Setenv("GO111MODULE", "off")
 			log.Println("INFO: Don't use go modules (go.mod not found)")
@@ -407,4 +414,12 @@ func run(cmd *exec.Cmd) error {
 	cmd.Stderr = os.Stderr
 
 	return cmd.Run()
+}
+
+// fileExists checks if given file exists
+func fileExists(file string) bool {
+	if _, err := os.Stat(file); os.IsNotExist(err) {
+		return false
+	}
+	return true
 }
