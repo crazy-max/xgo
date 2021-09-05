@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.2 (2021/09/05)
+
+* Fix go modules detection (#40)
+
 ## 0.7.1 (2021/08/29)
 
 * Fix missing Docker tags
