@@ -90,8 +90,8 @@ jobs:
     needs: [ base ]
     env:
       BASE_IMAGE: ghcr.io/crazy-max/xgo:base
-      LATEST_117: 1.17.2
-      LATEST_116: 1.16.9
+      LATEST_117: 1.17.3
+      LATEST_116: 1.16.10
     strategy:
       fail-fast: false
       matrix:
@@ -106,9 +106,11 @@ jobs:
           - 1.16.7
           - 1.16.8
           - 1.16.9
+          - 1.16.10
           - 1.17.0
           - 1.17.1
           - 1.17.2
+          - 1.17.3
     steps:
       -
         name: Checkout
