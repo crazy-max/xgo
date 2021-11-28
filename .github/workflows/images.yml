@@ -121,7 +121,7 @@ jobs:
       -
         name: Tags
         id: tags
-        uses: actions/github-script@v4
+        uses: actions/github-script@v5
         with:
           result-encoding: string
           script: |
