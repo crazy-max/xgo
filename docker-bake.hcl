@@ -1,11 +1,12 @@
-// xgo base image
 variable "BASE_IMAGE" {
   default = "ghcr.io/crazy-max/xgo:base"
 }
 
-// GitHub reference as defined in GitHub Actions (eg. refs/head/master))
-variable "GITHUB_REF" {
-  default = ""
+target "_common" {
+  args = {
+    BASE_IMAGE = BASE_IMAGE
+    BUILDKIT_CONTEXT_KEEP_GIT_DIR = 1
+  }
 }
 
 // Special target: https://github.com/docker/metadata-action#bake-definition
@@ -17,18 +18,8 @@ group "default" {
   targets = ["base"]
 }
 
-#
-#
-#
-
-target "base-image" {
-  args = {
-    BASE_IMAGE = BASE_IMAGE
-  }
-}
-
 target "base" {
-  inherits = ["docker-metadata-action"]
+  inherits = ["_common", "docker-metadata-action"]
   context = "./base"
 }
 
@@ -38,19 +29,9 @@ target "base-local" {
   output = ["type=docker"]
 }
 
-#
-#
-#
-
-target "git-ref" {
-  args = {
-    GIT_REF = GITHUB_REF
-  }
-}
-
 target "artifact" {
-  inherits = ["git-ref", "docker-metadata-action"]
-  target = "xgo-artifact"
+  inherits = ["_common", "docker-metadata-action"]
+  target = "artifact"
   output = ["./dist"]
 }
 
@@ -76,7 +57,7 @@ target "artifact-all" {
 #
 
 target "test" {
-  inherits = ["base-image"]
+  inherits = ["_common"]
   context = "./tests"
 }
 
@@ -125,7 +106,7 @@ target "test-goethereum" {
 #
 
 target "go" {
-  inherits = ["base-image", "git-ref", "docker-metadata-action"]
+  inherits = ["_common", "docker-metadata-action"]
   target = "go"
 }
 

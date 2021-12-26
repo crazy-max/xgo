@@ -74,13 +74,13 @@ cd xgo
 # Build base image and output to docker with xgo:base tag
 docker buildx bake base-local
 
-# Build go-1.16 image and output to docker with xgo:1.16 tag
-BASE_IMAGE=xgo:base docker buildx bake --set "*.tags=xgo:1.16" --set "*.output=type=docker" go-1.16
+# Build go-1.17 image and output to docker with xgo:1.17 tag
+BASE_IMAGE=xgo:base docker buildx bake --set "*.tags=xgo:1.17" --load go-1.17
 
 # Tests
-BASE_IMAGE=xgo:1.16 docker buildx bake test-c
-BASE_IMAGE=xgo:1.16 docker buildx bake test-cpp
-BASE_IMAGE=xgo:1.16 docker buildx bake test-gorm
+BASE_IMAGE=xgo:1.17 docker buildx bake test-c
+BASE_IMAGE=xgo:1.17 docker buildx bake test-cpp
+BASE_IMAGE=xgo:1.17 docker buildx bake test-gorm
 
 # Create xgo artifacts in ./dist
 docker buildx bake artifact-all
