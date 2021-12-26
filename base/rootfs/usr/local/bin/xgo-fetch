@@ -13,7 +13,7 @@ if [ "$1" == "" -o "$2" == "" ]; then
 fi
 
 # Pull the file from the remote URL
-file=`basename $1`
+file=$(basename $1)
 echo "Downloading $1..."
 wget -q $1
 

@@ -24,8 +24,8 @@ echo "Go version $GO_VERSION"
 if [ "$GOROOT" == "" ]; then
   xgo-fetch $GO_DIST_URL $GO_DIST_SHA
 
-  tar -C /usr/local -xzf `basename $GO_DIST_URL`
-  rm -f `basename $GO_DIST_URL`
+  tar -C /usr/local -xzf $(basename $GO_DIST_URL)
+  rm -f $(basename $GO_DIST_URL)
 
   export GOROOT=/usr/local/go
 fi
