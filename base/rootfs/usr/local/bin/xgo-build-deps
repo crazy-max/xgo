@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 #
 # Contains the a dependency builder to iterate over all installed dependencies
 # and cross compile them to the requested target platform.

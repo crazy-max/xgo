@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 #
 # Contains the main cross compiler, that individually sets up each target build
 # platform, compiles all the C dependencies, then build the requested executable
@@ -209,17 +210,17 @@ for TARGET in $TARGETS; do
   if ([ $XGOOS == "." ] || [ $XGOOS == "linux" ]) && ([ $XGOARCH == "." ] || [ $XGOARCH == "arm" ] || [ $XGOARCH == "arm-5" ]); then
     if [ "$(semver compare "$GO_VERSION" "1.5.0")" -ge 0 ]; then
       echo "Bootstrapping linux/arm-5..."
-      (set -x ; CC=arm-linux-gnueabi-gcc-$CC_CXX_VERSION GOOS=linux GOARCH=arm GOARM=5 CGO_ENABLED=1 CGO_CFLAGS="-march=armv5t" CGO_CXXFLAGS="-march=armv5t" go install std)
+      (set -x ; CC=arm-linux-gnueabi-gcc GOOS=linux GOARCH=arm GOARM=5 CGO_ENABLED=1 CGO_CFLAGS="-march=armv5t" CGO_CXXFLAGS="-march=armv5t" go install std)
     fi
     echo "Compiling for linux/arm-5..."
-    CC=arm-linux-gnueabi-gcc-$CC_CXX_VERSION CXX=arm-linux-gnueabi-g++-$CC_CXX_VERSION HOST=arm-linux-gnueabi PREFIX=/usr/arm-linux-gnueabi CFLAGS="-march=armv5t" CXXFLAGS="-march=armv5t" xgo-build-deps /deps ${DEPS_ARGS[@]}
+    CC=arm-linux-gnueabi-gcc CXX=arm-linux-gnueabi-g++ HOST=arm-linux-gnueabi PREFIX=/usr/arm-linux-gnueabi CFLAGS="-march=armv5t" CXXFLAGS="-march=armv5t" xgo-build-deps /deps ${DEPS_ARGS[@]}
     export PKG_CONFIG_PATH=/usr/arm-linux-gnueabi/lib/pkgconfig
 
     if [[ "$USEMODULES" == false ]]; then
-      CC=arm-linux-gnueabi-gcc-$CC_CXX_VERSION CXX=arm-linux-gnueabi-g++-$CC_CXX_VERSION GOOS=linux GOARCH=arm GOARM=5 CGO_ENABLED=1 CGO_CFLAGS="-march=armv5t" CGO_CXXFLAGS="-march=armv5t" go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
+      CC=arm-linux-gnueabi-gcc CXX=arm-linux-gnueabi-g++ GOOS=linux GOARCH=arm GOARM=5 CGO_ENABLED=1 CGO_CFLAGS="-march=armv5t" CGO_CXXFLAGS="-march=armv5t" go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
     fi
     ext=$(extension linux)
-    (set -x ; CC=arm-linux-gnueabi-gcc-$CC_CXX_VERSION CXX=arm-linux-gnueabi-g++-$CC_CXX_VERSION GOOS=linux GOARCH=arm GOARM=5 CGO_ENABLED=1 CGO_CFLAGS="-march=armv5t" CGO_CXXFLAGS="-march=armv5t" go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-arm-5$ext" $PACK_RELPATH)
+    (set -x ; CC=arm-linux-gnueabi-gcc CXX=arm-linux-gnueabi-g++ GOOS=linux GOARCH=arm GOARM=5 CGO_ENABLED=1 CGO_CFLAGS="-march=armv5t" CGO_CXXFLAGS="-march=armv5t" go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-arm-5$ext" $PACK_RELPATH)
     if [ "$(semver compare "$GO_VERSION" "1.5.0")" -ge 0 ]; then
       echo "Cleaning up Go runtime for linux/arm-5..."
       rm -rf /usr/local/go/pkg/linux_arm
@@ -230,17 +231,17 @@ for TARGET in $TARGETS; do
       echo "Go version too low, skipping linux/arm-6..."
     else
       echo "Bootstrapping linux/arm-6..."
-      (set -x ; CC=arm-linux-gnueabi-gcc-$CC_CXX_VERSION GOOS=linux GOARCH=arm GOARM=6 CGO_ENABLED=1 CGO_CFLAGS="-march=armv6" CGO_CXXFLAGS="-march=armv6" go install std)
+      (set -x ; CC=arm-linux-gnueabi-gcc GOOS=linux GOARCH=arm GOARM=6 CGO_ENABLED=1 CGO_CFLAGS="-march=armv6" CGO_CXXFLAGS="-march=armv6" go install std)
 
       echo "Compiling for linux/arm-6..."
-      CC=arm-linux-gnueabi-gcc-$CC_CXX_VERSION CXX=arm-linux-gnueabi-g++-$CC_CXX_VERSION HOST=arm-linux-gnueabi PREFIX=/usr/arm-linux-gnueabi CFLAGS="-march=armv6" CXXFLAGS="-march=armv6" xgo-build-deps /deps ${DEPS_ARGS[@]}
+      CC=arm-linux-gnueabi-gcc CXX=arm-linux-gnueabi-g++ HOST=arm-linux-gnueabi PREFIX=/usr/arm-linux-gnueabi CFLAGS="-march=armv6" CXXFLAGS="-march=armv6" xgo-build-deps /deps ${DEPS_ARGS[@]}
       export PKG_CONFIG_PATH=/usr/arm-linux-gnueabi/lib/pkgconfig
 
       if [[ "$USEMODULES" == false ]]; then
-        CC=arm-linux-gnueabi-gcc-$CC_CXX_VERSION CXX=arm-linux-gnueabi-g++-$CC_CXX_VERSION GOOS=linux GOARCH=arm GOARM=6 CGO_ENABLED=1 CGO_CFLAGS="-march=armv6" CGO_CXXFLAGS="-march=armv6" go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
+        CC=arm-linux-gnueabi-gcc CXX=arm-linux-gnueabi-g++ GOOS=linux GOARCH=arm GOARM=6 CGO_ENABLED=1 CGO_CFLAGS="-march=armv6" CGO_CXXFLAGS="-march=armv6" go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
       fi
       ext=$(extension linux)
-      (set -x ; CC=arm-linux-gnueabi-gcc-$CC_CXX_VERSION CXX=arm-linux-gnueabi-g++-$CC_CXX_VERSION GOOS=linux GOARCH=arm GOARM=6 CGO_ENABLED=1 CGO_CFLAGS="-march=armv6" CGO_CXXFLAGS="-march=armv6" go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-arm-6$ext" $PACK_RELPATH)
+      (set -x ; CC=arm-linux-gnueabi-gcc CXX=arm-linux-gnueabi-g++ GOOS=linux GOARCH=arm GOARM=6 CGO_ENABLED=1 CGO_CFLAGS="-march=armv6" CGO_CXXFLAGS="-march=armv6" go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-arm-6$ext" $PACK_RELPATH)
 
       echo "Cleaning up Go runtime for linux/arm-6..."
       rm -rf /usr/local/go/pkg/linux_arm
@@ -251,17 +252,17 @@ for TARGET in $TARGETS; do
       echo "Go version too low, skipping linux/arm-7..."
     else
       echo "Bootstrapping linux/arm-7..."
-      (set -x ; CC=arm-linux-gnueabihf-gcc-$CC_CXX_VERSION GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=1 CGO_CFLAGS="-march=armv7-a" CGO_CXXFLAGS="-march=armv7-a" go install std)
+      (set -x ; CC=arm-linux-gnueabihf-gcc GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=1 CGO_CFLAGS="-march=armv7-a" CGO_CXXFLAGS="-march=armv7-a" go install std)
 
       echo "Compiling for linux/arm-7..."
-      CC=arm-linux-gnueabihf-gcc-$CC_CXX_VERSION CXX=arm-linux-gnueabihf-g++-$CC_CXX_VERSION HOST=arm-linux-gnueabihf PREFIX=/usr/arm-linux-gnueabihf CFLAGS="-march=armv7-a -fPIC" CXXFLAGS="-march=armv7-a -fPIC" xgo-build-deps /deps ${DEPS_ARGS[@]}
+      CC=arm-linux-gnueabihf-gcc CXX=arm-linux-gnueabihf-g++ HOST=arm-linux-gnueabihf PREFIX=/usr/arm-linux-gnueabihf CFLAGS="-march=armv7-a -fPIC" CXXFLAGS="-march=armv7-a -fPIC" xgo-build-deps /deps ${DEPS_ARGS[@]}
       export PKG_CONFIG_PATH=/usr/arm-linux-gnueabihf/lib/pkgconfig
 
       if [[ "$USEMODULES" == false ]]; then
-        CC=arm-linux-gnueabihf-gcc-$CC_CXX_VERSION CXX=arm-linux-gnueabihf-g++-$CC_CXX_VERSION GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=1 CGO_CFLAGS="-march=armv7-a -fPIC" CGO_CXXFLAGS="-march=armv7-a -fPIC" go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
+        CC=arm-linux-gnueabihf-gcc CXX=arm-linux-gnueabihf-g++ GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=1 CGO_CFLAGS="-march=armv7-a -fPIC" CGO_CXXFLAGS="-march=armv7-a -fPIC" go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
       fi
       ext=$(extension linux)
-      (set -x ; CC=arm-linux-gnueabihf-gcc-$CC_CXX_VERSION CXX=arm-linux-gnueabihf-g++-$CC_CXX_VERSION GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=1 CGO_CFLAGS="-march=armv7-a -fPIC" CGO_CXXFLAGS="-march=armv7-a -fPIC" go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-arm-7$ext" $PACK_RELPATH)
+      (set -x ; CC=arm-linux-gnueabihf-gcc CXX=arm-linux-gnueabihf-g++ GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=1 CGO_CFLAGS="-march=armv7-a -fPIC" CGO_CXXFLAGS="-march=armv7-a -fPIC" go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-arm-7$ext" $PACK_RELPATH)
 
       echo "Cleaning up Go runtime for linux/arm-7..."
       rm -rf /usr/local/go/pkg/linux_arm
@@ -272,14 +273,14 @@ for TARGET in $TARGETS; do
       echo "Go version too low, skipping linux/arm64..."
     else
       echo "Compiling for linux/arm64..."
-      CC=aarch64-linux-gnu-gcc-$CC_CXX_VERSION CXX=aarch64-linux-gnu-g++-$CC_CXX_VERSION HOST=aarch64-linux-gnu PREFIX=/usr/aarch64-linux-gnu xgo-build-deps /deps ${DEPS_ARGS[@]}
+      CC=aarch64-linux-gnu-gcc CXX=aarch64-linux-gnu-g++ HOST=aarch64-linux-gnu PREFIX=/usr/aarch64-linux-gnu xgo-build-deps /deps ${DEPS_ARGS[@]}
       export PKG_CONFIG_PATH=/usr/aarch64-linux-gnu/lib/pkgconfig
 
       if [[ "$USEMODULES" == false ]]; then
-        CC=aarch64-linux-gnu-gcc-$CC_CXX_VERSION CXX=aarch64-linux-gnu-g++-$CC_CXX_VERSION GOOS=linux GOARCH=arm64 CGO_ENABLED=1 go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
+        CC=aarch64-linux-gnu-gcc CXX=aarch64-linux-gnu-g++ GOOS=linux GOARCH=arm64 CGO_ENABLED=1 go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
       fi
       ext=$(extension linux)
-      (set -x ; CC=aarch64-linux-gnu-gcc-$CC_CXX_VERSION CXX=aarch64-linux-gnu-g++-$CC_CXX_VERSION GOOS=linux GOARCH=arm64 CGO_ENABLED=1 go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-arm64$ext" $PACK_RELPATH)
+      (set -x ; CC=aarch64-linux-gnu-gcc CXX=aarch64-linux-gnu-g++ GOOS=linux GOARCH=arm64 CGO_ENABLED=1 go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-arm64$ext" $PACK_RELPATH)
     fi
   fi
   if ([ $XGOOS == "." ] || [ $XGOOS == "linux" ]) && ([ $XGOARCH == "." ] || [ $XGOARCH == "mips64" ]); then
@@ -287,14 +288,14 @@ for TARGET in $TARGETS; do
       echo "Go version too low, skipping linux/mips64..."
     else
       echo "Compiling for linux/mips64..."
-      CC=mips64-linux-gnuabi64-gcc-$CC_CXX_VERSION CXX=mips64-linux-gnuabi64-g++-$CC_CXX_VERSION HOST=mips64-linux-gnuabi64 PREFIX=/usr/mips64-linux-gnuabi64 xgo-build-deps /deps ${DEPS_ARGS[@]}
+      CC=mips64-linux-gnuabi64-gcc CXX=mips64-linux-gnuabi64-g++ HOST=mips64-linux-gnuabi64 PREFIX=/usr/mips64-linux-gnuabi64 xgo-build-deps /deps ${DEPS_ARGS[@]}
       export PKG_CONFIG_PATH=/usr/mips64-linux-gnuabi64/lib/pkgconfig
 
       if [[ "$USEMODULES" == false ]]; then
-        CC=mips64-linux-gnuabi64-gcc-$CC_CXX_VERSION CXX=mips64-linux-gnuabi64-g++-$CC_CXX_VERSION GOOS=linux GOARCH=mips64 CGO_ENABLED=1 go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
+        CC=mips64-linux-gnuabi64-gcc CXX=mips64-linux-gnuabi64-g++ GOOS=linux GOARCH=mips64 CGO_ENABLED=1 go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
       fi
       ext=$(extension linux)
-      (set -x ; CC=mips64-linux-gnuabi64-gcc-$CC_CXX_VERSION CXX=mips64-linux-gnuabi64-g++-$CC_CXX_VERSION GOOS=linux GOARCH=mips64 CGO_ENABLED=1 go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-mips64$ext" $PACK_RELPATH)
+      (set -x ; CC=mips64-linux-gnuabi64-gcc CXX=mips64-linux-gnuabi64-g++ GOOS=linux GOARCH=mips64 CGO_ENABLED=1 go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-mips64$ext" $PACK_RELPATH)
     fi
   fi
   if ([ $XGOOS == "." ] || [ $XGOOS == "linux" ]) && ([ $XGOARCH == "." ] || [ $XGOARCH == "mips64le" ]); then
@@ -302,14 +303,14 @@ for TARGET in $TARGETS; do
       echo "Go version too low, skipping linux/mips64le..."
     else
       echo "Compiling for linux/mips64le..."
-      CC=mips64el-linux-gnuabi64-gcc-$CC_CXX_VERSION CXX=mips64el-linux-gnuabi64-g++-$CC_CXX_VERSION HOST=mips64el-linux-gnuabi64 PREFIX=/usr/mips64el-linux-gnuabi64 xgo-build-deps /deps ${DEPS_ARGS[@]}
+      CC=mips64el-linux-gnuabi64-gcc CXX=mips64el-linux-gnuabi64-g++ HOST=mips64el-linux-gnuabi64 PREFIX=/usr/mips64el-linux-gnuabi64 xgo-build-deps /deps ${DEPS_ARGS[@]}
       export PKG_CONFIG_PATH=/usr/mips64le-linux-gnuabi64/lib/pkgconfig
 
       if [[ "$USEMODULES" == false ]]; then
-        CC=mips64el-linux-gnuabi64-gcc-$CC_CXX_VERSION CXX=mips64el-linux-gnuabi64-g++-$CC_CXX_VERSION GOOS=linux GOARCH=mips64le CGO_ENABLED=1 go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
+        CC=mips64el-linux-gnuabi64-gcc CXX=mips64el-linux-gnuabi64-g++ GOOS=linux GOARCH=mips64le CGO_ENABLED=1 go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
       fi
       ext=$(extension linux)
-      (set -x ; CC=mips64el-linux-gnuabi64-gcc-$CC_CXX_VERSION CXX=mips64el-linux-gnuabi64-g++-$CC_CXX_VERSION GOOS=linux GOARCH=mips64le CGO_ENABLED=1 go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-mips64le$ext" $PACK_RELPATH)
+      (set -x ; CC=mips64el-linux-gnuabi64-gcc CXX=mips64el-linux-gnuabi64-g++ GOOS=linux GOARCH=mips64le CGO_ENABLED=1 go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-mips64le$ext" $PACK_RELPATH)
     fi
   fi
   if ([ $XGOOS == "." ] || [ $XGOOS == "linux" ]) && ([ $XGOARCH == "." ] || [ $XGOARCH == "mips" ]); then
@@ -317,14 +318,14 @@ for TARGET in $TARGETS; do
       echo "Go version too low, skipping linux/mips..."
     else
       echo "Compiling for linux/mips..."
-      CC=mips-linux-gnu-gcc-$CC_CXX_VERSION CXX=mips-linux-gnu-g++-$CC_CXX_VERSION HOST=mips-linux-gnu PREFIX=/usr/mips-linux-gnu xgo-build-deps /deps ${DEPS_ARGS[@]}
+      CC=mips-linux-gnu-gcc CXX=mips-linux-gnu-g++ HOST=mips-linux-gnu PREFIX=/usr/mips-linux-gnu xgo-build-deps /deps ${DEPS_ARGS[@]}
       export PKG_CONFIG_PATH=/usr/mips-linux-gnu/lib/pkgconfig
 
       if [[ "$USEMODULES" == false ]]; then
-        CC=mips-linux-gnu-gcc-$CC_CXX_VERSION CXX=mips-linux-gnu-g++-$CC_CXX_VERSION GOOS=linux GOARCH=mips CGO_ENABLED=1 go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
+        CC=mips-linux-gnu-gcc CXX=mips-linux-gnu-g++ GOOS=linux GOARCH=mips CGO_ENABLED=1 go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
       fi
       ext=$(extension linux)
-      (set -x ; CC=mips-linux-gnu-gcc-$CC_CXX_VERSION CXX=mips-linux-gnu-g++-$CC_CXX_VERSION GOOS=linux GOARCH=mips CGO_ENABLED=1 go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-mips$ext" $PACK_RELPATH)
+      (set -x ; CC=mips-linux-gnu-gcc CXX=mips-linux-gnu-g++ GOOS=linux GOARCH=mips CGO_ENABLED=1 go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-mips$ext" $PACK_RELPATH)
     fi
   fi
   if ([ $XGOOS == "." ] || [ $XGOOS == "linux" ]) && ([ $XGOARCH == "." ] || [ $XGOARCH == "mipsle" ]); then
@@ -332,14 +333,14 @@ for TARGET in $TARGETS; do
       echo "Go version too low, skipping linux/mipsle..."
     else
       echo "Compiling for linux/mipsle..."
-      CC=mipsel-linux-gnu-gcc-$CC_CXX_VERSION CXX=mipsel-linux-gnu-g++-$CC_CXX_VERSION HOST=mipsel-linux-gnu PREFIX=/usr/mipsel-linux-gnu xgo-build-deps /deps ${DEPS_ARGS[@]}
+      CC=mipsel-linux-gnu-gcc CXX=mipsel-linux-gnu-g++ HOST=mipsel-linux-gnu PREFIX=/usr/mipsel-linux-gnu xgo-build-deps /deps ${DEPS_ARGS[@]}
       export PKG_CONFIG_PATH=/usr/mipsle-linux-gnu/lib/pkgconfig
 
       if [[ "$USEMODULES" == false ]]; then
-        CC=mipsel-linux-gnu-gcc-$CC_CXX_VERSION CXX=mipsel-linux-gnu-g++-$CC_CXX_VERSION GOOS=linux GOARCH=mipsle CGO_ENABLED=1 go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
+        CC=mipsel-linux-gnu-gcc CXX=mipsel-linux-gnu-g++ GOOS=linux GOARCH=mipsle CGO_ENABLED=1 go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
       fi
       ext=$(extension linux)
-      (set -x ; CC=mipsel-linux-gnu-gcc-$CC_CXX_VERSION CXX=mipsel-linux-gnu-g++-$CC_CXX_VERSION GOOS=linux GOARCH=mipsle CGO_ENABLED=1 go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-mipsle$ext" $PACK_RELPATH)
+      (set -x ; CC=mipsel-linux-gnu-gcc CXX=mipsel-linux-gnu-g++ GOOS=linux GOARCH=mipsle CGO_ENABLED=1 go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-mipsle$ext" $PACK_RELPATH)
     fi
   fi
   if ([ $XGOOS == "." ] || [ $XGOOS == "linux" ]) && ([ $XGOARCH == "." ] || [ $XGOARCH == "ppc64le" ]); then
@@ -347,14 +348,14 @@ for TARGET in $TARGETS; do
       echo "Go version too low, skipping linux/ppc64le..."
     else
       echo "Compiling for linux/ppc64le..."
-      CC=powerpc64le-linux-gnu-gcc-$CC_CXX_VERSION CXX=powerpc64le-linux-gnu-g++-$CC_CXX_VERSION HOST=powerpc64le-linux-gnu PREFIX=/usr/powerpc64le-linux-gnu xgo-build-deps /deps ${DEPS_ARGS[@]}
+      CC=powerpc64le-linux-gnu-gcc CXX=powerpc64le-linux-gnu-g++ HOST=powerpc64le-linux-gnu PREFIX=/usr/powerpc64le-linux-gnu xgo-build-deps /deps ${DEPS_ARGS[@]}
       export PKG_CONFIG_PATH=/usr/powerpc64le-linux-gnu/lib/pkgconfig
 
       if [[ "$USEMODULES" == false ]]; then
-        CC=powerpc64le-linux-gnu-gcc-$CC_CXX_VERSION CXX=powerpc64le-linux-gnu-g++-$CC_CXX_VERSION GOOS=linux GOARCH=ppc64le CGO_ENABLED=1 go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
+        CC=powerpc64le-linux-gnu-gcc CXX=powerpc64le-linux-gnu-g++ GOOS=linux GOARCH=ppc64le CGO_ENABLED=1 go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
       fi
       ext=$(extension linux)
-      (set -x ; CC=powerpc64le-linux-gnu-gcc-$CC_CXX_VERSION CXX=powerpc64le-linux-gnu-g++-$CC_CXX_VERSION GOOS=linux GOARCH=ppc64le CGO_ENABLED=1 go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-ppc64le$ext" $PACK_RELPATH)
+      (set -x ; CC=powerpc64le-linux-gnu-gcc CXX=powerpc64le-linux-gnu-g++ GOOS=linux GOARCH=ppc64le CGO_ENABLED=1 go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-ppc64le$ext" $PACK_RELPATH)
     fi
   fi
   if ([ $XGOOS == "." ] || [ $XGOOS == "linux" ]) && ([ $XGOARCH == "." ] || [ $XGOARCH == "riscv64" ]); then
@@ -362,14 +363,14 @@ for TARGET in $TARGETS; do
       echo "Go version too low, skipping linux/riscv64..."
     else
       echo "Compiling for linux/riscv64..."
-      CC=riscv64-linux-gnu-gcc-$CC_CXX_VERSION CXX=riscv64-linux-gnu-g++-$CC_CXX_VERSION HOST=riscv64-linux-gnu PREFIX=/usr/riscv64-linux-gnu xgo-build-deps /deps ${DEPS_ARGS[@]}
+      CC=riscv64-linux-gnu-gcc CXX=riscv64-linux-gnu-g++ HOST=riscv64-linux-gnu PREFIX=/usr/riscv64-linux-gnu xgo-build-deps /deps ${DEPS_ARGS[@]}
       export PKG_CONFIG_PATH=/usr/riscv64-linux-gnu/lib/pkgconfig
 
       if [[ "$USEMODULES" == false ]]; then
-        CC=riscv64-linux-gnu-gcc-$CC_CXX_VERSION CXX=riscv64-linux-gnu-g++-$CC_CXX_VERSION GOOS=linux GOARCH=riscv64 CGO_ENABLED=1 go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
+        CC=riscv64-linux-gnu-gcc CXX=riscv64-linux-gnu-g++ GOOS=linux GOARCH=riscv64 CGO_ENABLED=1 go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
       fi
       ext=$(extension linux)
-      (set -x ; CC=riscv64-linux-gnu-gcc-$CC_CXX_VERSION CXX=riscv64-linux-gnu-g++-$CC_CXX_VERSION GOOS=linux GOARCH=riscv64 CGO_ENABLED=1 go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-riscv64$ext" $PACK_RELPATH)
+      (set -x ; CC=riscv64-linux-gnu-gcc CXX=riscv64-linux-gnu-g++ GOOS=linux GOARCH=riscv64 CGO_ENABLED=1 go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-riscv64$ext" $PACK_RELPATH)
     fi
   fi
   if ([ $XGOOS == "." ] || [ $XGOOS == "linux" ]) && ([ $XGOARCH == "." ] || [ $XGOARCH == "s390x" ]); then
@@ -377,14 +378,14 @@ for TARGET in $TARGETS; do
       echo "Go version too low, skipping linux/s390x..."
     else
       echo "Compiling for linux/s390x..."
-      CC=s390x-linux-gnu-gcc-$CC_CXX_VERSION CXX=s390x-linux-gnu-g++-$CC_CXX_VERSION HOST=s390x-linux-gnu PREFIX=/usr/s390x-linux-gnu xgo-build-deps /deps ${DEPS_ARGS[@]}
+      CC=s390x-linux-gnu-gcc CXX=s390x-linux-gnu-g++ HOST=s390x-linux-gnu PREFIX=/usr/s390x-linux-gnu xgo-build-deps /deps ${DEPS_ARGS[@]}
       export PKG_CONFIG_PATH=/usr/s390x-linux-gnu/lib/pkgconfig
 
       if [[ "$USEMODULES" == false ]]; then
-        CC=s390x-linux-gnu-gcc-$CC_CXX_VERSION CXX=s390x-linux-gnu-g++-$CC_CXX_VERSION GOOS=linux GOARCH=s390x CGO_ENABLED=1 go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
+        CC=s390x-linux-gnu-gcc CXX=s390x-linux-gnu-g++ GOOS=linux GOARCH=s390x CGO_ENABLED=1 go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
       fi
       ext=$(extension linux)
-      (set -x ; CC=s390x-linux-gnu-gcc-$CC_CXX_VERSION CXX=s390x-linux-gnu-g++-$CC_CXX_VERSION GOOS=linux GOARCH=s390x CGO_ENABLED=1 go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-s390x$ext" $PACK_RELPATH)
+      (set -x ; CC=s390x-linux-gnu-gcc CXX=s390x-linux-gnu-g++ GOOS=linux GOARCH=s390x CGO_ENABLED=1 go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-s390x$ext" $PACK_RELPATH)
     fi
   fi
   # Check and build for Windows targets

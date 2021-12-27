@@ -40,9 +40,18 @@ COPY --from=build /out/*.tar.gz /
 COPY --from=build /out/*.zip /
 
 FROM ${BASE_IMAGE} AS go
+COPY --from=build /usr/local/bin/xgo /usr/local/bin/xgo
+
+ENV XGO_IN_XGO="1"
+ENV PATH="/usr/local/go/bin:$PATH"
+ENV GOPATH="/go"
+ENV GOCACHE="/go-build"
+
 ARG GO_VERSION
 ARG GO_DIST_SHA
 ARG GO_DIST_URL="https://golang.org/dl/go${GO_VERSION}.linux-amd64.tar.gz"
 ENV GO_VERSION=${GO_VERSION}
-COPY --from=build /usr/local/bin/xgo /usr/local/bin/xgo
 RUN xgo-bootstrap-pure
+
+WORKDIR /
+ENTRYPOINT [ "xgo-build" ]
