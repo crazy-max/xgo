@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 #
 # Contains a simple fetcher to download a file from a remote URL and verify its
 # SHA1 or SHA256 checksum (selected based on provided length).

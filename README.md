@@ -71,6 +71,9 @@ Build xgo yourself using Docker [`buildx bake`](https://github.com/docker/buildx
 git clone https://github.com/crazy-max/xgo.git xgo
 cd xgo
 
+# Use docker driver
+docker buildx use default
+
 # Build base image and output to docker with xgo:base tag
 docker buildx bake base-local
 
