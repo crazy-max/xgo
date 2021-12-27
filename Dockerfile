@@ -43,9 +43,9 @@ FROM ${BASE_IMAGE} AS go
 COPY --from=build /usr/local/bin/xgo /usr/local/bin/xgo
 
 ENV XGO_IN_XGO="1"
-ENV PATH="/usr/local/go/bin:$PATH"
 ENV GOPATH="/go"
-ENV GOCACHE="/go-build"
+ENV PATH="$GOPATH/bin:/usr/local/go/bin:$PATH"
+RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
 
 ARG GO_VERSION
 ARG GO_DIST_SHA
