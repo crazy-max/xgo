@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.0 (2021/12/28)
+
+* Switch to Ubuntu base image (#44)
+* Debug build cmd (#43)
+* Enhance dockerfiles (#42)
+
 ## 0.7.6 (2021/12/11)
 
 * Go 1.17.5, 1.17.4, 1.16.12, 1.16.11
