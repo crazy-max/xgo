@@ -7,11 +7,12 @@ ARG OSX_CROSS_COMMIT="035cc170338b7b252e3f13b0e3ccbf4411bffc41"
 FROM ubuntu:${UBUNTU_VERSION} AS base
 RUN export DEBIAN_FRONTEND="noninteractive" \
   && apt-get update \
-  && apt-get install -y \
+  && apt-get install --no-install-recommends -y \
     autoconf \
     automake \
     bash \
     bc \
+    binutils-multiarch \
     binutils-multiarch-dev \
     build-essential \
     bzr \
@@ -32,6 +33,7 @@ RUN export DEBIAN_FRONTEND="noninteractive" \
     crossbuild-essential-riscv64 \
     crossbuild-essential-s390x \
     curl \
+    devscripts \
     g++ \
     g++-mingw-w64 \
     gcc \
@@ -41,7 +43,6 @@ RUN export DEBIAN_FRONTEND="noninteractive" \
     help2man \
     libssl-dev \
     libtool \
-    linux-headers-generic \
     llvm-dev \
     lzma-dev \
     make \
@@ -57,28 +58,6 @@ RUN export DEBIAN_FRONTEND="noninteractive" \
     wget \
     xz-utils \
     zip \
-  && apt-get install -y \
-    lib32asan6 \
-    lib32atomic1 \
-    lib32gcc-10-dev \
-    lib32gomp1 \
-    lib32itm1 \
-    lib32quadmath0 \
-    lib32stdc++-10-dev \
-    lib32ubsan1 \
-    libc6-dev-i386 \
-    libc6-dev-x32 \
-    libc6-x32 \
-    libx32asan6 \
-    libx32atomic1 \
-    libx32gcc-10-dev \
-    libx32gcc-s1 \
-    libx32gomp1 \
-    libx32itm1 \
-    libx32quadmath0 \
-    libx32stdc++-10-dev \
-    libx32stdc++6 \
-    libx32ubsan1 \
   && apt-get -y autoremove \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
@@ -94,7 +73,6 @@ RUN export DEBIAN_FRONTEND="noninteractive" \
     libmpc-dev \
     libmpfr-dev \
     libxml2-dev \
-    llvm-dev \
     lzma-dev \
     uuid-dev \
     zlib1g-dev
@@ -117,7 +95,8 @@ RUN git clone https://github.com/tpoechtrager/osxcross.git . \
   && OSX_VERSION_MIN=10.10 UNATTENDED=1 /osxcross/build.sh
 
 FROM base
-COPY --from=osxcross /osxcross/target /osxcross/target
+COPY --from=osxcross /osxcross /osxcross
 ENV PATH="/osxcross/target/bin:$PATH"
+ENV LD_LIBRARY_PATH="/osxcross/lib:$LD_LIBRARY_PATH"
 RUN curl -sSLk https://raw.githubusercontent.com/fsaintjacques/semver-tool/master/src/semver -o /usr/local/bin/semver && chmod +x /usr/local/bin/semver
 COPY rootfs /
