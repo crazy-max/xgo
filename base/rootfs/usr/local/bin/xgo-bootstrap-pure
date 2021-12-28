@@ -34,7 +34,10 @@ export GOROOT_BOOTSTRAP=$GOROOT
 
 # Pre-build all guest distributions based on the root distribution
 echo "Bootstrapping linux/386..."
-(set -x ; GOOS=linux GOARCH=386 CGO_ENABLED=1 go install std)
+(set -x ; GOOS=linux GOARCH=386 CGO_ENABLED=1 CC=i686-linux-gnu-gcc go install std)
+
+echo "Bootstrapping linux/amd64..."
+(set -x ; GOOS=linux GOARCH=amd64 CGO_ENABLED=1 CC=x86_64-linux-gnu-gcc go install std)
 
 echo "Bootstrapping linux/arm64..."
 (set -x ; GOOS=linux GOARCH=arm64 CGO_ENABLED=1 CC=aarch64-linux-gnu-gcc go install std)
