@@ -1,10 +1,6 @@
-# syntax=docker/dockerfile:1.2
+# syntax=docker/dockerfile:1.3
 
-ARG BASE_IMAGE=ghcr.io/crazy-max/xgo:base
-ARG GO_VERSION
-ARG GO_DIST_URL
-ARG GO_DIST_SHA
-
+ARG GO_VERSION="1.17.5"
 ARG GORELEASER_XX_VERSION="1.2.2"
 
 FROM --platform=$BUILDPLATFORM crazymax/goreleaser-xx:${GORELEASER_XX_VERSION} AS goreleaser-xx
@@ -15,13 +11,13 @@ RUN apk add --no-cache file git
 WORKDIR /src
 
 FROM base AS vendored
-RUN --mount=type=bind,source=.,target=/src,rw \
+RUN --mount=type=bind,source=.,rw \
   --mount=type=cache,target=/go/pkg/mod \
   go mod tidy && go mod download
 
 FROM vendored AS build
 ARG TARGETPLATFORM
-RUN --mount=type=bind,target=/src,rw \
+RUN --mount=type=bind,source=.,rw \
   --mount=type=cache,target=/root/.cache \
   --mount=type=cache,target=/go/pkg/mod \
   goreleaser-xx --debug \
@@ -39,19 +35,10 @@ FROM scratch AS artifact
 COPY --from=build /out/*.tar.gz /
 COPY --from=build /out/*.zip /
 
-FROM ${BASE_IMAGE} AS go
+FROM crazymax/goxx:${GO_VERSION}
 COPY --from=build /usr/local/bin/xgo /usr/local/bin/xgo
-
 ENV XGO_IN_XGO="1"
-ENV GOPATH="/go"
-ENV PATH="$GOPATH/bin:/usr/local/go/bin:$PATH"
-RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
-
 ARG GO_VERSION
-ARG GO_DIST_SHA
-ARG GO_DIST_URL="https://golang.org/dl/go${GO_VERSION}.linux-amd64.tar.gz"
 ENV GO_VERSION=${GO_VERSION}
-RUN xgo-bootstrap-pure
-
-WORKDIR /
+COPY rootfs /
 ENTRYPOINT [ "xgo-build" ]

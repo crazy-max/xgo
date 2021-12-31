@@ -1,6 +1,6 @@
 [![GitHub release](https://img.shields.io/github/release/crazy-max/xgo.svg?style=flat-square)](https://github.com/crazy-max/xgo/releases/latest)
 [![Total downloads](https://img.shields.io/github/downloads/crazy-max/xgo/total.svg?style=flat-square)](https://github.com/crazy-max/xgo/releases/latest)
-[![Build Status](https://img.shields.io/github/workflow/status/crazy-max/xgo/images?label=images&logo=github&style=flat-square)](https://github.com/crazy-max/xgo/actions?query=workflow%3Aimages)
+[![Build Status](https://img.shields.io/github/workflow/status/crazy-max/xgo/build?label=build&logo=github&style=flat-square)](https://github.com/crazy-max/xgo/actions?query=workflow%3Abuild)
 [![Test Status](https://img.shields.io/github/workflow/status/crazy-max/xgo/test?label=test&logo=github&style=flat-square)](https://github.com/crazy-max/xgo/actions?query=workflow%3Atest)
 [![Docker Stars](https://img.shields.io/docker/stars/crazymax/xgo.svg?style=flat-square&logo=docker)](https://hub.docker.com/r/crazymax/xgo/)
 [![Docker Pulls](https://img.shields.io/docker/pulls/crazymax/xgo.svg?style=flat-square&logo=docker)](https://hub.docker.com/r/crazymax/xgo/)
@@ -56,9 +56,14 @@ things more consistent for users:
 | [Docker Hub](https://hub.docker.com/r/crazymax/xgo/)                                            | `crazymax/xgo`                 |
 | [GitHub Container Registry](https://github.com/users/crazy-max/packages/container/package/xgo)  | `ghcr.io/crazy-max/xgo`        |
 
-I use [GitHub Actions](https://github.com/crazy-max/xgo/actions) to build the
-images instead of using automated builds of Docker Hub
-(see [workflows](.github/workflows)).
+```
+$ docker run --rm mplatform/mquery crazymax/xgo:latest
+Image: crazymax/xgo:latest
+ * Manifest List: Yes
+ * Supported platforms:
+   - linux/amd64
+   - linux/arm64
+```
 
 This also creates a [standalone xgo executable](https://github.com/crazy-max/xgo/releases/latest)
 that can be used on many platforms.
@@ -71,19 +76,13 @@ Build xgo yourself using Docker [`buildx bake`](https://github.com/docker/buildx
 git clone https://github.com/crazy-max/xgo.git xgo
 cd xgo
 
-# Use docker driver
-docker buildx use default
-
-# Build base image and output to docker with xgo:base tag
-docker buildx bake base-local
-
-# Build go-1.17 image and output to docker with xgo:1.17 tag
-BASE_IMAGE=xgo:base docker buildx bake --set "*.tags=xgo:1.17" --load go-1.17
+# Build xgo image and output to docker with xgo:local tag
+docker buildx bake
 
 # Tests
-BASE_IMAGE=xgo:1.17 docker buildx bake test-c
-BASE_IMAGE=xgo:1.17 docker buildx bake test-cpp
-BASE_IMAGE=xgo:1.17 docker buildx bake test-gorm
+BASE_IMAGE=xgo:local docker buildx bake test-c
+BASE_IMAGE=xgo:local docker buildx bake test-cpp
+BASE_IMAGE=xgo:local docker buildx bake test-gorm
 
 # Create xgo artifacts in ./dist
 docker buildx bake artifact-all

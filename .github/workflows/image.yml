@@ -1,4 +1,4 @@
-name: images
+name: image
 
 on:
   push:
@@ -9,89 +9,19 @@ on:
     paths-ignore:
       - '**.md'
   pull_request:
-    branches:
-      - 'master'
     paths-ignore:
       - '**.md'
 
 env:
   DOCKERHUB_SLUG: crazymax/xgo
   GHCR_SLUG: ghcr.io/crazy-max/xgo
+  PLATFORMS: linux/amd64,linux/arm64
+  LATEST_117: 1.17.5
+  LATEST_116: 1.16.12
 
 jobs:
-  base:
+  build:
     runs-on: ubuntu-latest
-    steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v2
-      -
-        name: Cache Docker layers
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.xgo-cache
-          key: ${{ runner.os }}-xgo-base-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-xgo-base-
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      -
-        name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v3
-        with:
-          images: |
-            ${{ env.DOCKERHUB_SLUG }}
-            ${{ env.GHCR_SLUG }}
-          tags: |
-            base
-          labels: |
-            org.opencontainers.image.title=xgo
-            org.opencontainers.image.description=Go CGO cross compiler
-            org.opencontainers.image.vendor=CrazyMax
-      -
-        name: Login to DockerHub
-        if: startsWith(github.ref, 'refs/tags/v')
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-      -
-        name: Login to GHCR
-        if: startsWith(github.ref, 'refs/tags/v')
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      -
-        name: Build
-        uses: docker/bake-action@v1
-        with:
-          files: |
-            ./docker-bake.hcl
-            ${{ steps.meta.outputs.bake-file }}
-          targets: base
-          set: |
-            *.cache-from=type=local,src=/tmp/.xgo-cache
-            *.cache-to=type=local,dest=/tmp/.xgo-cache-new,mode=max
-          push: ${{ startsWith(github.ref, 'refs/tags/v') }}
-      -
-        # FIXME: https://github.com/docker/build-push-action/issues/252
-        name: Move cache
-        run: |
-          rm -rf /tmp/.xgo-cache
-          mv /tmp/.xgo-cache-new /tmp/.xgo-cache
-
-  go:
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v')
-    needs: [ base ]
-    env:
-      BASE_IMAGE: ghcr.io/crazy-max/xgo:base
-      LATEST_117: 1.17.5
-      LATEST_116: 1.16.12
     strategy:
       fail-fast: false
       matrix:
@@ -119,6 +49,9 @@ jobs:
       -
         name: Checkout
         uses: actions/checkout@v2
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
       -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
@@ -157,12 +90,14 @@ jobs:
             org.opencontainers.image.vendor=CrazyMax
       -
         name: Login to DockerHub
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       -
         name: Login to GHCR
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
@@ -175,5 +110,8 @@ jobs:
           files: |
             ./docker-bake.hcl
             ${{ steps.meta.outputs.bake-file }}
-          targets: go-${{ matrix.go_version }}
-          push: true
+          targets: image
+          set: |
+            *.platform=${{ env.PLATFORMS }}
+            *.args.GO_VERSION=${{ matrix.go_version }}
+          push: ${{ startsWith(github.ref, 'refs/tags/v') }}
