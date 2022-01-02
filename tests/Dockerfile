@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.2
+# syntax=docker/dockerfile:1
 
 ARG BASE_IMAGE=ghcr.io/crazy-max/xgo:1.17.x
 ARG PROJECT="./c"
