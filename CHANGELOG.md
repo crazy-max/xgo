@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.0 (2022/01/02)
+
+* Multi-platform image support with [`goxx`](https://github.com/crazy-max/goxx) (#46)
+
 ## 0.8.0 (2021/12/28)
 
 * Switch to Ubuntu base image (#44)
