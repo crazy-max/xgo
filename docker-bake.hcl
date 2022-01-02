@@ -18,6 +18,12 @@ group "default" {
   targets = ["image-local"]
 }
 
+target "base" {
+  inherits = ["_common"]
+  target = "goxx-base"
+  output = ["type=cacheonly"]
+}
+
 target "image" {
   inherits = ["_common", "docker-metadata-action"]
 }
