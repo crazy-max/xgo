@@ -41,4 +41,6 @@ ENV XGO_IN_XGO="1"
 ARG GO_VERSION
 ENV GO_VERSION=${GO_VERSION}
 COPY rootfs /
+RUN xgo-bootstrap-pure
+WORKDIR /
 ENTRYPOINT [ "xgo-build" ]
