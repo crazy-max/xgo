@@ -1,7 +1,8 @@
 # syntax=docker/dockerfile:1-labs
 
-ARG GO_VERSION="1.17.5"
-ARG GORELEASER_XX_VERSION="1.2.2"
+ARG GO_VERSION="1.17.6"
+ARG OSXCROSS_VERSION="11.3"
+ARG GORELEASER_XX_VERSION="1.2.5"
 ARG PLATFORMS="linux/386 linux/amd64 linux/arm64 linux/arm/v5 linux/arm/v6 linux/arm/v7 linux/mips linux/mipsle linux/mips64 linux/mips64le linux/ppc64le linux/riscv64 linux/s390x windows/386 windows/amd64"
 
 FROM --platform=$BUILDPLATFORM crazymax/goreleaser-xx:${GORELEASER_XX_VERSION} AS goreleaser-xx
@@ -52,13 +53,18 @@ rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 ln -sf /usr/include/asm-generic /usr/include/asm
 EOT
 
+FROM crazymax/osxcross:${OSXCROSS_VERSION} AS osxcross
 FROM goxx-base
 COPY --from=build /usr/local/bin/xgo /usr/local/bin/xgo
+COPY --from=osxcross /osxcross /osxcross
 
 ENV XGO_IN_XGO="1"
 ARG GO_VERSION
 ENV GO_VERSION=${GO_VERSION}
 COPY rootfs /
 RUN xgo-bootstrap-pure
+
+ENV DARWIN_DEFAULT_TARGET="10.16"
+ENV WINDOWS_DEFAULT_TARGET="4.0"
 WORKDIR /
 ENTRYPOINT [ "xgo-build" ]

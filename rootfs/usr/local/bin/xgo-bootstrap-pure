@@ -12,68 +12,47 @@
 #   GO_DIST_SHA   - 64 bit Linux Go distribution package checksum
 #
 # Environment variables for local bootstrapping:
-#   GOROOT - Path to the lready installed Go runtime
+#   GOROOT - Path to the already installed Go runtime
 set -e
+
+export GOROOT_BOOTSTRAP=$GOROOT
+
+xgobootstrap() {
+  if command -v "$3" >/dev/null 2>/dev/null; then
+    echo "Bootstrapping $1/$2..."
+    (set -x ; GOOS=$1 GOARCH=$2 CGO_ENABLED=1 CC=$3 go install std)
+  fi
+}
 
 # Fix last digit
 if [ "$(echo "$GO_VERSION" | tr -cd '.' | wc -c)" != "2" ]; then
   export GO_VERSION="${GO_VERSION}.0"
 fi
-echo "Go version $GO_VERSION"
-
-# Download, verify and install the root distribution if pulled remotely
-if [ "$GOROOT" == "" ]; then
-  xgo-fetch $GO_DIST_URL $GO_DIST_SHA
-
-  tar -C /usr/local -xzf $(basename $GO_DIST_URL)
-  rm -f $(basename $GO_DIST_URL)
-
-  export GOROOT=/usr/local/go
-fi
-export GOROOT_BOOTSTRAP=$GOROOT
+echo "GO_VERSION=$GO_VERSION"
 
 # Pre-build all guest distributions based on the root distribution
-echo "Bootstrapping linux/386..."
-(set -x ; GOOS=linux GOARCH=386 CGO_ENABLED=1 CC=i686-linux-gnu-gcc go install std)
-
-echo "Bootstrapping linux/amd64..."
-(set -x ; GOOS=linux GOARCH=amd64 CGO_ENABLED=1 CC=x86_64-linux-gnu-gcc go install std)
-
-echo "Bootstrapping linux/arm64..."
-(set -x ; GOOS=linux GOARCH=arm64 CGO_ENABLED=1 CC=aarch64-linux-gnu-gcc go install std)
+xgobootstrap linux 386 i686-linux-gnu-gcc
+xgobootstrap linux amd64 x86_64-linux-gnu-gcc
+xgobootstrap linux arm64 aarch64-linux-gnu-gcc
 
 if [ "$(semver compare "$GO_VERSION" "1.7.0")" -ge 0 ]; then
-  echo "Bootstrapping linux/mips64..."
-  (set -x ; GOOS=linux GOARCH=mips64 CGO_ENABLED=1 CC=mips64-linux-gnuabi64-gcc go install std)
-
-  echo "Bootstrapping linux/mips64le..."
-  (set -x ; GOOS=linux GOARCH=mips64le CGO_ENABLED=1 CC=mips64el-linux-gnuabi64-gcc go install std)
+  xgobootstrap linux mips64 mips64-linux-gnuabi64-gcc
+  xgobootstrap linux mips64le mips64el-linux-gnuabi64-gcc
 fi
 
 if [ "$(semver compare "$GO_VERSION" "1.8.0")" -ge 0 ]; then
-  echo "Bootstrapping linux/mips..."
-  (set -x ; GOOS=linux GOARCH=mips CGO_ENABLED=1 CC=mips-linux-gnu-gcc go install std)
-
-  echo "Bootstrapping linux/mipsle..."
-  (set -x ; GOOS=linux GOARCH=mipsle CGO_ENABLED=1 CC=mipsel-linux-gnu-gcc go install std)
-
-  echo "Bootstrapping linux/ppc64le..."
-  (set -x ; GOOS=linux GOARCH=ppc64le CGO_ENABLED=1 CC=powerpc64le-linux-gnu-gcc go install std)
-
-  echo "Bootstrapping linux/s390x..."
-  (set -x ; GOOS=linux GOARCH=s390x CGO_ENABLED=1 CC=s390x-linux-gnu-gcc go install std)
+  xgobootstrap linux mips mips-linux-gnu-gcc
+  xgobootstrap linux mipsle mipsel-linux-gnu-gcc
+  xgobootstrap linux ppc64le powerpc64le-linux-gnu-gcc
+  xgobootstrap linux s390x s390x-linux-gnu-gcc
 fi
 
 if [ "$(semver compare "$GO_VERSION" "1.16.0")" -ge 0 ]; then
-  echo "Bootstrapping linux/riscv64..."
-  (set -x ; GOOS=linux GOARCH=riscv64 CGO_ENABLED=1 CC=riscv64-linux-gnu-gcc go install std)
+  xgobootstrap linux riscv64 riscv64-linux-gnu-gcc
 fi
 
-echo "Bootstrapping windows/amd64..."
-(set -x ; GOOS=windows GOARCH=amd64 CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc go install std)
-
-echo "Bootstrapping windows/386..."
-(set -x ; GOOS=windows GOARCH=386 CGO_ENABLED=1 CC=i686-w64-mingw32-gcc go install std)
+xgobootstrap windows amd64 x86_64-w64-mingw32-gcc
+xgobootstrap windows 386 i686-w64-mingw32-gcc
 
 # FIXME: gcc_libinit_windows.c:8:10: fatal error: 'windows.h' file not found
 #if [ "$(semver compare "$GO_VERSION" "1.17.0")" -ge 0 ]; then
@@ -81,15 +60,12 @@ echo "Bootstrapping windows/386..."
 #  (set -x ; GOOS=windows GOARCH=arm64 CGO_ENABLED=1 CC=aarch64-w64-mingw32-gcc go install std)
 #fi
 
-echo "Bootstrapping darwin/amd64..."
-(set -x ; GOOS=darwin GOARCH=amd64 CGO_ENABLED=1 CC=o64-clang go install std)
+xgobootstrap darwin amd64 o64-clang
 
 if [ "$(semver compare "$GO_VERSION" "1.15.0")" -lt 0 ]; then
-  echo "Bootstrapping darwin/386..."
-  (set -x ; GOOS=darwin GOARCH=386 CGO_ENABLED=1 CC=o32-clang go install std)
+  xgobootstrap darwin 386 o32-clang
 fi
 
 if [ "$(semver compare "$GO_VERSION" "1.16.0")" -ge 0 ]; then
-  echo "Bootstrapping darwin/arm64..."
-  (set -x ; GOOS=darwin GOARCH=arm64 CGO_ENABLED=1 CC=o64-clang go install std)
+  xgobootstrap darwin arm64 o64-clang
 fi
