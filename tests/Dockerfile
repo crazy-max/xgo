@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1
 
-ARG BASE_IMAGE=ghcr.io/crazy-max/xgo:1.17.x
+ARG BASE_IMAGE=ghcr.io/crazy-max/xgo:1.17
 ARG PROJECT="./c"
-ARG BRANCH=""
+ARG BRANCH
 
 FROM ${BASE_IMAGE} AS base
 WORKDIR /src

@@ -287,60 +287,76 @@ for TARGET in $TARGETS; do
     if [ "$(semver compare "$GO_VERSION" "1.7.0")" -lt 0 ]; then
       echo "Go version too low, skipping linux/mips64..."
     else
-      echo "Compiling for linux/mips64..."
-      CC=mips64-linux-gnuabi64-gcc CXX=mips64-linux-gnuabi64-g++ HOST=mips64-linux-gnuabi64 PREFIX=/usr/mips64-linux-gnuabi64 xgo-build-deps /deps ${DEPS_ARGS[@]}
-      export PKG_CONFIG_PATH=/usr/mips64-linux-gnuabi64/lib/pkgconfig
+      if ! command -v "mips64-linux-gnuabi64-gcc" >/dev/null 2>/dev/null; then
+        echo "mips64-linux-gnuabi64-gcc not found, skipping linux/mips64..."
+      else
+        echo "Compiling for linux/mips64..."
+        CC=mips64-linux-gnuabi64-gcc CXX=mips64-linux-gnuabi64-g++ HOST=mips64-linux-gnuabi64 PREFIX=/usr/mips64-linux-gnuabi64 xgo-build-deps /deps ${DEPS_ARGS[@]}
+        export PKG_CONFIG_PATH=/usr/mips64-linux-gnuabi64/lib/pkgconfig
 
-      if [[ "$USEMODULES" == false ]]; then
-        CC=mips64-linux-gnuabi64-gcc CXX=mips64-linux-gnuabi64-g++ GOOS=linux GOARCH=mips64 CGO_ENABLED=1 go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
+        if [[ "$USEMODULES" == false ]]; then
+          CC=mips64-linux-gnuabi64-gcc CXX=mips64-linux-gnuabi64-g++ GOOS=linux GOARCH=mips64 CGO_ENABLED=1 go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
+        fi
+        ext=$(extension linux)
+        (set -x ; CC=mips64-linux-gnuabi64-gcc CXX=mips64-linux-gnuabi64-g++ GOOS=linux GOARCH=mips64 CGO_ENABLED=1 go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-mips64$ext" $PACK_RELPATH)
       fi
-      ext=$(extension linux)
-      (set -x ; CC=mips64-linux-gnuabi64-gcc CXX=mips64-linux-gnuabi64-g++ GOOS=linux GOARCH=mips64 CGO_ENABLED=1 go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-mips64$ext" $PACK_RELPATH)
     fi
   fi
   if ([ $XGOOS == "." ] || [ $XGOOS == "linux" ]) && ([ $XGOARCH == "." ] || [ $XGOARCH == "mips64le" ]); then
     if [ "$(semver compare "$GO_VERSION" "1.7.0")" -lt 0 ]; then
       echo "Go version too low, skipping linux/mips64le..."
     else
-      echo "Compiling for linux/mips64le..."
-      CC=mips64el-linux-gnuabi64-gcc CXX=mips64el-linux-gnuabi64-g++ HOST=mips64el-linux-gnuabi64 PREFIX=/usr/mips64el-linux-gnuabi64 xgo-build-deps /deps ${DEPS_ARGS[@]}
-      export PKG_CONFIG_PATH=/usr/mips64le-linux-gnuabi64/lib/pkgconfig
+      if ! command -v "mips64el-linux-gnuabi64-gcc" >/dev/null 2>/dev/null; then
+        echo "mips64el-linux-gnuabi64-gcc not found, skipping linux/mips64le..."
+      else
+        echo "Compiling for linux/mips64le..."
+        CC=mips64el-linux-gnuabi64-gcc CXX=mips64el-linux-gnuabi64-g++ HOST=mips64el-linux-gnuabi64 PREFIX=/usr/mips64el-linux-gnuabi64 xgo-build-deps /deps ${DEPS_ARGS[@]}
+        export PKG_CONFIG_PATH=/usr/mips64le-linux-gnuabi64/lib/pkgconfig
 
-      if [[ "$USEMODULES" == false ]]; then
-        CC=mips64el-linux-gnuabi64-gcc CXX=mips64el-linux-gnuabi64-g++ GOOS=linux GOARCH=mips64le CGO_ENABLED=1 go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
+        if [[ "$USEMODULES" == false ]]; then
+          CC=mips64el-linux-gnuabi64-gcc CXX=mips64el-linux-gnuabi64-g++ GOOS=linux GOARCH=mips64le CGO_ENABLED=1 go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
+        fi
+        ext=$(extension linux)
+        (set -x ; CC=mips64el-linux-gnuabi64-gcc CXX=mips64el-linux-gnuabi64-g++ GOOS=linux GOARCH=mips64le CGO_ENABLED=1 go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-mips64le$ext" $PACK_RELPATH)
       fi
-      ext=$(extension linux)
-      (set -x ; CC=mips64el-linux-gnuabi64-gcc CXX=mips64el-linux-gnuabi64-g++ GOOS=linux GOARCH=mips64le CGO_ENABLED=1 go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-mips64le$ext" $PACK_RELPATH)
     fi
   fi
   if ([ $XGOOS == "." ] || [ $XGOOS == "linux" ]) && ([ $XGOARCH == "." ] || [ $XGOARCH == "mips" ]); then
     if [ "$(semver compare "$GO_VERSION" "1.8.0")" -lt 0 ]; then
       echo "Go version too low, skipping linux/mips..."
     else
-      echo "Compiling for linux/mips..."
-      CC=mips-linux-gnu-gcc CXX=mips-linux-gnu-g++ HOST=mips-linux-gnu PREFIX=/usr/mips-linux-gnu xgo-build-deps /deps ${DEPS_ARGS[@]}
-      export PKG_CONFIG_PATH=/usr/mips-linux-gnu/lib/pkgconfig
+      if ! command -v "mips-linux-gnu-gcc" >/dev/null 2>/dev/null; then
+        echo "mips-linux-gnu-gcc not found, skipping linux/mips..."
+      else
+        echo "Compiling for linux/mips..."
+        CC=mips-linux-gnu-gcc CXX=mips-linux-gnu-g++ HOST=mips-linux-gnu PREFIX=/usr/mips-linux-gnu xgo-build-deps /deps ${DEPS_ARGS[@]}
+        export PKG_CONFIG_PATH=/usr/mips-linux-gnu/lib/pkgconfig
 
-      if [[ "$USEMODULES" == false ]]; then
-        CC=mips-linux-gnu-gcc CXX=mips-linux-gnu-g++ GOOS=linux GOARCH=mips CGO_ENABLED=1 go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
+        if [[ "$USEMODULES" == false ]]; then
+          CC=mips-linux-gnu-gcc CXX=mips-linux-gnu-g++ GOOS=linux GOARCH=mips CGO_ENABLED=1 go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
+        fi
+        ext=$(extension linux)
+        (set -x ; CC=mips-linux-gnu-gcc CXX=mips-linux-gnu-g++ GOOS=linux GOARCH=mips CGO_ENABLED=1 go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-mips$ext" $PACK_RELPATH)
       fi
-      ext=$(extension linux)
-      (set -x ; CC=mips-linux-gnu-gcc CXX=mips-linux-gnu-g++ GOOS=linux GOARCH=mips CGO_ENABLED=1 go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-mips$ext" $PACK_RELPATH)
     fi
   fi
   if ([ $XGOOS == "." ] || [ $XGOOS == "linux" ]) && ([ $XGOARCH == "." ] || [ $XGOARCH == "mipsle" ]); then
     if [ "$(semver compare "$GO_VERSION" "1.8.0")" -lt 0 ]; then
       echo "Go version too low, skipping linux/mipsle..."
     else
-      echo "Compiling for linux/mipsle..."
-      CC=mipsel-linux-gnu-gcc CXX=mipsel-linux-gnu-g++ HOST=mipsel-linux-gnu PREFIX=/usr/mipsel-linux-gnu xgo-build-deps /deps ${DEPS_ARGS[@]}
-      export PKG_CONFIG_PATH=/usr/mipsle-linux-gnu/lib/pkgconfig
+      if ! command -v "mipsel-linux-gnu-gcc" >/dev/null 2>/dev/null; then
+        echo "mipsel-linux-gnu-gcc not found, skipping linux/mipsle..."
+      else
+        echo "Compiling for linux/mipsle..."
+        CC=mipsel-linux-gnu-gcc CXX=mipsel-linux-gnu-g++ HOST=mipsel-linux-gnu PREFIX=/usr/mipsel-linux-gnu xgo-build-deps /deps ${DEPS_ARGS[@]}
+        export PKG_CONFIG_PATH=/usr/mipsle-linux-gnu/lib/pkgconfig
 
-      if [[ "$USEMODULES" == false ]]; then
-        CC=mipsel-linux-gnu-gcc CXX=mipsel-linux-gnu-g++ GOOS=linux GOARCH=mipsle CGO_ENABLED=1 go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
+        if [[ "$USEMODULES" == false ]]; then
+          CC=mipsel-linux-gnu-gcc CXX=mipsel-linux-gnu-g++ GOOS=linux GOARCH=mipsle CGO_ENABLED=1 go get $V $X "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
+        fi
+        ext=$(extension linux)
+        (set -x ; CC=mipsel-linux-gnu-gcc CXX=mipsel-linux-gnu-g++ GOOS=linux GOARCH=mipsle CGO_ENABLED=1 go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-mipsle$ext" $PACK_RELPATH)
       fi
-      ext=$(extension linux)
-      (set -x ; CC=mipsel-linux-gnu-gcc CXX=mipsel-linux-gnu-g++ GOOS=linux GOARCH=mipsle CGO_ENABLED=1 go build $V $X $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-mipsle$ext" $PACK_RELPATH)
     fi
   fi
   if ([ $XGOOS == "." ] || [ $XGOOS == "linux" ]) && ([ $XGOARCH == "." ] || [ $XGOARCH == "ppc64le" ]); then
@@ -393,7 +409,7 @@ for TARGET in $TARGETS; do
     # Split the platform version and configure the Windows NT version
     PLATFORM=$(echo $XGOOS | cut -d '-' -f 2)
     if [ "$PLATFORM" == "" ] || [ "$PLATFORM" == "." ] || [ "$PLATFORM" == "windows" ]; then
-      PLATFORM=4.0 # Windows NT
+      PLATFORM=$WINDOWS_DEFAULT_TARGET
     fi
 
     MAJOR=$(echo $PLATFORM | cut -d '.' -f 1)
@@ -447,7 +463,7 @@ for TARGET in $TARGETS; do
     # Split the platform version and configure the deployment target
     PLATFORM=$(echo $XGOOS | cut -d '-' -f 2)
     if [ "$PLATFORM" == "" ] || [ "$PLATFORM" == "." ] || [ "$PLATFORM" == "darwin" ]; then
-      PLATFORM=10.12 # OS X Sierra
+      PLATFORM=$DARWIN_DEFAULT_TARGET
     fi
     export MACOSX_DEPLOYMENT_TARGET=$PLATFORM
 
