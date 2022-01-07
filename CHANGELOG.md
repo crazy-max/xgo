@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.0 (2022/01/07)
+
+* Go 1.17.6, 1.16.13 (#51)
+
 ## 0.9.0 (2022/01/02)
 
 * Multi-platform image support with [`goxx`](https://github.com/crazy-max/goxx) (#46)
