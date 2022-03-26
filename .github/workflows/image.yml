@@ -18,8 +18,8 @@ env:
   DOCKERHUB_SLUG: crazymax/xgo
   GHCR_SLUG: ghcr.io/crazy-max/xgo
   PLATFORMS: linux/amd64,linux/arm64
+  LATEST_118: 1.18.0
   LATEST_117: 1.17.8
-  LATEST_116: 1.16.15
 
 jobs:
   prepare:
@@ -54,22 +54,6 @@ jobs:
       fail-fast: false
       matrix:
         go_version:
-          - 1.16.0
-          - 1.16.1
-          - 1.16.2
-          - 1.16.3
-          - 1.16.4
-          - 1.16.5
-          - 1.16.6
-          - 1.16.7
-          - 1.16.8
-          - 1.16.9
-          - 1.16.10
-          - 1.16.11
-          - 1.16.12
-          - 1.16.13
-          - 1.16.14
-          - 1.16.15
           - 1.17.0
           - 1.17.1
           - 1.17.2
@@ -79,6 +63,7 @@ jobs:
           - 1.17.6
           - 1.17.7
           - 1.17.8
+          - 1.18.0
     steps:
       -
         name: Checkout
@@ -102,12 +87,12 @@ jobs:
             const os = require('os');
             const tags = ["${{ matrix.go_version }}"];
             switch ("${{ matrix.go_version }}") {
-              case "${{ env.LATEST_117 }}": {
-                tags.push("1.17.x", "1.17", "latest");
+              case "${{ env.LATEST_118 }}": {
+                tags.push("1.18.x", "1.18", "latest");
                 break;
               }
-              case "${{ env.LATEST_116 }}": {
-                tags.push("1.16.x", "1.16");
+              case "${{ env.LATEST_117 }}": {
+                tags.push("1.17.x", "1.17");
                 break;
               }
             }
