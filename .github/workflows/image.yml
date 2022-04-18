@@ -18,8 +18,8 @@ env:
   DOCKERHUB_SLUG: crazymax/xgo
   GHCR_SLUG: ghcr.io/crazy-max/xgo
   PLATFORMS: linux/amd64,linux/arm64
-  LATEST_118: 1.18.0
-  LATEST_117: 1.17.8
+  LATEST_118: 1.18.1
+  LATEST_117: 1.17.9
 
 jobs:
   prepare:
@@ -63,7 +63,9 @@ jobs:
           - 1.17.6
           - 1.17.7
           - 1.17.8
+          - 1.17.9
           - 1.18.0
+          - 1.18.1
     steps:
       -
         name: Checkout
