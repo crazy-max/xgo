@@ -76,8 +76,10 @@ elif [[ "$USEMODULES" == true ]]; then
     echo "Go modules are enabled but go.mod was not found in the source folder."
     exit 10
   fi
+
   # set git safe directory, ref: CVE-2022-24765
   git config --global --add safe.directory /source
+
   # Change into the repo/source folder
   cd /source
   echo "Building /source/go.mod..."
@@ -89,6 +91,9 @@ else
     export GOPATH=$GOPATH:$GOPATH_ROOT/$IMPORT_PATH/Godeps/_workspace
     IMPORT_PATH=$(dirname $IMPORT_PATH)
   done
+
+  # set git safe directory, ref: CVE-2022-24765
+  git config --global --add safe.directory "$GOPATH_ROOT"
 
   # Otherwise download the canonical import path (may fail, don't allow failures beyond)
   echo "Fetching main repository $1..."
