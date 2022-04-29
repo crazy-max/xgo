@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.15.0 (2022/04/29)
+
+* `buildvcs` flag (#65)
+
 ## 0.14.1 (2022/04/28)
 
 * fix: add git config safe dir (#62 #63)
