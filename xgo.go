@@ -58,6 +58,7 @@ var (
 	buildTags    = flag.String("tags", "", "List of build tags to consider satisfied during the build")
 	buildLdFlags = flag.String("ldflags", "", "Arguments to pass on each go tool link invocation")
 	buildMode    = flag.String("buildmode", "default", "Indicates which kind of object file to build")
+	buildVCS     = flag.String("buildvcs", "", "Whether to stamp binaries with version control information")
 )
 
 // BuildFlags is a simple collection of flags to fine tune a build.
@@ -68,6 +69,7 @@ type BuildFlags struct {
 	Tags    string // List of build tags to consider satisfied during the build
 	LdFlags string // Arguments to pass on each go tool link invocation
 	Mode    string // Indicates which kind of object file to build
+	VCS     string // Whether to stamp binaries with version control information
 }
 
 func main() {
@@ -168,6 +170,7 @@ func main() {
 		Tags:    *buildTags,
 		LdFlags: *buildLdFlags,
 		Mode:    *buildMode,
+		VCS:     *buildVCS,
 	}
 	log.Printf("DBG: flags: %+v", flags)
 	folder, err := os.Getwd()
@@ -309,6 +312,7 @@ func compile(image string, config *ConfigFlags, flags *BuildFlags, folder string
 		"-e", fmt.Sprintf("FLAG_TAGS=%s", flags.Tags),
 		"-e", fmt.Sprintf("FLAG_LDFLAGS=%s", flags.LdFlags),
 		"-e", fmt.Sprintf("FLAG_BUILDMODE=%s", flags.Mode),
+		"-e", fmt.Sprintf("FLAG_BUILDVCS=%s", flags.VCS),
 		"-e", "TARGETS=" + strings.Replace(strings.Join(config.Targets, " "), "*", ".", -1),
 	}
 	if usesModules {
@@ -376,6 +380,7 @@ func compileContained(config *ConfigFlags, flags *BuildFlags, folder string) err
 		fmt.Sprintf("FLAG_TAGS=%s", flags.Tags),
 		fmt.Sprintf("FLAG_LDFLAGS=%s", flags.LdFlags),
 		fmt.Sprintf("FLAG_BUILDMODE=%s", flags.Mode),
+		fmt.Sprintf("FLAG_BUILDVCS=%s", flags.VCS),
 		"TARGETS=" + strings.Replace(strings.Join(config.Targets, " "), "*", ".", -1),
 	}
 	if local {
