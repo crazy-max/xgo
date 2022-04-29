@@ -14,5 +14,5 @@ RUN --mount=type=bind,source=.,target=/src,rw \
     .*)  echo "."                ;; \
     *)   echo "$PROJECT"         ;; esac) \
   && if [ "$ROOTPATH" = "." ]; then cd $PROJECT; fi \
-  && xgo -targets="*/*" -branch="$BRANCH" -out="test" $ROOTPATH \
+  && xgo -targets="*/*" -buildvcs="true" -branch="$BRANCH" -out="test" $ROOTPATH \
   && ls -al /build
