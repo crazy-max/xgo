@@ -39,7 +39,7 @@ jobs:
         uses: docker/setup-buildx-action@v1
       -
         name: Build base (cache only)
-        uses: docker/bake-action@v1
+        uses: docker/bake-action@v2
         with:
           targets: base
           set: |
@@ -129,7 +129,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       -
         name: Build
-        uses: docker/bake-action@v1
+        uses: docker/bake-action@v2
         with:
           files: |
             ./docker-bake.hcl
