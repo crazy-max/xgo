@@ -1,5 +1,9 @@
 name: xgo
 
+concurrency:
+  group: xgo-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches:
