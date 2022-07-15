@@ -9,3 +9,4 @@ A handful of flags can be passed to `go build`. The currently supported ones are
 * `-ldflags=<flag list>`: arguments to pass on each go tool link invocation
 * `-buildmode=<mode>`: binary type to produce by the compiler
 * `-buildvcs=<value>`: whether to stamp binaries with version control information
+* `-trimpath`: remove all file system paths from the resulting executable
