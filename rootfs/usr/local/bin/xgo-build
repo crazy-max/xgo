@@ -419,8 +419,10 @@ for TARGET in $TARGETS; do
   if [ $XGOOS == "." ] || [[ $XGOOS == windows* ]]; then
     # Split the platform version and configure the Windows NT version
     PLATFORM=$(echo $XGOOS | cut -d '-' -f 2)
+    PLATFORM_SUFFIX="-$PLATFORM"
     if [ "$PLATFORM" == "" ] || [ "$PLATFORM" == "." ] || [ "$PLATFORM" == "windows" ]; then
       PLATFORM=$WINDOWS_DEFAULT_TARGET
+      PLATFORM_SUFFIX=""
     fi
 
     MAJOR=$(echo $PLATFORM | cut -d '.' -f 1)
@@ -431,7 +433,7 @@ for TARGET in $TARGETS; do
 
     # Build the requested windows binaries
     if [ $XGOARCH == "." ] || [ $XGOARCH == "amd64" ]; then
-      echo "Compiling for windows-$PLATFORM/amd64..."
+      echo "Compiling for windows$PLATFORM_SUFFIX/amd64..."
       CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ HOST=x86_64-w64-mingw32 PREFIX=/usr/x86_64-w64-mingw32 xgo-build-deps /deps ${DEPS_ARGS[@]}
       export PKG_CONFIG_PATH=/usr/x86_64-w64-mingw32/lib/pkgconfig
 
@@ -439,10 +441,10 @@ for TARGET in $TARGETS; do
         CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ GOOS=windows GOARCH=amd64 CGO_ENABLED=1 CGO_CFLAGS="$CGO_NTDEF" CGO_CXXFLAGS="$CGO_NTDEF" go get $V $X $TP $VCS "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
       fi
       ext=$(extension windows)
-      (set -x ; CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ GOOS=windows GOARCH=amd64 CGO_ENABLED=1 CGO_CFLAGS="$CGO_NTDEF" CGO_CXXFLAGS="$CGO_NTDEF" go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$V $LD" $R $BM -o "/build/$NAME-windows-$PLATFORM-amd64$R$ext" $PACK_RELPATH)
+      (set -x ; CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ GOOS=windows GOARCH=amd64 CGO_ENABLED=1 CGO_CFLAGS="$CGO_NTDEF" CGO_CXXFLAGS="$CGO_NTDEF" go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$V $LD" $R $BM -o "/build/$NAME-windows-amd64$R$ext" $PACK_RELPATH)
     fi
     if [ $XGOARCH == "." ] || [ $XGOARCH == "386" ]; then
-      echo "Compiling for windows-$PLATFORM/386..."
+      echo "Compiling for windows$PLATFORM_SUFFIX/386..."
       CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++ HOST=i686-w64-mingw32 PREFIX=/usr/i686-w64-mingw32 xgo-build-deps /deps ${DEPS_ARGS[@]}
       export PKG_CONFIG_PATH=/usr/i686-w64-mingw32/lib/pkgconfig
 
@@ -450,14 +452,14 @@ for TARGET in $TARGETS; do
         CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++ GOOS=windows GOARCH=386 CGO_ENABLED=1 CGO_CFLAGS="$CGO_NTDEF" CGO_CXXFLAGS="$CGO_NTDEF" go get $V $X $TP $VCS "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
       fi
       ext=$(extension windows)
-      (set -x ; CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++ GOOS=windows GOARCH=386 CGO_ENABLED=1 CGO_CFLAGS="$CGO_NTDEF" CGO_CXXFLAGS="$CGO_NTDEF" go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-windows-$PLATFORM-386$ext" $PACK_RELPATH)
+      (set -x ; CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++ GOOS=windows GOARCH=386 CGO_ENABLED=1 CGO_CFLAGS="$CGO_NTDEF" CGO_CXXFLAGS="$CGO_NTDEF" go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-windows-386$ext" $PACK_RELPATH)
     fi
 #    FIXME: gcc_libinit_windows.c:8:10: fatal error: 'windows.h' file not found
 #    if [ $XGOARCH == "." ] || [ $XGOARCH == "arm64" ]; then
 #      if [ "$(semver compare "$GO_VERSION" "1.17.0")" -lt 0 ]; then
-#        echo "Go version too low, skipping windows-$PLATFORM/arm64..."
+#        echo "Go version too low, skipping windows$PLATFORM_SUFFIX/arm64..."
 #      else
-#        echo "Compiling for windows-$PLATFORM/arm64..."
+#        echo "Compiling for windows$PLATFORM_SUFFIX/arm64..."
 #        CC=aarch64-w64-mingw32-gcc CXX=aarch64-w64-mingw32-g++ HOST=aarch64-w64-mingw32 PREFIX=/usr/aarch64-w64-mingw32 xgo-build-deps /deps ${DEPS_ARGS[@]}
 #        export PKG_CONFIG_PATH=/usr/aarch64-w64-mingw32/lib/pkgconfig
 #
@@ -465,7 +467,7 @@ for TARGET in $TARGETS; do
 #          CC=aarch64-w64-mingw32-gcc CXX=aarch64-w64-mingw32-g++ GOOS=windows GOARCH=386 CGO_ENABLED=1 CGO_CFLAGS="$CGO_NTDEF" CGO_CXXFLAGS="$CGO_NTDEF" go get $V $X $TP $VCS "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
 #        fi
 #        ext=$(extension windows)
-#        (set -x ; CC=aarch64-w64-mingw32-gcc CXX=aarch64-w64-mingw32-gcc GOOS=windows GOARCH=386 CGO_ENABLED=1 CGO_CFLAGS="$CGO_NTDEF" CGO_CXXFLAGS="$CGO_NTDEF" go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-windows-$PLATFORM-386$ext" $PACK_RELPATH)
+#        (set -x ; CC=aarch64-w64-mingw32-gcc CXX=aarch64-w64-mingw32-gcc GOOS=windows GOARCH=386 CGO_ENABLED=1 CGO_CFLAGS="$CGO_NTDEF" CGO_CXXFLAGS="$CGO_NTDEF" go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-windows-386$ext" $PACK_RELPATH)
 #      fi
 #    fi
   fi
@@ -473,8 +475,10 @@ for TARGET in $TARGETS; do
   if [ $XGOOS == "." ] || [[ $XGOOS == darwin* ]]; then
     # Split the platform version and configure the deployment target
     PLATFORM=$(echo $XGOOS | cut -d '-' -f 2)
+    PLATFORM_SUFFIX="-$PLATFORM"
     if [ "$PLATFORM" == "" ] || [ "$PLATFORM" == "." ] || [ "$PLATFORM" == "darwin" ]; then
       PLATFORM=$DARWIN_DEFAULT_TARGET
+      PLATFORM_SUFFIX=""
     fi
     export MACOSX_DEPLOYMENT_TARGET=$PLATFORM
 
@@ -485,38 +489,38 @@ for TARGET in $TARGETS; do
     fi
     # Build the requested darwin binaries
     if [ $XGOARCH == "." ] || [ $XGOARCH == "amd64" ]; then
-      echo "Compiling for darwin-$PLATFORM/amd64..."
+      echo "Compiling for darwin$PLATFORM_SUFFIX/amd64..."
       CC=o64-clang CXX=o64-clang++ HOST=x86_64-apple-darwin15 PREFIX=/usr/local xgo-build-deps /deps ${DEPS_ARGS[@]}
       if [[ "$USEMODULES" == false ]]; then
         CC=o64-clang CXX=o64-clang++ GOOS=darwin GOARCH=amd64 CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" --ldflags="$LDSTRIP $V $LD" -d $PACK_RELPATH
       fi
       ext=$(extension darwin)
-      (set -x ; CC=o64-clang CXX=o64-clang++ GOOS=darwin GOARCH=amd64 CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$LDSTRIP $V $LD" $R $BM -o "/build/$NAME-darwin-$PLATFORM-amd64$R$ext" $PACK_RELPATH)
+      (set -x ; CC=o64-clang CXX=o64-clang++ GOOS=darwin GOARCH=amd64 CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$LDSTRIP $V $LD" $R $BM -o "/build/$NAME-darwin-amd64$R$ext" $PACK_RELPATH)
     fi
     if [ $XGOARCH == "." ] || [ $XGOARCH == "arm64" ]; then
       if [ "$(semver compare "$GO_VERSION" "1.16.0")" -lt 0 ]; then
-        echo "Go version too low, skipping darwin-$PLATFORM/arm64..."
+        echo "Go version too low, skipping darwin/arm64..."
       else
-        echo "Compiling for darwin-$PLATFORM/arm64..."
+        echo "Compiling for darwin$PLATFORM_SUFFIX/arm64..."
         CC=o64-clang CXX=o64-clang++ HOST=arm64-apple-darwin15 PREFIX=/usr/local xgo-build-deps /deps ${DEPS_ARGS[@]}
         if [[ "$USEMODULES" == false ]]; then
           CC=o64-clang CXX=o64-clang++ GOOS=darwin GOARCH=arm64 CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" --ldflags="$LDSTRIP $V $LD" -d $PACK_RELPATH
         fi
         ext=$(extension darwin)
-        (set -x ; CC=o64-clang CXX=o64-clang++ GOOS=darwin GOARCH=arm64 CGO_ENABLED=1 go build $V $X $TP $VCS $TP $MOD "${T[@]}" --ldflags="$LDSTRIP $V $LD" $R $BM -o "/build/$NAME-darwin-$PLATFORM-arm64$R$ext" $PACK_RELPATH)
+        (set -x ; CC=o64-clang CXX=o64-clang++ GOOS=darwin GOARCH=arm64 CGO_ENABLED=1 go build $V $X $TP $VCS $TP $MOD "${T[@]}" --ldflags="$LDSTRIP $V $LD" $R $BM -o "/build/$NAME-darwin-arm64$R$ext" $PACK_RELPATH)
       fi
     fi
     if [ $XGOARCH == "." ] || [ $XGOARCH == "386" ]; then
       if [ "$(semver compare "$GO_VERSION" "1.15.0")" -lt 0 ]; then
-        echo "Compiling for darwin-$PLATFORM/386..."
+        echo "Compiling for darwin$PLATFORM_SUFFIX/386..."
         CC=o32-clang CXX=o32-clang++ HOST=i386-apple-darwin15 PREFIX=/usr/local xgo-build-deps /deps ${DEPS_ARGS[@]}
         if [[ "$USEMODULES" == false ]]; then
           CC=o32-clang CXX=o32-clang++ GOOS=darwin GOARCH=386 CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" --ldflags="$LDSTRIP $V $LD" -d $PACK_RELPATH
         fi
         ext=$(extension darwin)
-        (set -x ; CC=o32-clang CXX=o32-clang++ GOOS=darwin GOARCH=386 CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$LDSTRIP $V $LD" $BM -o "/build/$NAME-darwin-$PLATFORM-386$ext" $PACK_RELPATH)
+        (set -x ; CC=o32-clang CXX=o32-clang++ GOOS=darwin GOARCH=386 CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$LDSTRIP $V $LD" $BM -o "/build/$NAME-darwin-386$ext" $PACK_RELPATH)
       else
-        echo "Go version too high, skipping darwin-$PLATFORM/386..."
+        echo "Go version too high, skipping darwin$PLATFORM_SUFFIX/386..."
       fi
     fi
     # Remove any automatically injected deployment target vars

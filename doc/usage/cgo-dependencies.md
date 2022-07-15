@@ -23,8 +23,8 @@ $ xgo --deps=https://gmplib.org/download/gmp/gmp-6.1.0.tar.bz2 --targets=windows
 ls -al
 ```
 ```text
--rwxr-xr-x 1 root root 16315679 Nov 24 16:39 geth-windows-4.0-386.exe
--rwxr-xr-x 1 root root 19452036 Nov 24 16:38 geth-windows-4.0-amd64.exe
+-rwxr-xr-x 1 root root 16315679 Nov 24 16:39 geth-windows-386.exe
+-rwxr-xr-x 1 root root 19452036 Nov 24 16:38 geth-windows-amd64.exe
 ```
 
 Some trivial arguments may be passed to the dependencies' configure script via `--depsargs`.
