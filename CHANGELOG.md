@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.19.0 (2022/07/16)
+
+* Disable Go modules explicitly on non-module path (#81)
+* Fix checking docker image (#80)
+* Remove target from windows and darwin output filename (#79)
+* `trimpath` flag support (#77)
+
 ## 0.18.0 (2022/07/15)
 
 * Go 1.18.4, 1.17.12 (#78)
