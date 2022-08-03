@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.20.0 (2022/08/03)
+
+* Go 1.18.5, 1.17.13 (#82)
+
 ## 0.19.0 (2022/07/16)
 
 * Disable Go modules explicitly on non-module path (#81)
