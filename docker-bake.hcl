@@ -101,11 +101,3 @@ target "test-ffmerger" {
     BRANCH = "master"
   }
 }
-
-target "test-goethereum" {
-  inherits = ["test"]
-  args = {
-    PROJECT = "github.com/ethereum/go-ethereum/cmd/geth"
-    BRANCH = "master"
-  }
-}
