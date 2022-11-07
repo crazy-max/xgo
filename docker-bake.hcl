@@ -1,5 +1,5 @@
 variable "GO_VERSION" {
-  default = "1.19.2"
+  default = "1.19.3"
 }
 
 target "_common" {
@@ -98,14 +98,6 @@ target "test-ffmerger" {
   inherits = ["test"]
   args = {
     PROJECT = "github.com/crazy-max/firefox-history-merger"
-    BRANCH = "master"
-  }
-}
-
-target "test-goethereum" {
-  inherits = ["test"]
-  args = {
-    PROJECT = "github.com/ethereum/go-ethereum/cmd/geth"
     BRANCH = "master"
   }
 }
