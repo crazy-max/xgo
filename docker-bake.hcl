@@ -58,6 +58,14 @@ target "artifact-all" {
   ]
 }
 
+target "release" {
+  target = "release"
+  output = ["./release"]
+  contexts = {
+    artifacts = "./dist"
+  }
+}
+
 variable "BASE_IMAGE" {
   default = "ghcr.io/crazy-max/xgo:latest"
 }
