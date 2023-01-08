@@ -2,6 +2,10 @@ variable "GO_VERSION" {
   default = "1.19.3"
 }
 
+variable "DESTDIR" {
+  default = "./bin"
+}
+
 target "_common" {
   args = {
     GO_VERSION = GO_VERSION
@@ -9,7 +13,7 @@ target "_common" {
   }
 }
 
-// Special target: https://github.com/docker/metadata-action#bake-definition
+# Special target: https://github.com/docker/metadata-action#bake-definition
 target "docker-metadata-action" {
   tags = ["xgo:local"]
 }
@@ -36,7 +40,7 @@ target "image-local" {
 target "artifact" {
   inherits = ["_common", "docker-metadata-action"]
   target = "artifact"
-  output = ["./dist"]
+  output = ["${DESTDIR}/artifact"]
 }
 
 target "artifact-all" {
@@ -56,6 +60,14 @@ target "artifact-all" {
     "windows/arm64",
     "windows/386"
   ]
+}
+
+target "release" {
+  target = "release"
+  output = ["${DESTDIR}/release"]
+  contexts = {
+    artifacts = "${DESTDIR}/artifact"
+  }
 }
 
 variable "BASE_IMAGE" {

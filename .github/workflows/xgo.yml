@@ -18,6 +18,9 @@ on:
     paths-ignore:
       - '**.md'
 
+env:
+  DESTDIR: ./bin
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -34,15 +37,16 @@ jobs:
         with:
           targets: artifact-all
       -
-        name: Move artifacts
-        run: |
-          mv ./dist/**/* ./dist/
+        name: Release
+        uses: docker/bake-action@v2
+        with:
+          targets: release
       -
         name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: xgo
-          path: ./dist/*
+          path: ${{ env.DESTDIR }}/release/*
           if-no-files-found: error
       -
         name: GitHub Release
@@ -51,7 +55,6 @@ jobs:
         with:
           draft: true
           files: |
-            dist/*.tar.gz
-            dist/*.zip
+            ${{ env.DESTDIR }}/release/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
