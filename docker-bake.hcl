@@ -9,7 +9,7 @@ target "_common" {
   }
 }
 
-// Special target: https://github.com/docker/metadata-action#bake-definition
+# Special target: https://github.com/docker/metadata-action#bake-definition
 target "docker-metadata-action" {
   tags = ["xgo:local"]
 }
