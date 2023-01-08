@@ -18,6 +18,9 @@ on:
     paths-ignore:
       - '**.md'
 
+env:
+  DESTDIR: ./bin
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -43,7 +46,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: xgo
-          path: ./release/*
+          path: ${{ env.DESTDIR }}/release/*
           if-no-files-found: error
       -
         name: GitHub Release
@@ -52,6 +55,6 @@ jobs:
         with:
           draft: true
           files: |
-            release/*
+            ${{ env.DESTDIR }}/release/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

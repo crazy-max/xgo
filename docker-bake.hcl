@@ -2,6 +2,10 @@ variable "GO_VERSION" {
   default = "1.19.3"
 }
 
+variable "DESTDIR" {
+  default = "./bin"
+}
+
 target "_common" {
   args = {
     GO_VERSION = GO_VERSION
@@ -36,7 +40,7 @@ target "image-local" {
 target "artifact" {
   inherits = ["_common", "docker-metadata-action"]
   target = "artifact"
-  output = ["./dist"]
+  output = ["${DESTDIR}/artifact"]
 }
 
 target "artifact-all" {
@@ -60,9 +64,9 @@ target "artifact-all" {
 
 target "release" {
   target = "release"
-  output = ["./release"]
+  output = ["${DESTDIR}/release"]
   contexts = {
-    artifacts = "./dist"
+    artifacts = "${DESTDIR}/artifact"
   }
 }
 
