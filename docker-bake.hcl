@@ -1,5 +1,5 @@
 variable "GO_VERSION" {
-  default = "1.19.5"
+  default = "1.20.0"
 }
 
 variable "DESTDIR" {
