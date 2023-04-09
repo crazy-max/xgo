@@ -7,7 +7,7 @@ ARG ALPINE_VERSION="3.17"
 ARG PLATFORMS="linux/386 linux/amd64 linux/arm64 linux/arm/v5 linux/arm/v6 linux/arm/v7 linux/mips linux/mipsle linux/mips64 linux/mips64le linux/ppc64le linux/riscv64 linux/s390x windows/386 windows/amd64"
 
 FROM --platform=$BUILDPLATFORM tonistiigi/xx:${XX_VERSION} AS xx
-FROM --platform=$BUILDPLATFORM golang:1.19-alpine${ALPINE_VERSION} AS base
+FROM --platform=$BUILDPLATFORM golang:1.20-alpine${ALPINE_VERSION} AS base
 COPY --from=xx / /
 ENV CGO_ENABLED=0
 RUN apk add --no-cache file git
