@@ -1,11 +1,13 @@
 name: test
 
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches:
       - 'master'
-    tags:
-      - '*'
     paths-ignore:
       - '**.md'
   pull_request:
