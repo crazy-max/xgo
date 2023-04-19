@@ -33,12 +33,12 @@ jobs:
         uses: docker/setup-buildx-action@v2
       -
         name: Build artifacts
-        uses: docker/bake-action@v2
+        uses: docker/bake-action@v3
         with:
           targets: artifact-all
       -
         name: Release
-        uses: docker/bake-action@v2
+        uses: docker/bake-action@v3
         with:
           targets: release
       -
