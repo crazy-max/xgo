@@ -36,11 +36,13 @@ jobs:
         uses: docker/bake-action@v3
         with:
           targets: artifact-all
+          provenance: false
       -
         name: Release
         uses: docker/bake-action@v3
         with:
           targets: release
+          provenance: false
       -
         name: Upload artifacts
         uses: actions/upload-artifact@v3
