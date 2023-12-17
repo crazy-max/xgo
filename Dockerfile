@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1
 
-ARG GO_VERSION="1.21.0"
+ARG GO_VERSION="1.21.5"
 ARG OSXCROSS_VERSION="11.3"
-ARG XX_VERSION="1.2.1"
+ARG XX_VERSION="1.3.0"
 ARG ALPINE_VERSION="3.18"
 ARG PLATFORMS="linux/386 linux/amd64 linux/arm64 linux/arm/v5 linux/arm/v6 linux/arm/v7 linux/mips linux/mipsle linux/mips64 linux/mips64le linux/ppc64le linux/riscv64 linux/s390x windows/386 windows/amd64"
 
