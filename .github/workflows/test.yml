@@ -42,7 +42,7 @@ jobs:
           driver: docker
       -
         name: Build xgo
-        uses: docker/bake-action@v3
+        uses: docker/bake-action@v4
         with:
           targets: image
           set: |
@@ -51,7 +51,7 @@ jobs:
             *.output=type=docker
       -
         name: Test ${{ matrix.case }} for go ${{ matrix.go_version }}
-        uses: docker/bake-action@v3
+        uses: docker/bake-action@v4
         with:
           targets: test-${{ matrix.case }}
         env:
