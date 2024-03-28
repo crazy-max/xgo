@@ -108,6 +108,8 @@ ENV GO_VERSION=${GO_VERSION}
 COPY rootfs /
 RUN xgo-bootstrap-pure
 
+RUN ln -s /usr/x86_64-linux-gnu/lib/* /usr/lib/x86_64-linux-gnu/
+
 ENV DARWIN_DEFAULT_TARGET="10.16"
 ENV WINDOWS_DEFAULT_TARGET="4.0"
 WORKDIR /
