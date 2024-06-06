@@ -1,3 +1,3 @@
-module github.com/crazy-max/xgo
+module github.com/vitbulio/xgo
 
 go 1.21
