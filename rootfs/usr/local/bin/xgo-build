@@ -8,23 +8,24 @@
 # Usage: xgo-build <import path>
 #
 # Needed environment variables:
-#   REPO_REMOTE    - Optional VCS remote if not the primary repository is needed
-#   REPO_BRANCH    - Optional VCS branch to use, if not the master branch
-#   DEPS           - Optional list of C dependency packages to build
-#   ARGS           - Optional arguments to pass to C dependency configure scripts
-#   PACK           - Optional sub-package, if not the import path is being built
-#   OUT            - Optional output prefix to override the package name
-#   FLAG_V         - Optional verbosity flag to set on the Go builder
-#   FLAG_X         - Optional flag to print the build progress commands
-#   FLAG_RACE      - Optional race flag to set on the Go builder
-#   FLAG_TAGS      - Optional tag flag to set on the Go builder
-#   FLAG_LDFLAGS   - Optional ldflags flag to set on the Go builder
-#   FLAG_BUILDMODE - Optional buildmode flag to set on the Go builder
-#   FLAG_BUILDVCS  - Optional buildvcs flag to set on the Go builder
-#   FLAG_TRIMPATH  - Optional trimpath flag to remove all file system paths
-#   TARGETS        - Comma separated list of build targets to compile for
-#   GO_VERSION     - Bootstrapped version of Go to disable uncupported targets
-#   EXT_GOPATH     - GOPATH elements mounted from the host filesystem
+#   REPO_REMOTE       - Optional VCS remote if not the primary repository is needed
+#   REPO_BRANCH       - Optional VCS branch to use, if not the master branch
+#   DEPS              - Optional list of C dependency packages to build
+#   ARGS              - Optional arguments to pass to C dependency configure scripts
+#   PACK              - Optional sub-package, if not the import path is being built
+#   OUT               - Optional output prefix to override the package name
+#   FLAG_V            - Optional verbosity flag to set on the Go builder
+#   FLAG_X            - Optional flag to print the build progress commands
+#   FLAG_RACE         - Optional race flag to set on the Go builder
+#   FLAG_TAGS         - Optional tag flag to set on the Go builder
+#   FLAG_LDFLAGS      - Optional ldflags flag to set on the Go builder
+#   FLAG_BUILDMODE    - Optional buildmode flag to set on the Go builder
+#   FLAG_BUILDVCS     - Optional buildvcs flag to set on the Go builder
+#   FLAG_TRIMPATH     - Optional trimpath flag to remove all file system paths
+#   FLAG_HIDEWINDOW   - Optional flag to hide the console window on Windows
+#   TARGETS           - Comma separated list of build targets to compile for
+#   GO_VERSION        - Bootstrapped version of Go to disable uncupported targets
+#   EXT_GOPATH        - GOPATH elements mounted from the host filesystem
 
 # Define a function that figures out the binary extension
 function extension {
@@ -183,6 +184,7 @@ if [ "$FLAG_RACE" == "true" ]; then R=-race; fi
 if [ "$FLAG_TAGS" != "" ];     then T=(--tags "$FLAG_TAGS"); fi
 if [ "$FLAG_LDFLAGS" != "" ];  then LD="$FLAG_LDFLAGS"; fi
 if [ "$FLAG_TRIMPATH" == "true" ];  then TP=-trimpath; fi
+if [ "$FLAG_HIDEWINDOW" == "true" ];  then H="-H=windowsgui"; fi
 
 if [ "$FLAG_BUILDMODE" != "" ] && [ "$FLAG_BUILDMODE" != "default" ]; then BM="--buildmode=$FLAG_BUILDMODE"; fi
 if [ "$(semver compare "$GO_VERSION" "1.18.0")" -ge 0 ] && [ "$FLAG_BUILDVCS" != "" ]; then VCS="-buildvcs=$FLAG_BUILDVCS"; fi
@@ -441,7 +443,7 @@ for TARGET in $TARGETS; do
         CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ GOOS=windows GOARCH=amd64 CGO_ENABLED=1 CGO_CFLAGS="$CGO_NTDEF" CGO_CXXFLAGS="$CGO_NTDEF" go get $V $X $TP $VCS "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
       fi
       ext=$(extension windows)
-      (set -x ; CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ GOOS=windows GOARCH=amd64 CGO_ENABLED=1 CGO_CFLAGS="$CGO_NTDEF" CGO_CXXFLAGS="$CGO_NTDEF" go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$V $LD" $R $BM -o "/build/$NAME-windows-amd64$R$ext" $PACK_RELPATH)
+      (set -x ; CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ GOOS=windows GOARCH=amd64 CGO_ENABLED=1 CGO_CFLAGS="$CGO_NTDEF" CGO_CXXFLAGS="$CGO_NTDEF" go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$V $H $LD" $R $BM -o "/build/$NAME-windows-amd64$R$ext" $PACK_RELPATH)
     fi
     if [ $XGOARCH == "." ] || [ $XGOARCH == "386" ]; then
       echo "Compiling for windows$PLATFORM_SUFFIX/386..."
@@ -452,7 +454,7 @@ for TARGET in $TARGETS; do
         CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++ GOOS=windows GOARCH=386 CGO_ENABLED=1 CGO_CFLAGS="$CGO_NTDEF" CGO_CXXFLAGS="$CGO_NTDEF" go get $V $X $TP $VCS "${T[@]}" --ldflags="$V $LD" -d $PACK_RELPATH
       fi
       ext=$(extension windows)
-      (set -x ; CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++ GOOS=windows GOARCH=386 CGO_ENABLED=1 CGO_CFLAGS="$CGO_NTDEF" CGO_CXXFLAGS="$CGO_NTDEF" go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-windows-386$ext" $PACK_RELPATH)
+      (set -x ; CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++ GOOS=windows GOARCH=386 CGO_ENABLED=1 CGO_CFLAGS="$CGO_NTDEF" CGO_CXXFLAGS="$CGO_NTDEF" go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$V $H $LD" $BM -o "/build/$NAME-windows-386$ext" $PACK_RELPATH)
     fi
 #    FIXME: gcc_libinit_windows.c:8:10: fatal error: 'windows.h' file not found
 #    if [ $XGOARCH == "." ] || [ $XGOARCH == "arm64" ]; then
