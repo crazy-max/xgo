@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-ARG GO_VERSION="1.22.1"
+ARG GO_VERSION="1.23.0"
 ARG OSXCROSS_VERSION="11.3"
 ARG GHQ_VERSION="1.6.1"
 ARG XX_VERSION="1.3.0"
@@ -61,7 +61,7 @@ RUN --mount=type=bind,target=/src \
   set -ex
   mkdir /out
   version=$(cat /tmp/.version)
-  cp /build/* /src/CHANGELOG.md /src/LICENSE /src/README.md .
+  cp /build/* /src/LICENSE /src/README.md .
   if [ "$TARGETOS" = "windows" ]; then
     zip -r "/out/xgo_${version#v}_${TARGETOS}_${TARGETARCH}${TARGETVARIANT}.zip" .
   else
