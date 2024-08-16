@@ -51,26 +51,28 @@ type ConfigFlags struct {
 
 // Command line arguments to pass to go build
 var (
-	buildVerbose  = flag.Bool("v", false, "Print the names of packages as they are compiled")
-	buildSteps    = flag.Bool("x", false, "Print the command as executing the builds")
-	buildRace     = flag.Bool("race", false, "Enable data race detection (supported only on amd64)")
-	buildTags     = flag.String("tags", "", "List of build tags to consider satisfied during the build")
-	buildLdFlags  = flag.String("ldflags", "", "Arguments to pass on each go tool link invocation")
-	buildMode     = flag.String("buildmode", "default", "Indicates which kind of object file to build")
-	buildVCS      = flag.String("buildvcs", "", "Whether to stamp binaries with version control information")
-	buildTrimPath = flag.Bool("trimpath", false, "Remove all file system paths from the resulting executable")
+	buildVerbose    = flag.Bool("v", false, "Print the names of packages as they are compiled")
+	buildSteps      = flag.Bool("x", false, "Print the command as executing the builds")
+	buildRace       = flag.Bool("race", false, "Enable data race detection (supported only on amd64)")
+	buildTags       = flag.String("tags", "", "List of build tags to consider satisfied during the build")
+	buildLdFlags    = flag.String("ldflags", "", "Arguments to pass on each go tool link invocation")
+	buildMode       = flag.String("buildmode", "default", "Indicates which kind of object file to build")
+	buildVCS        = flag.String("buildvcs", "", "Whether to stamp binaries with version control information")
+	buildTrimPath   = flag.Bool("trimpath", false, "Remove all file system paths from the resulting executable")
+	buildHideWindow = flag.Bool("hidewindow", false, "Optional flag to hide the console window on Windows")
 )
 
 // BuildFlags is a simple collection of flags to fine tune a build.
 type BuildFlags struct {
-	Verbose  bool   // Print the names of packages as they are compiled
-	Steps    bool   // Print the command as executing the builds
-	Race     bool   // Enable data race detection (supported only on amd64)
-	Tags     string // List of build tags to consider satisfied during the build
-	LdFlags  string // Arguments to pass on each go tool link invocation
-	Mode     string // Indicates which kind of object file to build
-	VCS      string // Whether to stamp binaries with version control information
-	TrimPath bool   // Remove all file system paths from the resulting executable
+	Verbose    bool   // Print the names of packages as they are compiled
+	Steps      bool   // Print the command as executing the builds
+	Race       bool   // Enable data race detection (supported only on amd64)
+	Tags       string // List of build tags to consider satisfied during the build
+	LdFlags    string // Arguments to pass on each go tool link invocation
+	Mode       string // Indicates which kind of object file to build
+	VCS        string // Whether to stamp binaries with version control information
+	TrimPath   bool   // Remove all file system paths from the resulting executable
+	HideWindow bool   // Hide the console window on Windows
 }
 
 func main() {
@@ -163,14 +165,15 @@ func main() {
 	}
 	log.Printf("DBG: config: %+v", config)
 	flags := &BuildFlags{
-		Verbose:  *buildVerbose,
-		Steps:    *buildSteps,
-		Race:     *buildRace,
-		Tags:     *buildTags,
-		LdFlags:  *buildLdFlags,
-		Mode:     *buildMode,
-		VCS:      *buildVCS,
-		TrimPath: *buildTrimPath,
+		Verbose:    *buildVerbose,
+		Steps:      *buildSteps,
+		Race:       *buildRace,
+		Tags:       *buildTags,
+		LdFlags:    *buildLdFlags,
+		Mode:       *buildMode,
+		VCS:        *buildVCS,
+		TrimPath:   *buildTrimPath,
+		HideWindow: *buildHideWindow,
 	}
 	log.Printf("DBG: flags: %+v", flags)
 	folder, err := os.Getwd()
@@ -311,6 +314,7 @@ func compile(image string, config *ConfigFlags, flags *BuildFlags, folder string
 		"-e", fmt.Sprintf("FLAG_BUILDMODE=%s", flags.Mode),
 		"-e", fmt.Sprintf("FLAG_BUILDVCS=%s", flags.VCS),
 		"-e", fmt.Sprintf("FLAG_TRIMPATH=%v", flags.TrimPath),
+		"-e", fmt.Sprintf("FLAG_HIDEWINDOW=%v", flags.HideWindow),
 		"-e", "TARGETS=" + strings.Replace(strings.Join(config.Targets, " "), "*", ".", -1),
 	}
 	if usesModules {
