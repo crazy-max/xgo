@@ -1,10 +1,10 @@
 # syntax=docker/dockerfile:1
 
-ARG GO_VERSION="1.22.1"
+ARG GO_VERSION="1.23.0"
 ARG OSXCROSS_VERSION="11.3"
 ARG GHQ_VERSION="1.6.1"
-ARG XX_VERSION="1.3.0"
-ARG ALPINE_VERSION="3.19"
+ARG XX_VERSION="1.4.0"
+ARG ALPINE_VERSION="3.20"
 ARG PLATFORMS="linux/386 linux/amd64 linux/arm64 linux/arm/v5 linux/arm/v6 linux/arm/v7 linux/mips linux/mipsle linux/mips64 linux/mips64le linux/ppc64le linux/riscv64 linux/s390x windows/386 windows/amd64"
 
 FROM --platform=$BUILDPLATFORM tonistiigi/xx:${XX_VERSION} AS xx
@@ -61,7 +61,7 @@ RUN --mount=type=bind,target=/src \
   set -ex
   mkdir /out
   version=$(cat /tmp/.version)
-  cp /build/* /src/CHANGELOG.md /src/LICENSE /src/README.md .
+  cp /build/* /src/LICENSE /src/README.md .
   if [ "$TARGETOS" = "windows" ]; then
     zip -r "/out/xgo_${version#v}_${TARGETOS}_${TARGETARCH}${TARGETVARIANT}.zip" .
   else
