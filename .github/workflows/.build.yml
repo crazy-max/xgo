@@ -137,7 +137,6 @@ jobs:
             *.tags=
             *.platform=${{ matrix.platform }}
             *.args.GO_VERSION=${{ inputs.go_version }}
-            *.cache-from=type=gha,scope=base
             *.cache-from=type=gha,scope=go-${{ inputs.go_version }}-${{ env.PLATFORM_PAIR }}
             *.cache-to=type=gha,scope=go-${{ inputs.go_version }}-${{ env.PLATFORM_PAIR }}
             *.output=type=image,"name=${{ env.DOCKERHUB_SLUG }},${{ env.GHCR_SLUG }}",push-by-digest=true,name-canonical=true,push=${{ github.event_name != 'pull_request' }}

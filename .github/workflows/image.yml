@@ -18,40 +18,10 @@ on:
     paths-ignore:
       - '**.md'
 
-env:
-  DOCKERHUB_SLUG: crazymax/xgo
-  GHCR_SLUG: ghcr.io/crazy-max/xgo
-
 jobs:
-  prepare:
-    runs-on: ubuntu-latest
-    steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v4
-      -
-        name: Remove dotnet
-        run: sudo rm -rf /usr/share/dotnet
-      -
-        name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      -
-        name: Build base (cache only)
-        uses: docker/bake-action@v5
-        with:
-          targets: base-all
-          set: |
-            *.cache-from=type=gha,scope=base
-            *.cache-to=type=gha,scope=base,mode=max
-
   build:
     uses: ./.github/workflows/.build.yml
     secrets: inherit
-    needs:
-      - prepare
     strategy:
       fail-fast: false
       matrix:
