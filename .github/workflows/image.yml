@@ -1,8 +1,12 @@
 name: image
 
 concurrency:
-  group: image-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+permissions:
+  contents: read
 
 on:
   schedule:
@@ -21,6 +25,11 @@ on:
 jobs:
   build:
     uses: ./.github/workflows/.build.yml
+    permissions:
+      # same as global permissions
+      contents: read
+      # required to push to GHCR
+      packages: write
     secrets: inherit
     strategy:
       fail-fast: false
