@@ -13,6 +13,13 @@ target "_common" {
   }
 }
 
+target "_platforms" {
+  platforms = [
+    "linux/amd64",
+    "linux/arm64"
+  ]
+}
+
 # Special target: https://github.com/docker/metadata-action#bake-definition
 target "docker-metadata-action" {
   tags = ["xgo:local"]
@@ -28,6 +35,10 @@ target "base" {
   output = ["type=cacheonly"]
 }
 
+target "base-all" {
+  inherits = ["base", "_platforms"]
+}
+
 target "image" {
   inherits = ["_common", "docker-metadata-action"]
 }
@@ -35,6 +46,10 @@ target "image" {
 target "image-local" {
   inherits = ["image"]
   output = ["type=docker"]
+}
+
+target "image-all" {
+  inherits = ["image", "_platforms"]
 }
 
 target "artifact" {
