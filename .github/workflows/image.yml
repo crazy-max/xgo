@@ -21,9 +21,6 @@ on:
 env:
   DOCKERHUB_SLUG: crazymax/xgo
   GHCR_SLUG: ghcr.io/crazy-max/xgo
-  PLATFORMS: linux/amd64,linux/arm64
-  LATEST_CURRENT: 1.23.0
-  LATEST_PREVIOUS: 1.22.6
 
 jobs:
   prepare:
@@ -45,101 +42,29 @@ jobs:
         name: Build base (cache only)
         uses: docker/bake-action@v5
         with:
-          targets: base
+          targets: base-all
           set: |
-            *.platform=${{ env.PLATFORMS }}
             *.cache-from=type=gha,scope=base
             *.cache-to=type=gha,scope=base,mode=max
 
   build:
-    needs: prepare
-    runs-on: ubuntu-latest
+    uses: ./.github/workflows/.build.yml
+    secrets: inherit
+    needs:
+      - prepare
     strategy:
       fail-fast: false
       matrix:
         go_version:
-          - 1.22.0
-          - 1.22.1
-          - 1.22.2
-          - 1.22.3
-          - 1.22.4
-          - 1.22.5
-          - 1.22.6
-          - 1.23.0
-    steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v4
-      -
-        name: Remove dotnet
-        run: sudo rm -rf /usr/share/dotnet
-      -
-        name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      -
-        name: Tags
-        id: tags
-        uses: actions/github-script@v7
-        with:
-          result-encoding: string
-          script: |
-            const os = require('os');
-            const majorMinor = "${{ matrix.go_version }}".match(/[0-9]+\.[0-9]+/g)[0];
-            const tags = ["${{ matrix.go_version }}"];
-            switch ("${{ matrix.go_version }}") {
-              case "${{ env.LATEST_CURRENT }}": {
-                tags.push(`${majorMinor}.x`, majorMinor, "latest");
-                break;
-              }
-              case "${{ env.LATEST_PREVIOUS }}": {
-                tags.push(`${majorMinor}.x`, majorMinor);
-                break;
-              }
-            }
-            return tags.join(os.EOL);
-      -
-        name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: |
-            ${{ env.DOCKERHUB_SLUG }}
-            ${{ env.GHCR_SLUG }}
-          tags: ${{ steps.tags.outputs.result }}
-          labels: |
-            org.opencontainers.image.title=xgo (go-${{ matrix.go_version }})
-            org.opencontainers.image.description=Go CGO cross compiler
-            org.opencontainers.image.vendor=CrazyMax
-      -
-        name: Login to DockerHub
-        if: startsWith(github.ref, 'refs/tags/v')
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-      -
-        name: Login to GHCR
-        if: startsWith(github.ref, 'refs/tags/v')
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      -
-        name: Build
-        uses: docker/bake-action@v5
-        with:
-          files: |
-            ./docker-bake.hcl
-            ${{ steps.meta.outputs.bake-file }}
-          targets: image
-          set: |
-            *.platform=${{ env.PLATFORMS }}
-            *.args.GO_VERSION=${{ matrix.go_version }}
-            *.cache-from=type=gha,scope=go-${{ matrix.go_version }}
-            *.cache-from=type=gha,scope=base
-            *.cache-to=type=gha,scope=go-${{ matrix.go_version }}
-          push: ${{ startsWith(github.ref, 'refs/tags/v') }}
+          - "1.22.0"
+          - "1.22.1"
+          - "1.22.2"
+          - "1.22.3"
+          - "1.22.4"
+          - "1.22.5"
+          - "1.22.6"
+          - "1.23.0"
+    with:
+      go_version: ${{ matrix.go_version }}
+      latest_current: "1.23.0"
+      latest_previous: "1.22.6"
