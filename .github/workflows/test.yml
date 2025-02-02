@@ -30,16 +30,8 @@ jobs:
           - ffmerger
     steps:
       -
-        name: Checkout
-        uses: actions/checkout@v4
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          driver: docker
-      -
         name: Build xgo
-        uses: docker/bake-action@v5
+        uses: docker/bake-action@v6
         with:
           targets: image
           set: |
@@ -49,7 +41,7 @@ jobs:
             *.cache-from=type=gha,scope=go-${{ inputs.go_version }}-linux-amd64
       -
         name: Test ${{ matrix.case }} for go ${{ matrix.go_version }}
-        uses: docker/bake-action@v5
+        uses: docker/bake-action@v6
         with:
           targets: test-${{ matrix.case }}
         env:
