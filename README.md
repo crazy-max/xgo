@@ -31,12 +31,11 @@ and platform headers/libraries.
 | [GitHub Container Registry](https://github.com/users/crazy-max/packages/container/package/xgo) | `ghcr.io/crazy-max/xgo` |
 
 ```
-$ docker run --rm mplatform/mquery crazymax/xgo:latest
-Image: crazymax/xgo:latest
- * Manifest List: Yes
- * Supported platforms:
-   - linux/amd64
-   - linux/arm64
+$ docker buildx imagetools inspect crazymax/xgo --format "{{json .Manifest}}" | \
+  jq -r '.manifests[] | select(.platform.os != null and .platform.os != "unknown") | .platform | "\(.os)/\(.architecture)\(if .variant then "/" + .variant else "" end)"'
+
+linux/amd64
+linux/arm64
 ```
 
 This also creates a [standalone xgo executable](https://github.com/crazy-max/xgo/releases/latest)

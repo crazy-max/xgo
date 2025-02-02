@@ -1,8 +1,12 @@
 name: test
 
 concurrency:
-  group: test-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+permissions:
+  contents: read
 
 on:
   push:
@@ -38,7 +42,7 @@ jobs:
             *.tags=xgo:${{ matrix.go_version }}
             *.args.GO_VERSION=${{ matrix.go_version }}
             *.output=type=docker
-            *.cache-from=type=gha,scope=go-${{ inputs.go_version }}-linux-amd64
+            *.cache-from=type=gha,scope=go-${{ matrix.go_version }}-linux-amd64
       -
         name: Test ${{ matrix.case }} for go ${{ matrix.go_version }}
         uses: docker/bake-action@v6

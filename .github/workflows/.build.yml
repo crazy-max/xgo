@@ -1,6 +1,10 @@
 # reusable workflow
 name: .build
 
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+permissions:
+  contents: read
+
 on:
   workflow_call:
     inputs:
@@ -85,6 +89,11 @@ jobs:
 
   build:
     runs-on: ${{ startsWith(matrix.platform, 'linux/arm') && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    permissions:
+      # same as global permissions
+      contents: read
+      # required to push to GHCR
+      packages: write
     needs:
       - prepare
     strategy:
@@ -155,6 +164,11 @@ jobs:
   merge:
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
+    permissions:
+      # same as global permissions
+      contents: read
+      # required to push to GHCR
+      packages: write
     needs:
       - build
     steps:
