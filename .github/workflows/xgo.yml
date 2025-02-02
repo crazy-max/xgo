@@ -26,23 +26,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       -
-        name: Checkout
-        uses: actions/checkout@v4
-      -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       -
         name: Build artifacts
-        uses: docker/bake-action@v5
+        uses: docker/bake-action@v6
         with:
           targets: artifact-all
           provenance: false
       -
         name: Release
-        uses: docker/bake-action@v5
+        uses: docker/bake-action@v6
         with:
           targets: release
           provenance: false
+          set: |
+            *.contexts.artifacts=cwd://${{ env.DESTDIR }}/artifact
       -
         name: Upload artifacts
         uses: actions/upload-artifact@v4
