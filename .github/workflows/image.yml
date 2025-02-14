@@ -35,15 +35,14 @@ jobs:
       fail-fast: false
       matrix:
         go_version:
-          - "1.22.0"
-          - "1.22.1"
-          - "1.22.2"
-          - "1.22.3"
-          - "1.22.4"
-          - "1.22.5"
-          - "1.22.6"
           - "1.23.0"
+          - "1.23.1"
+          - "1.23.2"
+          - "1.23.3"
+          - "1.23.4"
+          - "1.23.5"
+          - "1.24.0"
     with:
       go_version: ${{ matrix.go_version }}
-      latest_current: "1.23.0"
-      latest_previous: "1.22.6"
+      latest_current: "1.24.0"
+      latest_previous: "1.23.5"
