@@ -41,8 +41,11 @@ jobs:
           - "1.23.3"
           - "1.23.4"
           - "1.23.5"
+          - "1.23.6"
+          - "1.23.7"
           - "1.24.0"
+          - "1.24.1"
     with:
       go_version: ${{ matrix.go_version }}
-      latest_current: "1.24.0"
-      latest_previous: "1.23.5"
+      latest_current: "1.24.1"
+      latest_previous: "1.23.7"
