@@ -6,9 +6,16 @@ variable "DESTDIR" {
   default = "./bin"
 }
 
+# GITHUB_REF is the actual ref that triggers the workflow and used as version
+# when tag is pushed: https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/store-information-in-variables#default-environment-variables
+variable "GITHUB_REF" {
+  default = ""
+}
+
 target "_common" {
   args = {
     GO_VERSION = GO_VERSION
+    GIT_REF = GITHUB_REF
     BUILDKIT_CONTEXT_KEEP_GIT_DIR = 1
   }
 }

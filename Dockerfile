@@ -20,8 +20,15 @@ RUN --mount=type=cache,target=/go/pkg/mod \
   go install github.com/x-motemen/ghq@v${GHQ_VERSION}
 
 FROM base AS version
-RUN --mount=target=. \
-  echo $(git describe --match 'v[0-9]*' --dirty='.m' --always --tags) | tee /tmp/.version
+ARG GIT_REF
+RUN --mount=target=. <<EOT
+  set -e
+  case "$GIT_REF" in
+    refs/tags/v*) version="${GIT_REF#refs/tags/}" ;;
+    *) version=$(git describe --match 'v[0-9]*' --dirty='.m' --always --tags) ;;
+  esac
+  echo "$version" | tee /tmp/.version
+EOT
 
 FROM base AS vendored
 RUN --mount=type=bind,source=.,rw \
