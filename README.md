@@ -25,18 +25,17 @@ things more consistent for users. It uses [`goxx` image](https://github.com/craz
 as base that provides all the necessary Go tool-chains, C/C++ cross-compilers
 and platform headers/libraries.
 
-| Registry                                                                                         | Image                           |
-|--------------------------------------------------------------------------------------------------|---------------------------------|
-| [Docker Hub](https://hub.docker.com/r/crazymax/xgo/)                                            | `crazymax/xgo`                 |
-| [GitHub Container Registry](https://github.com/users/crazy-max/packages/container/package/xgo)  | `ghcr.io/crazy-max/xgo`        |
+| Registry                                                                                       | Image                   |
+|------------------------------------------------------------------------------------------------|-------------------------|
+| [Docker Hub](https://hub.docker.com/r/crazymax/xgo/)                                           | `crazymax/xgo`          |
+| [GitHub Container Registry](https://github.com/users/crazy-max/packages/container/package/xgo) | `ghcr.io/crazy-max/xgo` |
 
 ```
-$ docker run --rm mplatform/mquery crazymax/xgo:latest
-Image: crazymax/xgo:latest
- * Manifest List: Yes
- * Supported platforms:
-   - linux/amd64
-   - linux/arm64
+$ docker buildx imagetools inspect crazymax/xgo --format "{{json .Manifest}}" | \
+  jq -r '.manifests[] | select(.platform.os != null and .platform.os != "unknown") | .platform | "\(.os)/\(.architecture)\(if .variant then "/" + .variant else "" end)"'
+
+linux/amd64
+linux/arm64
 ```
 
 This also creates a [standalone xgo executable](https://github.com/crazy-max/xgo/releases/latest)

@@ -1,8 +1,12 @@
 name: xgo
 
 concurrency:
-  group: xgo-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+permissions:
+  contents: read
 
 on:
   push:
@@ -24,25 +28,27 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      # required to create GitHub release
+      contents: write
     steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v4
       -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       -
         name: Build artifacts
-        uses: docker/bake-action@v4
+        uses: docker/bake-action@v6
         with:
           targets: artifact-all
           provenance: false
       -
         name: Release
-        uses: docker/bake-action@v4
+        uses: docker/bake-action@v6
         with:
           targets: release
           provenance: false
+          set: |
+            *.contexts.artifacts=cwd://${{ env.DESTDIR }}/artifact
       -
         name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -52,7 +58,7 @@ jobs:
           if-no-files-found: error
       -
         name: GitHub Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/v')
         with:
           draft: true
