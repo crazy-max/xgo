@@ -4,7 +4,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
 permissions:
   contents: read
 
@@ -12,11 +11,7 @@ on:
   push:
     branches:
       - 'master'
-    paths-ignore:
-      - '**.md'
   pull_request:
-    paths-ignore:
-      - '**.md'
 
 jobs:
   test:
@@ -35,7 +30,7 @@ jobs:
     steps:
       -
         name: Build xgo
-        uses: docker/bake-action@v6
+        uses: docker/bake-action@5be5f02ff8819ecd3092ea6b2e6261c31774f2b4 # v6.10.0
         with:
           targets: image
           set: |
@@ -45,7 +40,7 @@ jobs:
             *.cache-from=type=gha,scope=go-${{ matrix.go_version }}-linux-amd64
       -
         name: Test ${{ matrix.case }} for go ${{ matrix.go_version }}
-        uses: docker/bake-action@v6
+        uses: docker/bake-action@5be5f02ff8819ecd3092ea6b2e6261c31774f2b4 # v6.10.0
         with:
           targets: test-${{ matrix.case }}
         env:
