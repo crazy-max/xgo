@@ -4,33 +4,25 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
 permissions:
   contents: read
 
 on:
   schedule:
-    - cron: '0 8 */6 * *' # every 6 days to keep cache
+    - cron: '0 8 */6 * *'
   push:
     branches:
       - 'master'
     tags:
       - 'v*'
-    paths-ignore:
-      - '**.md'
   pull_request:
-    paths-ignore:
-      - '**.md'
 
 jobs:
   build:
     uses: ./.github/workflows/.build.yml
     permissions:
-      # same as global permissions
-      contents: read
-      # required to push to GHCR
-      packages: write
-    secrets: inherit
+      contents: read # same as global permissions
+      packages: write # required to push to GHCR
     strategy:
       fail-fast: false
       matrix:
@@ -49,3 +41,6 @@ jobs:
       go_version: ${{ matrix.go_version }}
       latest_current: "1.25.1"
       latest_previous: "1.24.7"
+    secrets:
+      docker_username: ${{ secrets.DOCKER_USERNAME }}
+      docker_password: ${{ secrets.DOCKER_PASSWORD }}
