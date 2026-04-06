@@ -92,7 +92,7 @@ jobs:
           mv "${{ steps.meta.outputs.bake-file }}" "/tmp/bake-meta.json"
       -
         name: Upload meta bake definition
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: bake-meta-${{ inputs.go_version }}
           path: /tmp/bake-meta.json
@@ -165,7 +165,7 @@ jobs:
           touch "/tmp/digests/${digest#sha256:}"
       -
         name: Upload digest
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: digests-${{ inputs.go_version }}-${{ env.PLATFORM_PAIR }}
           path: /tmp/digests/*
