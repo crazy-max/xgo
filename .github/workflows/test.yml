@@ -35,7 +35,7 @@ jobs:
     steps:
       -
         name: Build xgo
-        uses: docker/bake-action@v6
+        uses: docker/bake-action@v7
         with:
           targets: image
           set: |
@@ -45,7 +45,7 @@ jobs:
             *.cache-from=type=gha,scope=go-${{ matrix.go_version }}-linux-amd64
       -
         name: Test ${{ matrix.case }} for go ${{ matrix.go_version }}
-        uses: docker/bake-action@v6
+        uses: docker/bake-action@v7
         with:
           targets: test-${{ matrix.case }}
         env:
