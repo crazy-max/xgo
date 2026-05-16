@@ -209,19 +209,15 @@ DEPS_ARGS=($ARGS)
 USR_LOCAL_SNAPSHOT=$(mktemp)
 find /usr/local -mindepth 1 > "$USR_LOCAL_SNAPSHOT"
 
-# Configure some global build parameters
-NAME=$(basename $1/$PACK)
-
-# Go module-based builds error with 'cannot find main module' when $PACK is defined
-if [[ "$USEMODULES" = true ]]; then
-  PACK_RELPATH=""
-  NAME=$(sed -n 's/module\ \(.*\)/\1/p' /source/go.mod)
-else
-  PACK_RELPATH="./$PACK"
-fi
-
 # Pack relative path
 PACK_RELPATH="./$PACK"
+
+# Configure some global build parameters
+if [[ "$USEMODULES" == true ]] && [ "$PACK" == "" ]; then
+  NAME=$(basename "$(go list -m -f '{{.Path}}')")
+else
+  NAME=$(basename "$1/$PACK")
+fi
 
 if [ "$OUT" != "" ]; then
   NAME=$OUT
