@@ -487,6 +487,7 @@ for TARGET in $TARGETS; do
     fi
 
     MAJOR=$(echo $PLATFORM | cut -d '.' -f 1)
+    MINOR=0
     if [ "${PLATFORM/.}" != "$PLATFORM" ] ; then
       MINOR=$(echo $PLATFORM | cut -d '.' -f 2)
     fi
