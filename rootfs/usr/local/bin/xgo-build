@@ -96,9 +96,10 @@ if [ "$(echo "$GO_VERSION" | tr -cd '.' | wc -c)" != "2" ]; then
 fi
 
 # Detect if we are using go modules
-if [[ "$GO111MODULE" == "on" || "$GO111MODULE" == "auto" ]]; then
+if [[ "$GO111MODULE" == "on" || "$GO111MODULE" == "auto" ]] ||
+  { [[ "$GO111MODULE" != "off" ]] && [[ "$EXT_GOPATH" != "" ]] && [[ -f go.mod ]]; }; then
   USEMODULES=true
-  else
+else
   USEMODULES=false
 fi
 
@@ -114,7 +115,7 @@ if [ "$EXT_GOPATH" != "" ]; then
 elif [[ "$USEMODULES" == true ]]; then
   # Go module builds should assume a local repository
   # at mapped to /source containing at least a go.mod file.
-  if [[ ! -d /source ]]; then
+  if [[ ! -f /source/go.mod ]]; then
     echo "Go modules are enabled but go.mod was not found in the source folder."
     exit 10
   fi
@@ -208,19 +209,15 @@ DEPS_ARGS=($ARGS)
 USR_LOCAL_SNAPSHOT=$(mktemp)
 find /usr/local -mindepth 1 > "$USR_LOCAL_SNAPSHOT"
 
-# Configure some global build parameters
-NAME=$(basename $1/$PACK)
-
-# Go module-based builds error with 'cannot find main module' when $PACK is defined
-if [[ "$USEMODULES" = true ]]; then
-  PACK_RELPATH=""
-  NAME=$(sed -n 's/module\ \(.*\)/\1/p' /source/go.mod)
-else
-  PACK_RELPATH="./$PACK"
-fi
-
 # Pack relative path
 PACK_RELPATH="./$PACK"
+
+# Configure some global build parameters
+if [[ "$USEMODULES" == true ]] && [ "$PACK" == "" ]; then
+  NAME=$(basename "$(go list -m -f '{{.Path}}')")
+else
+  NAME=$(basename "$1/$PACK")
+fi
 
 if [ "$OUT" != "" ]; then
   NAME=$OUT
