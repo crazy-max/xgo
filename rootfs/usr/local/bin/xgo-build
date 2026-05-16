@@ -571,7 +571,7 @@ for TARGET in $TARGETS; do
           CC=o64-clang CXX=o64-clang++ GOOS=darwin GOARCH=arm64 CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" --ldflags="$LDSTRIP $V $LD" $PACK_RELPATH
         fi
         ext=$(extension darwin)
-        (set -x ; CC=o64-clang CXX=o64-clang++ GOOS=darwin GOARCH=arm64 CGO_ENABLED=1 go build $V $X $TP $VCS $TP $MOD "${T[@]}" --ldflags="$LDSTRIP $V $LD" $R $BM -o "/build/$NAME-darwin-arm64$R$ext" $PACK_RELPATH)
+        (set -x ; CC=o64-clang CXX=o64-clang++ GOOS=darwin GOARCH=arm64 CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$LDSTRIP $V $LD" $R $BM -o "/build/$NAME-darwin-arm64$R$ext" $PACK_RELPATH)
       fi
     fi
     if [ $XGOARCH == "." ] || [ $XGOARCH == "386" ]; then
