@@ -148,6 +148,7 @@ else
 fi
 
 # Download all the C dependencies
+rm -rf /deps
 mkdir /deps
 DEPS=($DEPS) && for dep in "${DEPS[@]}"; do
   if [ "${dep##*.}" == "tar" ]; then cat "/deps-cache/$(basename $dep)" | tar -C /deps -x; fi
