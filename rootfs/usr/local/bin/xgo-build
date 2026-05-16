@@ -29,8 +29,7 @@
 
 set -e
 
-USR_LOCAL_CONTENTS=""
-USR_LOCAL_SNAPSHOT=false
+USR_LOCAL_SNAPSHOT=""
 ORIGINAL_PKG_CONFIG_PATH="$PKG_CONFIG_PATH"
 
 function cleanup {
@@ -38,27 +37,19 @@ function cleanup {
   local cleanup_status=0
   set +e
 
-  if [ -d /deps ] || [ "$USR_LOCAL_SNAPSHOT" == "true" ]; then
+  if [ -d /deps ] || [ "$USR_LOCAL_SNAPSHOT" != "" ]; then
     echo "Cleaning up build environment..."
   fi
 
   rm -rf /deps || cleanup_status=$?
 
-  if [ "$USR_LOCAL_SNAPSHOT" == "true" ]; then
-    for dir in $(ls /usr/local); do
-      keep=0
-
-      # Check against original folder contents
-      for old in $USR_LOCAL_CONTENTS; do
-        if [ "$old" == "$dir" ]; then
-          keep=1
-        fi
-      done
-      # Delete anything freshly generated
-      if [ "$keep" == "0" ]; then
-        rm -rf "/usr/local/$dir" || cleanup_status=$?
+  if [ "$USR_LOCAL_SNAPSHOT" != "" ]; then
+    while IFS= read -r path; do
+      if ! grep -Fxq "$path" "$USR_LOCAL_SNAPSHOT"; then
+        rm -rf "$path" || cleanup_status=$?
       fi
-    done
+    done < <(find /usr/local -mindepth 1 -depth)
+    rm -f "$USR_LOCAL_SNAPSHOT" || cleanup_status=$?
   fi
 
   if [ "$status" -eq 0 ] && [ "$cleanup_status" -ne 0 ]; then
@@ -206,8 +197,8 @@ done
 DEPS_ARGS=($ARGS)
 
 # Save the contents of the pre-build /usr/local folder for post cleanup
-USR_LOCAL_CONTENTS=$(ls /usr/local)
-USR_LOCAL_SNAPSHOT=true
+USR_LOCAL_SNAPSHOT=$(mktemp)
+find /usr/local -mindepth 1 > "$USR_LOCAL_SNAPSHOT"
 
 # Configure some global build parameters
 NAME=$(basename $1/$PACK)
