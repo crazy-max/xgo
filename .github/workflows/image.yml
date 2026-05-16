@@ -18,29 +18,102 @@ on:
   pull_request:
 
 jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      -
+        name: Create matrix
+        id: matrix
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          INPUT_GO-VERSIONS: |
+            1.24.0
+            1.24.1
+            1.24.2
+            1.24.3
+            1.24.4
+            1.24.5
+            1.24.6
+            1.24.7
+            1.25.0
+            1.25.1
+        with:
+          script: |
+            const goVersions = core.getMultilineInput('go-versions');
+
+            const parseVersion = (goVersion) => {
+              const match = goVersion.match(/^(\d+)\.(\d+)\.(\d+)$/);
+              if (!match) {
+                throw new Error(`Invalid Go version: ${goVersion}`);
+              }
+              return {
+                goVersion,
+                major: Number(match[1]),
+                minor: Number(match[2]),
+                patch: Number(match[3]),
+                majorMinor: `${match[1]}.${match[2]}`,
+              };
+            };
+
+            const compareVersion = (a, b) => a.major - b.major || a.minor - b.minor || a.patch - b.patch;
+            const versions = goVersions.map(parseVersion).sort(compareVersion);
+            const latestCurrent = versions[versions.length - 1];
+            const releaseLines = [...new Set(versions.map((version) => version.majorMinor))];
+            const previousLine = releaseLines[releaseLines.length - 2];
+            const latestPrevious = versions.filter((version) => version.majorMinor === previousLine).pop();
+
+            const include = versions.map((version) => {
+              return {
+                go_version: version.goVersion,
+                major_minor: version.majorMinor,
+                latest_previous: version.goVersion === latestPrevious?.goVersion,
+                latest_current: version.goVersion === latestCurrent.goVersion,
+              };
+            });
+
+            core.info(JSON.stringify(include, null, 2));
+            core.setOutput('matrix', JSON.stringify({ include }));
+
   build:
-    uses: ./.github/workflows/.build.yml
+    needs:
+      - prepare
+    uses: docker/github-builder/.github/workflows/bake.yml@c2782c55efa56a01b9c30021db8f5ec3993228a3 # v1.8.0
     permissions:
-      contents: read # same as global permissions
+      contents: read # required to fetch the repository content
       packages: write # required to push to GHCR
+      id-token: write # required to sign provenance attestations
     strategy:
       fail-fast: false
-      matrix:
-        go_version:
-          - "1.24.0"
-          - "1.24.1"
-          - "1.24.2"
-          - "1.24.3"
-          - "1.24.4"
-          - "1.24.5"
-          - "1.24.6"
-          - "1.24.7"
-          - "1.25.0"
-          - "1.25.1"
+      matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
     with:
-      go_version: ${{ matrix.go_version }}
-      latest_current: "1.25.1"
-      latest_previous: "1.24.7"
+      output: image
+      push: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
+      target: image-all
+      cache: true
+      cache-scope: go-${{ matrix.go_version }}
+      vars: |
+        GO_VERSION=${{ matrix.go_version }}
+        GITHUB_REF=${{ github.ref }}
+      set-meta-labels: true
+      meta-images: |
+        crazymax/xgo
+        ghcr.io/crazy-max/xgo
+      meta-tags: |
+        type=raw,value=${{ matrix.go_version }}
+        type=raw,value=${{ matrix.major_minor }}.x,enable=${{ matrix.latest_previous || matrix.latest_current }}
+        type=raw,value=${{ matrix.major_minor }},enable=${{ matrix.latest_previous || matrix.latest_current }}
+        type=raw,value=latest,enable=${{ matrix.latest_current }}
+      meta-labels: |
+        org.opencontainers.image.title=xgo (go-${{ matrix.go_version }})
+        org.opencontainers.image.description=Go CGO cross compiler
+        org.opencontainers.image.vendor=CrazyMax
     secrets:
-      docker_username: ${{ secrets.DOCKER_USERNAME }}
-      docker_password: ${{ secrets.DOCKER_PASSWORD }}
+      registry-auths: |
+        - registry: docker.io
+          username: ${{ vars.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+        - registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
