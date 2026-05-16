@@ -377,7 +377,7 @@ for TARGET in $TARGETS; do
       else
         echo "Compiling for linux/mips64le..."
         CC=mips64el-linux-gnuabi64-gcc CXX=mips64el-linux-gnuabi64-g++ HOST=mips64el-linux-gnuabi64 PREFIX=/usr/mips64el-linux-gnuabi64 xgo-build-deps /deps "${DEPS_ARGS[@]}"
-        export PKG_CONFIG_PATH=/usr/mips64le-linux-gnuabi64/lib/pkgconfig
+        export PKG_CONFIG_PATH=/usr/mips64el-linux-gnuabi64/lib/pkgconfig
 
         if [[ "$USEMODULES" == false ]]; then
           CC=mips64el-linux-gnuabi64-gcc CXX=mips64el-linux-gnuabi64-g++ GOOS=linux GOARCH=mips64le CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" --ldflags="$V $LD" $PACK_RELPATH
@@ -417,7 +417,7 @@ for TARGET in $TARGETS; do
       else
         echo "Compiling for linux/mipsle..."
         CC=mipsel-linux-gnu-gcc CXX=mipsel-linux-gnu-g++ HOST=mipsel-linux-gnu PREFIX=/usr/mipsel-linux-gnu xgo-build-deps /deps "${DEPS_ARGS[@]}"
-        export PKG_CONFIG_PATH=/usr/mipsle-linux-gnu/lib/pkgconfig
+        export PKG_CONFIG_PATH=/usr/mipsel-linux-gnu/lib/pkgconfig
 
         if [[ "$USEMODULES" == false ]]; then
           CC=mipsel-linux-gnu-gcc CXX=mipsel-linux-gnu-g++ GOOS=linux GOARCH=mipsle CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" --ldflags="$V $LD" $PACK_RELPATH
