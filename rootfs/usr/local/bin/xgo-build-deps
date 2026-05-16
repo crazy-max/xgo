@@ -13,23 +13,60 @@
 #   MAKE_JOBS - Optional number of parallel make jobs to use
 set -e
 
+BUILD_DIR=/deps-build
 MAKE_JOBS=${MAKE_JOBS:-$(nproc)}
 if [[ ! "$MAKE_JOBS" =~ ^[1-9][0-9]*$ ]]; then
 	echo "Invalid MAKE_JOBS value: $MAKE_JOBS"
 	exit 1
 fi
-
-# Remove any previous build leftovers, and copy a fresh working set (clean doesn't work for cross compiling)
-rm -rf /deps-build && cp -r $1 /deps-build
-
-# Build all the dependencies (no order for now)
-for dep in $(ls /deps-build); do
-	echo "Configuring dependency $dep for $HOST..."
-	(cd /deps-build/$dep && ./configure --disable-shared --host=$HOST --prefix=$PREFIX --silent ${@:2})
-
-	echo "Building dependency $dep for $HOST..."
-	(cd /deps-build/$dep && make --silent -j"$MAKE_JOBS" install)
+for var in HOST PREFIX; do
+	if [ "${!var}" == "" ]; then
+		echo "$var is required."
+		exit 1
+	fi
 done
 
-# Remove any build artifacts
-rm -rf /deps-build
+function cleanup {
+	local status=$?
+	local cleanup_status=0
+	set +e
+
+	rm -rf "$BUILD_DIR" || cleanup_status=$?
+
+	if [ "$status" -eq 0 ] && [ "$cleanup_status" -ne 0 ]; then
+		exit "$cleanup_status"
+	fi
+	exit "$status"
+}
+trap cleanup EXIT
+
+if [ $# -lt 1 ] || [ ! -d "$1" ]; then
+	echo "Dependency folder not found: ${1:-}"
+	exit 1
+fi
+
+# Remove any previous build leftovers, and copy a fresh working set (clean doesn't work for cross compiling)
+rm -rf "$BUILD_DIR"
+cp -r "$1" "$BUILD_DIR"
+
+# Build all the dependencies (no order for now)
+for dep in "$BUILD_DIR"/*; do
+	if [ ! -e "$dep" ]; then
+		continue
+	fi
+	dep_name=$(basename "$dep")
+	if [ ! -d "$dep" ]; then
+		echo "Dependency $dep_name is not a directory."
+		exit 1
+	fi
+	if [ ! -x "$dep/configure" ]; then
+		echo "Dependency $dep_name does not contain an executable configure script."
+		exit 1
+	fi
+
+	echo "Configuring dependency $dep_name for $HOST..."
+	(cd "$dep" && ./configure --disable-shared --host=$HOST --prefix=$PREFIX --silent "${@:2}")
+
+	echo "Building dependency $dep_name for $HOST..."
+	(cd "$dep" && make --silent -j"$MAKE_JOBS" install)
+done
