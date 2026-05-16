@@ -189,9 +189,17 @@ fi
 rm -rf /deps
 mkdir /deps
 DEPS=($DEPS) && for dep in "${DEPS[@]}"; do
-  if [ "${dep##*.}" == "tar" ]; then cat "/deps-cache/$(basename $dep)" | tar -C /deps -x; fi
-  if [ "${dep##*.}" == "gz" ];  then cat "/deps-cache/$(basename $dep)" | tar -C /deps -xz; fi
-  if [ "${dep##*.}" == "bz2" ]; then cat "/deps-cache/$(basename $dep)" | tar -C /deps -xj; fi
+  archive="/deps-cache/$(basename "$dep")"
+  if [ ! -f "$archive" ]; then
+    echo "Dependency archive not found: $archive"
+    exit 1
+  fi
+  case "$archive" in
+    *.tar) tar -C /deps -xf "$archive" ;;
+    *.tar.gz|*.tgz) tar -C /deps -xzf "$archive" ;;
+    *.tar.bz2|*.tbz2) tar -C /deps -xjf "$archive" ;;
+    *) echo "Unsupported dependency archive: $dep"; exit 1 ;;
+  esac
 done
 
 DEPS_ARGS=($ARGS)
