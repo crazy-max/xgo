@@ -7,10 +7,17 @@
 # Usage: xgo-build-deps <dependency folder> <configure arguments>
 #
 # Needed environment variables:
-#   CC      - C cross compiler to use for the build
-#   HOST    - Target platform to build (used to find the needed tool-chains)
-#   PREFIX  - File-system path where to install the built binaries
+#   CC        - C cross compiler to use for the build
+#   HOST      - Target platform to build (used to find the needed tool-chains)
+#   PREFIX    - File-system path where to install the built binaries
+#   MAKE_JOBS - Optional number of parallel make jobs to use
 set -e
+
+MAKE_JOBS=${MAKE_JOBS:-$(nproc)}
+if [[ ! "$MAKE_JOBS" =~ ^[1-9][0-9]*$ ]]; then
+	echo "Invalid MAKE_JOBS value: $MAKE_JOBS"
+	exit 1
+fi
 
 # Remove any previous build leftovers, and copy a fresh working set (clean doesn't work for cross compiling)
 rm -rf /deps-build && cp -r $1 /deps-build
@@ -21,7 +28,7 @@ for dep in $(ls /deps-build); do
 	(cd /deps-build/$dep && ./configure --disable-shared --host=$HOST --prefix=$PREFIX --silent ${@:2})
 
 	echo "Building dependency $dep for $HOST..."
-	(cd /deps-build/$dep && make --silent -j install)
+	(cd /deps-build/$dep && make --silent -j"$MAKE_JOBS" install)
 done
 
 # Remove any build artifacts
