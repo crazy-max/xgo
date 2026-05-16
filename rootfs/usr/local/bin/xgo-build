@@ -96,9 +96,10 @@ if [ "$(echo "$GO_VERSION" | tr -cd '.' | wc -c)" != "2" ]; then
 fi
 
 # Detect if we are using go modules
-if [[ "$GO111MODULE" == "on" || "$GO111MODULE" == "auto" ]]; then
+if [[ "$GO111MODULE" == "on" || "$GO111MODULE" == "auto" ]] ||
+  { [[ "$GO111MODULE" != "off" ]] && [[ "$EXT_GOPATH" != "" ]] && [[ -f go.mod ]]; }; then
   USEMODULES=true
-  else
+else
   USEMODULES=false
 fi
 
@@ -114,7 +115,7 @@ if [ "$EXT_GOPATH" != "" ]; then
 elif [[ "$USEMODULES" == true ]]; then
   # Go module builds should assume a local repository
   # at mapped to /source containing at least a go.mod file.
-  if [[ ! -d /source ]]; then
+  if [[ ! -f /source/go.mod ]]; then
     echo "Go modules are enabled but go.mod was not found in the source folder."
     exit 10
   fi
