@@ -2,9 +2,9 @@
 
 ARG GO_VERSION="1.26"
 ARG OSXCROSS_VERSION="12.3"
-ARG GHQ_VERSION="1.6.1"
-ARG XX_VERSION="1.7.0"
-ARG ALPINE_VERSION="3.22"
+ARG GHQ_VERSION="1.9.0"
+ARG XX_VERSION="1.9.0"
+ARG ALPINE_VERSION="3.23"
 ARG PLATFORMS="linux/386 linux/amd64 linux/arm64 linux/arm/v5 linux/arm/v6 linux/arm/v7 linux/mips linux/mipsle linux/mips64 linux/mips64le linux/ppc64le linux/riscv64 linux/s390x windows/386 windows/amd64"
 
 FROM --platform=$BUILDPLATFORM tonistiigi/xx:${XX_VERSION} AS xx
