@@ -27,6 +27,46 @@
 #   GO_VERSION        - Bootstrapped version of Go to disable uncupported targets
 #   EXT_GOPATH        - GOPATH elements mounted from the host filesystem
 
+set -e
+
+USR_LOCAL_CONTENTS=""
+USR_LOCAL_SNAPSHOT=false
+
+function cleanup {
+  local status=$?
+  local cleanup_status=0
+  set +e
+
+  if [ -d /deps ] || [ "$USR_LOCAL_SNAPSHOT" == "true" ]; then
+    echo "Cleaning up build environment..."
+  fi
+
+  rm -rf /deps || cleanup_status=$?
+
+  if [ "$USR_LOCAL_SNAPSHOT" == "true" ]; then
+    for dir in $(ls /usr/local); do
+      keep=0
+
+      # Check against original folder contents
+      for old in $USR_LOCAL_CONTENTS; do
+        if [ "$old" == "$dir" ]; then
+          keep=1
+        fi
+      done
+      # Delete anything freshly generated
+      if [ "$keep" == "0" ]; then
+        rm -rf "/usr/local/$dir" || cleanup_status=$?
+      fi
+    done
+  fi
+
+  if [ "$status" -eq 0 ] && [ "$cleanup_status" -ne 0 ]; then
+    exit "$cleanup_status"
+  fi
+  exit "$status"
+}
+trap cleanup EXIT
+
 # Define a function that figures out the binary extension
 function extension {
   if [ "$FLAG_BUILDMODE" == "archive" ] || [ "$FLAG_BUILDMODE" == "c-archive" ]; then
@@ -67,7 +107,6 @@ if [ "$EXT_GOPATH" != "" ]; then
   # If local builds are requested, inject the sources
   echo "Building locally $1..."
   export GOPATH=$GOPATH:$EXT_GOPATH
-  set -e
 
   # Find and change into the package folder
   cd "$(go list -e -f '{{.Dir}}' $1)"
@@ -100,8 +139,7 @@ else
 
   # Otherwise download the canonical import path (may fail, don't allow failures beyond)
   echo "Fetching main repository $1..."
-  GHQ_ROOT=$GOPATH_ROOT ghq get "$1"
-  set -e
+  GHQ_ROOT=$GOPATH_ROOT ghq get "$1" || true
 
   cd "$GOPATH_ROOT/$1"
 
@@ -160,6 +198,7 @@ DEPS_ARGS=($ARGS)
 
 # Save the contents of the pre-build /usr/local folder for post cleanup
 USR_LOCAL_CONTENTS=$(ls /usr/local)
+USR_LOCAL_SNAPSHOT=true
 
 # Configure some global build parameters
 NAME=$(basename $1/$PACK)
@@ -529,24 +568,5 @@ for TARGET in $TARGETS; do
     # Remove any automatically injected deployment target vars
     unset MACOSX_DEPLOYMENT_TARGET
 
-  fi
-done
-
-# Clean up any leftovers for subsequent build invocations
-echo "Cleaning up build environment..."
-rm -rf /deps
-
-for dir in $(ls /usr/local); do
-  keep=0
-
-  # Check against original folder contents
-  for old in $USR_LOCAL_CONTENTS; do
-    if [ "$old" == "$dir" ]; then
-      keep=1
-    fi
-  done
-  # Delete anything freshly generated
-  if [ "$keep" == "0" ]; then
-    rm -rf "/usr/local/$dir"
   fi
 done
