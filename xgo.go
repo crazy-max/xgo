@@ -2,6 +2,8 @@
 package main
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"flag"
 	"fmt"
 	"go/build"
@@ -10,9 +12,11 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"os/signal"
 	"path/filepath"
 	"strconv"
 	"strings"
+	"syscall"
 )
 
 var version = "dev"
@@ -293,11 +297,17 @@ func compile(image string, config *ConfigFlags, flags *BuildFlags, folder string
 			}
 		}
 	}
+
 	// Assemble and run the cross compilation command
 	log.Printf("INFO: Cross compiling %s package...", config.Repository)
+	name, err := containerName(config.Repository, config.Package, folder)
+	if err != nil {
+		return err
+	}
 
 	args := []string{
 		"run", "--rm",
+		"--name", name,
 		"-v", folder + ":/build",
 		"-v", depsCache + ":/deps-cache:ro",
 		"-e", "REPO_REMOTE=" + config.Remote,
@@ -348,7 +358,9 @@ func compile(image string, config *ConfigFlags, flags *BuildFlags, folder string
 
 	args = append(args, []string{image, config.Repository}...)
 	log.Printf("INFO: Docker %s", strings.Join(args, " "))
-	return run(exec.Command("docker", args...))
+	return runWithCleanup(exec.Command("docker", args...), func() {
+		_ = exec.Command("docker", "rm", "-f", name).Run()
+	})
 }
 
 // compileContained cross builds a requested package according to the given build
@@ -419,10 +431,82 @@ func resolveImportPath(path string) string {
 
 // Executes a command synchronously, redirecting its output to stdout.
 func run(cmd *exec.Cmd) error {
+	return runWithCleanup(cmd, nil)
+}
+
+// Executes a command synchronously and runs cleanup if the process is interrupted.
+func runWithCleanup(cmd *exec.Cmd, cleanup func()) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	return cmd.Run()
+	if err := cmd.Start(); err != nil {
+		return err
+	}
+
+	done := make(chan error, 1)
+	go func() {
+		done <- cmd.Wait()
+	}()
+
+	signals := make(chan os.Signal, 1)
+	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
+	defer signal.Stop(signals)
+
+	select {
+	case err := <-done:
+		return err
+	case sig := <-signals:
+		signal.Stop(signals)
+		if cleanup != nil {
+			cleanup()
+		}
+		if cmd.Process != nil {
+			_ = cmd.Process.Kill()
+		}
+		err := <-done
+		if cleanup != nil {
+			cleanup()
+		}
+		if err != nil {
+			return fmt.Errorf("interrupted by %s: %w", sig, err)
+		}
+		return fmt.Errorf("interrupted by %s", sig)
+	}
+}
+
+func containerName(repository, pack, folder string) (string, error) {
+	suffix := make([]byte, 4)
+	if _, err := rand.Read(suffix); err != nil {
+		return "", fmt.Errorf("failed to generate docker container name: %w", err)
+	}
+	slug := filepath.Base(repository)
+	if pack != "" {
+		slug = filepath.Base(pack)
+	}
+	if slug == "." || slug == string(filepath.Separator) {
+		slug = filepath.Base(folder)
+	}
+	slug = strings.Map(func(r rune) rune {
+		switch {
+		case r >= 'a' && r <= 'z':
+			return r
+		case r >= 'A' && r <= 'Z':
+			return r
+		case r >= '0' && r <= '9':
+			return r
+		case r == '.', r == '_', r == '-':
+			return r
+		default:
+			return '-'
+		}
+	}, slug)
+	if len(slug) > 32 {
+		slug = slug[:32]
+	}
+	if slug == "" {
+		slug = "build"
+	}
+	return fmt.Sprintf("xgo-%s-%s", slug, hex.EncodeToString(suffix)), nil
 }
 
 // fileExists checks if given file exists
