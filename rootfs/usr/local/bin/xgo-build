@@ -243,6 +243,19 @@ if [ "$FLAG_BUILDMODE" != "" ] && [ "$FLAG_BUILDMODE" != "default" ]; then BM="-
 if [ "$(semver compare "$GO_VERSION" "1.18.0")" -ge 0 ] && [ "$FLAG_BUILDVCS" != "" ]; then VCS="-buildvcs=$FLAG_BUILDVCS"; fi
 if [ "$FLAG_MOD" != "" ]; then MOD="--mod=$FLAG_MOD"; fi
 
+LDARGS=()
+LD_FLAGS=()
+if [ "$V" != "" ]; then LD_FLAGS+=("$V"); fi
+if [ "$LD" != "" ]; then LD_FLAGS+=("$LD"); fi
+if [ "${#LD_FLAGS[@]}" -gt 0 ]; then LDARGS=(--ldflags="${LD_FLAGS[*]}"); fi
+
+WINLDARGS=()
+WINLD_FLAGS=()
+if [ "$V" != "" ]; then WINLD_FLAGS+=("$V"); fi
+if [ "$H" != "" ]; then WINLD_FLAGS+=("$H"); fi
+if [ "$LD" != "" ]; then WINLD_FLAGS+=("$LD"); fi
+if [ "${#WINLD_FLAGS[@]}" -gt 0 ]; then WINLDARGS=(--ldflags="${WINLD_FLAGS[*]}"); fi
+
 # If no build targets were specified, inject a catch all wildcard
 if [ "$TARGETS" == "" ]; then
   TARGETS="./."
@@ -259,19 +272,19 @@ for TARGET in $TARGETS; do
     echo "Compiling for linux/amd64..."
     HOST=x86_64-linux PREFIX=/usr/local xgo-build-deps /deps "${DEPS_ARGS[@]}"
     if [[ "$USEMODULES" == false && "$EXT_GOPATH" == "" ]]; then
-      GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" --ldflags="$V $LD" $PACK_RELPATH
+      GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" "${LDARGS[@]}" $PACK_RELPATH
     fi
     ext=$(extension linux)
-    (set -x ; CC=x86_64-linux-gnu-gcc CXX=x86_64-linux-gnu-g++ GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$V $LD" $R $BM -o "/build/$NAME-linux-amd64$R$ext" $PACK_RELPATH)
+    (set -x ; CC=x86_64-linux-gnu-gcc CXX=x86_64-linux-gnu-g++ GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" "${LDARGS[@]}" $R $BM -o "/build/$NAME-linux-amd64$R$ext" $PACK_RELPATH)
   fi
   if ([ $XGOOS == "." ] || [ $XGOOS == "linux" ]) && ([ $XGOARCH == "." ] || [ $XGOARCH == "386" ]); then
     echo "Compiling for linux/386..."
     HOST=i686-linux PREFIX=/usr/local xgo-build-deps /deps "${DEPS_ARGS[@]}"
     if [[ "$USEMODULES" == false && "$EXT_GOPATH" == "" ]]; then
-      GOOS=linux GOARCH=386 CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" --ldflags="$V $LD" $PACK_RELPATH
+      GOOS=linux GOARCH=386 CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" "${LDARGS[@]}" $PACK_RELPATH
     fi
     ext=$(extension linux)
-    (set -x ; CC=i686-linux-gnu-gcc CXX=i686-linux-gnu-g++ GOOS=linux GOARCH=386 CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-386$ext" $PACK_RELPATH)
+    (set -x ; CC=i686-linux-gnu-gcc CXX=i686-linux-gnu-g++ GOOS=linux GOARCH=386 CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" "${LDARGS[@]}" $BM -o "/build/$NAME-linux-386$ext" $PACK_RELPATH)
   fi
   if ([ $XGOOS == "." ] || [ $XGOOS == "linux" ]) && ([ $XGOARCH == "." ] || [ $XGOARCH == "arm" ] || [ $XGOARCH == "arm-5" ]); then
     if [ "$(semver compare "$GO_VERSION" "1.5.0")" -ge 0 ]; then
@@ -283,10 +296,10 @@ for TARGET in $TARGETS; do
     export PKG_CONFIG_PATH=/usr/arm-linux-gnueabi/lib/pkgconfig
 
     if [[ "$USEMODULES" == false && "$EXT_GOPATH" == "" ]]; then
-      CC=arm-linux-gnueabi-gcc CXX=arm-linux-gnueabi-g++ GOOS=linux GOARCH=arm GOARM=5 CGO_ENABLED=1 CGO_CFLAGS="-march=armv5t" CGO_CXXFLAGS="-march=armv5t" go get $V $X $TP $VCS "${T[@]}" --ldflags="$V $LD" $PACK_RELPATH
+      CC=arm-linux-gnueabi-gcc CXX=arm-linux-gnueabi-g++ GOOS=linux GOARCH=arm GOARM=5 CGO_ENABLED=1 CGO_CFLAGS="-march=armv5t" CGO_CXXFLAGS="-march=armv5t" go get $V $X $TP $VCS "${T[@]}" "${LDARGS[@]}" $PACK_RELPATH
     fi
     ext=$(extension linux)
-    (set -x ; CC=arm-linux-gnueabi-gcc CXX=arm-linux-gnueabi-g++ GOOS=linux GOARCH=arm GOARM=5 CGO_ENABLED=1 CGO_CFLAGS="-march=armv5t" CGO_CXXFLAGS="-march=armv5t" go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-arm-5$ext" $PACK_RELPATH)
+    (set -x ; CC=arm-linux-gnueabi-gcc CXX=arm-linux-gnueabi-g++ GOOS=linux GOARCH=arm GOARM=5 CGO_ENABLED=1 CGO_CFLAGS="-march=armv5t" CGO_CXXFLAGS="-march=armv5t" go build $V $X $TP $VCS $MOD "${T[@]}" "${LDARGS[@]}" $BM -o "/build/$NAME-linux-arm-5$ext" $PACK_RELPATH)
     reset_pkg_config_path
     if [ "$(semver compare "$GO_VERSION" "1.5.0")" -ge 0 ]; then
       echo "Cleaning up Go runtime for linux/arm-5..."
@@ -305,10 +318,10 @@ for TARGET in $TARGETS; do
       export PKG_CONFIG_PATH=/usr/arm-linux-gnueabi/lib/pkgconfig
 
       if [[ "$USEMODULES" == false && "$EXT_GOPATH" == "" ]]; then
-        CC=arm-linux-gnueabi-gcc CXX=arm-linux-gnueabi-g++ GOOS=linux GOARCH=arm GOARM=6 CGO_ENABLED=1 CGO_CFLAGS="-march=armv6" CGO_CXXFLAGS="-march=armv6" go get $V $X $TP $VCS "${T[@]}" --ldflags="$V $LD" $PACK_RELPATH
+        CC=arm-linux-gnueabi-gcc CXX=arm-linux-gnueabi-g++ GOOS=linux GOARCH=arm GOARM=6 CGO_ENABLED=1 CGO_CFLAGS="-march=armv6" CGO_CXXFLAGS="-march=armv6" go get $V $X $TP $VCS "${T[@]}" "${LDARGS[@]}" $PACK_RELPATH
       fi
       ext=$(extension linux)
-      (set -x ; CC=arm-linux-gnueabi-gcc CXX=arm-linux-gnueabi-g++ GOOS=linux GOARCH=arm GOARM=6 CGO_ENABLED=1 CGO_CFLAGS="-march=armv6" CGO_CXXFLAGS="-march=armv6" go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-arm-6$ext" $PACK_RELPATH)
+      (set -x ; CC=arm-linux-gnueabi-gcc CXX=arm-linux-gnueabi-g++ GOOS=linux GOARCH=arm GOARM=6 CGO_ENABLED=1 CGO_CFLAGS="-march=armv6" CGO_CXXFLAGS="-march=armv6" go build $V $X $TP $VCS $MOD "${T[@]}" "${LDARGS[@]}" $BM -o "/build/$NAME-linux-arm-6$ext" $PACK_RELPATH)
       reset_pkg_config_path
 
       echo "Cleaning up Go runtime for linux/arm-6..."
@@ -327,10 +340,10 @@ for TARGET in $TARGETS; do
       export PKG_CONFIG_PATH=/usr/arm-linux-gnueabihf/lib/pkgconfig
 
       if [[ "$USEMODULES" == false && "$EXT_GOPATH" == "" ]]; then
-        CC=arm-linux-gnueabihf-gcc CXX=arm-linux-gnueabihf-g++ GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=1 CGO_CFLAGS="-march=armv7-a -mfpu=vfpv3-d16 -fPIC" CGO_CXXFLAGS="-march=armv7-a -mfpu=vfpv3-d16 -fPIC" go get $V $X $TP $VCS "${T[@]}" --ldflags="$V $LD" $PACK_RELPATH
+        CC=arm-linux-gnueabihf-gcc CXX=arm-linux-gnueabihf-g++ GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=1 CGO_CFLAGS="-march=armv7-a -mfpu=vfpv3-d16 -fPIC" CGO_CXXFLAGS="-march=armv7-a -mfpu=vfpv3-d16 -fPIC" go get $V $X $TP $VCS "${T[@]}" "${LDARGS[@]}" $PACK_RELPATH
       fi
       ext=$(extension linux)
-      (set -x ; CC=arm-linux-gnueabihf-gcc CXX=arm-linux-gnueabihf-g++ GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=1 CGO_CFLAGS="-march=armv7-a -mfpu=vfpv3-d16 -fPIC" CGO_CXXFLAGS="-march=armv7-a -mfpu=vfpv3-d16 -fPIC" go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-arm-7$ext" $PACK_RELPATH)
+      (set -x ; CC=arm-linux-gnueabihf-gcc CXX=arm-linux-gnueabihf-g++ GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=1 CGO_CFLAGS="-march=armv7-a -mfpu=vfpv3-d16 -fPIC" CGO_CXXFLAGS="-march=armv7-a -mfpu=vfpv3-d16 -fPIC" go build $V $X $TP $VCS $MOD "${T[@]}" "${LDARGS[@]}" $BM -o "/build/$NAME-linux-arm-7$ext" $PACK_RELPATH)
       reset_pkg_config_path
 
       echo "Cleaning up Go runtime for linux/arm-7..."
@@ -346,10 +359,10 @@ for TARGET in $TARGETS; do
       export PKG_CONFIG_PATH=/usr/aarch64-linux-gnu/lib/pkgconfig
 
       if [[ "$USEMODULES" == false && "$EXT_GOPATH" == "" ]]; then
-        CC=aarch64-linux-gnu-gcc CXX=aarch64-linux-gnu-g++ GOOS=linux GOARCH=arm64 CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" --ldflags="$V $LD" $PACK_RELPATH
+        CC=aarch64-linux-gnu-gcc CXX=aarch64-linux-gnu-g++ GOOS=linux GOARCH=arm64 CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" "${LDARGS[@]}" $PACK_RELPATH
       fi
       ext=$(extension linux)
-      (set -x ; CC=aarch64-linux-gnu-gcc CXX=aarch64-linux-gnu-g++ GOOS=linux GOARCH=arm64 CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-arm64$ext" $PACK_RELPATH)
+      (set -x ; CC=aarch64-linux-gnu-gcc CXX=aarch64-linux-gnu-g++ GOOS=linux GOARCH=arm64 CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" "${LDARGS[@]}" $BM -o "/build/$NAME-linux-arm64$ext" $PACK_RELPATH)
       reset_pkg_config_path
     fi
   fi
@@ -365,10 +378,10 @@ for TARGET in $TARGETS; do
         export PKG_CONFIG_PATH=/usr/mips64-linux-gnuabi64/lib/pkgconfig
 
         if [[ "$USEMODULES" == false && "$EXT_GOPATH" == "" ]]; then
-          CC=mips64-linux-gnuabi64-gcc CXX=mips64-linux-gnuabi64-g++ GOOS=linux GOARCH=mips64 CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" --ldflags="$V $LD" $PACK_RELPATH
+          CC=mips64-linux-gnuabi64-gcc CXX=mips64-linux-gnuabi64-g++ GOOS=linux GOARCH=mips64 CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" "${LDARGS[@]}" $PACK_RELPATH
         fi
         ext=$(extension linux)
-        (set -x ; CC=mips64-linux-gnuabi64-gcc CXX=mips64-linux-gnuabi64-g++ GOOS=linux GOARCH=mips64 CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-mips64$ext" $PACK_RELPATH)
+        (set -x ; CC=mips64-linux-gnuabi64-gcc CXX=mips64-linux-gnuabi64-g++ GOOS=linux GOARCH=mips64 CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" "${LDARGS[@]}" $BM -o "/build/$NAME-linux-mips64$ext" $PACK_RELPATH)
         reset_pkg_config_path
       fi
     fi
@@ -385,10 +398,10 @@ for TARGET in $TARGETS; do
         export PKG_CONFIG_PATH=/usr/mips64el-linux-gnuabi64/lib/pkgconfig
 
         if [[ "$USEMODULES" == false && "$EXT_GOPATH" == "" ]]; then
-          CC=mips64el-linux-gnuabi64-gcc CXX=mips64el-linux-gnuabi64-g++ GOOS=linux GOARCH=mips64le CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" --ldflags="$V $LD" $PACK_RELPATH
+          CC=mips64el-linux-gnuabi64-gcc CXX=mips64el-linux-gnuabi64-g++ GOOS=linux GOARCH=mips64le CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" "${LDARGS[@]}" $PACK_RELPATH
         fi
         ext=$(extension linux)
-        (set -x ; CC=mips64el-linux-gnuabi64-gcc CXX=mips64el-linux-gnuabi64-g++ GOOS=linux GOARCH=mips64le CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-mips64le$ext" $PACK_RELPATH)
+        (set -x ; CC=mips64el-linux-gnuabi64-gcc CXX=mips64el-linux-gnuabi64-g++ GOOS=linux GOARCH=mips64le CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" "${LDARGS[@]}" $BM -o "/build/$NAME-linux-mips64le$ext" $PACK_RELPATH)
         reset_pkg_config_path
       fi
     fi
@@ -405,10 +418,10 @@ for TARGET in $TARGETS; do
         export PKG_CONFIG_PATH=/usr/mips-linux-gnu/lib/pkgconfig
 
         if [[ "$USEMODULES" == false && "$EXT_GOPATH" == "" ]]; then
-          CC=mips-linux-gnu-gcc CXX=mips-linux-gnu-g++ GOOS=linux GOARCH=mips CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" --ldflags="$V $LD" $PACK_RELPATH
+          CC=mips-linux-gnu-gcc CXX=mips-linux-gnu-g++ GOOS=linux GOARCH=mips CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" "${LDARGS[@]}" $PACK_RELPATH
         fi
         ext=$(extension linux)
-        (set -x ; CC=mips-linux-gnu-gcc CXX=mips-linux-gnu-g++ GOOS=linux GOARCH=mips CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-mips$ext" $PACK_RELPATH)
+        (set -x ; CC=mips-linux-gnu-gcc CXX=mips-linux-gnu-g++ GOOS=linux GOARCH=mips CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" "${LDARGS[@]}" $BM -o "/build/$NAME-linux-mips$ext" $PACK_RELPATH)
         reset_pkg_config_path
       fi
     fi
@@ -425,10 +438,10 @@ for TARGET in $TARGETS; do
         export PKG_CONFIG_PATH=/usr/mipsel-linux-gnu/lib/pkgconfig
 
         if [[ "$USEMODULES" == false && "$EXT_GOPATH" == "" ]]; then
-          CC=mipsel-linux-gnu-gcc CXX=mipsel-linux-gnu-g++ GOOS=linux GOARCH=mipsle CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" --ldflags="$V $LD" $PACK_RELPATH
+          CC=mipsel-linux-gnu-gcc CXX=mipsel-linux-gnu-g++ GOOS=linux GOARCH=mipsle CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" "${LDARGS[@]}" $PACK_RELPATH
         fi
         ext=$(extension linux)
-        (set -x ; CC=mipsel-linux-gnu-gcc CXX=mipsel-linux-gnu-g++ GOOS=linux GOARCH=mipsle CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-mipsle$ext" $PACK_RELPATH)
+        (set -x ; CC=mipsel-linux-gnu-gcc CXX=mipsel-linux-gnu-g++ GOOS=linux GOARCH=mipsle CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" "${LDARGS[@]}" $BM -o "/build/$NAME-linux-mipsle$ext" $PACK_RELPATH)
         reset_pkg_config_path
       fi
     fi
@@ -442,10 +455,10 @@ for TARGET in $TARGETS; do
       export PKG_CONFIG_PATH=/usr/powerpc64le-linux-gnu/lib/pkgconfig
 
       if [[ "$USEMODULES" == false && "$EXT_GOPATH" == "" ]]; then
-        CC=powerpc64le-linux-gnu-gcc CXX=powerpc64le-linux-gnu-g++ GOOS=linux GOARCH=ppc64le CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" --ldflags="$V $LD" $PACK_RELPATH
+        CC=powerpc64le-linux-gnu-gcc CXX=powerpc64le-linux-gnu-g++ GOOS=linux GOARCH=ppc64le CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" "${LDARGS[@]}" $PACK_RELPATH
       fi
       ext=$(extension linux)
-      (set -x ; CC=powerpc64le-linux-gnu-gcc CXX=powerpc64le-linux-gnu-g++ GOOS=linux GOARCH=ppc64le CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-ppc64le$ext" $PACK_RELPATH)
+      (set -x ; CC=powerpc64le-linux-gnu-gcc CXX=powerpc64le-linux-gnu-g++ GOOS=linux GOARCH=ppc64le CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" "${LDARGS[@]}" $BM -o "/build/$NAME-linux-ppc64le$ext" $PACK_RELPATH)
       reset_pkg_config_path
     fi
   fi
@@ -458,10 +471,10 @@ for TARGET in $TARGETS; do
       export PKG_CONFIG_PATH=/usr/riscv64-linux-gnu/lib/pkgconfig
 
       if [[ "$USEMODULES" == false && "$EXT_GOPATH" == "" ]]; then
-        CC=riscv64-linux-gnu-gcc CXX=riscv64-linux-gnu-g++ GOOS=linux GOARCH=riscv64 CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" --ldflags="$V $LD" $PACK_RELPATH
+        CC=riscv64-linux-gnu-gcc CXX=riscv64-linux-gnu-g++ GOOS=linux GOARCH=riscv64 CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" "${LDARGS[@]}" $PACK_RELPATH
       fi
       ext=$(extension linux)
-      (set -x ; CC=riscv64-linux-gnu-gcc CXX=riscv64-linux-gnu-g++ GOOS=linux GOARCH=riscv64 CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-riscv64$ext" $PACK_RELPATH)
+      (set -x ; CC=riscv64-linux-gnu-gcc CXX=riscv64-linux-gnu-g++ GOOS=linux GOARCH=riscv64 CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" "${LDARGS[@]}" $BM -o "/build/$NAME-linux-riscv64$ext" $PACK_RELPATH)
       reset_pkg_config_path
     fi
   fi
@@ -474,10 +487,10 @@ for TARGET in $TARGETS; do
       export PKG_CONFIG_PATH=/usr/s390x-linux-gnu/lib/pkgconfig
 
       if [[ "$USEMODULES" == false && "$EXT_GOPATH" == "" ]]; then
-        CC=s390x-linux-gnu-gcc CXX=s390x-linux-gnu-g++ GOOS=linux GOARCH=s390x CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" --ldflags="$V $LD" $PACK_RELPATH
+        CC=s390x-linux-gnu-gcc CXX=s390x-linux-gnu-g++ GOOS=linux GOARCH=s390x CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" "${LDARGS[@]}" $PACK_RELPATH
       fi
       ext=$(extension linux)
-      (set -x ; CC=s390x-linux-gnu-gcc CXX=s390x-linux-gnu-g++ GOOS=linux GOARCH=s390x CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-linux-s390x$ext" $PACK_RELPATH)
+      (set -x ; CC=s390x-linux-gnu-gcc CXX=s390x-linux-gnu-g++ GOOS=linux GOARCH=s390x CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" "${LDARGS[@]}" $BM -o "/build/$NAME-linux-s390x$ext" $PACK_RELPATH)
       reset_pkg_config_path
     fi
   fi
@@ -505,10 +518,10 @@ for TARGET in $TARGETS; do
       export PKG_CONFIG_PATH=/usr/x86_64-w64-mingw32/lib/pkgconfig
 
       if [[ "$USEMODULES" == false && "$EXT_GOPATH" == "" ]]; then
-        CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ GOOS=windows GOARCH=amd64 CGO_ENABLED=1 CGO_CFLAGS="$CGO_NTDEF" CGO_CXXFLAGS="$CGO_NTDEF" go get $V $X $TP $VCS "${T[@]}" --ldflags="$V $LD" $PACK_RELPATH
+        CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ GOOS=windows GOARCH=amd64 CGO_ENABLED=1 CGO_CFLAGS="$CGO_NTDEF" CGO_CXXFLAGS="$CGO_NTDEF" go get $V $X $TP $VCS "${T[@]}" "${LDARGS[@]}" $PACK_RELPATH
       fi
       ext=$(extension windows)
-      (set -x ; CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ GOOS=windows GOARCH=amd64 CGO_ENABLED=1 CGO_CFLAGS="$CGO_NTDEF" CGO_CXXFLAGS="$CGO_NTDEF" go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$V $H $LD" $R $BM -o "/build/$NAME-windows-amd64$R$ext" $PACK_RELPATH)
+      (set -x ; CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ GOOS=windows GOARCH=amd64 CGO_ENABLED=1 CGO_CFLAGS="$CGO_NTDEF" CGO_CXXFLAGS="$CGO_NTDEF" go build $V $X $TP $VCS $MOD "${T[@]}" "${WINLDARGS[@]}" $R $BM -o "/build/$NAME-windows-amd64$R$ext" $PACK_RELPATH)
       reset_pkg_config_path
     fi
     if [ $XGOARCH == "." ] || [ $XGOARCH == "386" ]; then
@@ -517,10 +530,10 @@ for TARGET in $TARGETS; do
       export PKG_CONFIG_PATH=/usr/i686-w64-mingw32/lib/pkgconfig
 
       if [[ "$USEMODULES" == false && "$EXT_GOPATH" == "" ]]; then
-        CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++ GOOS=windows GOARCH=386 CGO_ENABLED=1 CGO_CFLAGS="$CGO_NTDEF" CGO_CXXFLAGS="$CGO_NTDEF" go get $V $X $TP $VCS "${T[@]}" --ldflags="$V $LD" $PACK_RELPATH
+        CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++ GOOS=windows GOARCH=386 CGO_ENABLED=1 CGO_CFLAGS="$CGO_NTDEF" CGO_CXXFLAGS="$CGO_NTDEF" go get $V $X $TP $VCS "${T[@]}" "${LDARGS[@]}" $PACK_RELPATH
       fi
       ext=$(extension windows)
-      (set -x ; CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++ GOOS=windows GOARCH=386 CGO_ENABLED=1 CGO_CFLAGS="$CGO_NTDEF" CGO_CXXFLAGS="$CGO_NTDEF" go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$V $H $LD" $BM -o "/build/$NAME-windows-386$ext" $PACK_RELPATH)
+      (set -x ; CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++ GOOS=windows GOARCH=386 CGO_ENABLED=1 CGO_CFLAGS="$CGO_NTDEF" CGO_CXXFLAGS="$CGO_NTDEF" go build $V $X $TP $VCS $MOD "${T[@]}" "${WINLDARGS[@]}" $BM -o "/build/$NAME-windows-386$ext" $PACK_RELPATH)
       reset_pkg_config_path
     fi
 #    FIXME: gcc_libinit_windows.c:8:10: fatal error: 'windows.h' file not found
@@ -533,10 +546,10 @@ for TARGET in $TARGETS; do
 #        export PKG_CONFIG_PATH=/usr/aarch64-w64-mingw32/lib/pkgconfig
 #
 #        if [[ "$USEMODULES" == false && "$EXT_GOPATH" == "" ]]; then
-#          CC=aarch64-w64-mingw32-gcc CXX=aarch64-w64-mingw32-g++ GOOS=windows GOARCH=386 CGO_ENABLED=1 CGO_CFLAGS="$CGO_NTDEF" CGO_CXXFLAGS="$CGO_NTDEF" go get $V $X $TP $VCS "${T[@]}" --ldflags="$V $LD" $PACK_RELPATH
+#          CC=aarch64-w64-mingw32-gcc CXX=aarch64-w64-mingw32-g++ GOOS=windows GOARCH=386 CGO_ENABLED=1 CGO_CFLAGS="$CGO_NTDEF" CGO_CXXFLAGS="$CGO_NTDEF" go get $V $X $TP $VCS "${T[@]}" "${LDARGS[@]}" $PACK_RELPATH
 #        fi
 #        ext=$(extension windows)
-#        (set -x ; CC=aarch64-w64-mingw32-gcc CXX=aarch64-w64-mingw32-gcc GOOS=windows GOARCH=386 CGO_ENABLED=1 CGO_CFLAGS="$CGO_NTDEF" CGO_CXXFLAGS="$CGO_NTDEF" go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$V $LD" $BM -o "/build/$NAME-windows-386$ext" $PACK_RELPATH)
+#        (set -x ; CC=aarch64-w64-mingw32-gcc CXX=aarch64-w64-mingw32-gcc GOOS=windows GOARCH=386 CGO_ENABLED=1 CGO_CFLAGS="$CGO_NTDEF" CGO_CXXFLAGS="$CGO_NTDEF" go build $V $X $TP $VCS $MOD "${T[@]}" "${WINLDARGS[@]}" $BM -o "/build/$NAME-windows-386$ext" $PACK_RELPATH)
 #      fi
 #    fi
   fi
@@ -556,15 +569,21 @@ for TARGET in $TARGETS; do
     if [ "$(semver compare "$GO_VERSION" "1.6.0")" -lt 0 ]; then
       LDSTRIP="-s"
     fi
+    DARWIN_LDARGS=()
+    DARWIN_LD_FLAGS=()
+    if [ "$LDSTRIP" != "" ]; then DARWIN_LD_FLAGS+=("$LDSTRIP"); fi
+    if [ "$V" != "" ]; then DARWIN_LD_FLAGS+=("$V"); fi
+    if [ "$LD" != "" ]; then DARWIN_LD_FLAGS+=("$LD"); fi
+    if [ "${#DARWIN_LD_FLAGS[@]}" -gt 0 ]; then DARWIN_LDARGS=(--ldflags="${DARWIN_LD_FLAGS[*]}"); fi
     # Build the requested darwin binaries
     if [ $XGOARCH == "." ] || [ $XGOARCH == "amd64" ]; then
       echo "Compiling for darwin$PLATFORM_SUFFIX/amd64..."
       CC=o64-clang CXX=o64-clang++ HOST=x86_64-apple-darwin15 PREFIX=/usr/local xgo-build-deps /deps "${DEPS_ARGS[@]}"
       if [[ "$USEMODULES" == false && "$EXT_GOPATH" == "" ]]; then
-        CC=o64-clang CXX=o64-clang++ GOOS=darwin GOARCH=amd64 CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" --ldflags="$LDSTRIP $V $LD" $PACK_RELPATH
+        CC=o64-clang CXX=o64-clang++ GOOS=darwin GOARCH=amd64 CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" "${DARWIN_LDARGS[@]}" $PACK_RELPATH
       fi
       ext=$(extension darwin)
-      (set -x ; CC=o64-clang CXX=o64-clang++ GOOS=darwin GOARCH=amd64 CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$LDSTRIP $V $LD" $R $BM -o "/build/$NAME-darwin-amd64$R$ext" $PACK_RELPATH)
+      (set -x ; CC=o64-clang CXX=o64-clang++ GOOS=darwin GOARCH=amd64 CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" "${DARWIN_LDARGS[@]}" $R $BM -o "/build/$NAME-darwin-amd64$R$ext" $PACK_RELPATH)
     fi
     if [ $XGOARCH == "." ] || [ $XGOARCH == "arm64" ]; then
       if [ "$(semver compare "$GO_VERSION" "1.16.0")" -lt 0 ]; then
@@ -573,10 +592,10 @@ for TARGET in $TARGETS; do
         echo "Compiling for darwin$PLATFORM_SUFFIX/arm64..."
         CC=o64-clang CXX=o64-clang++ HOST=arm64-apple-darwin15 PREFIX=/usr/local xgo-build-deps /deps "${DEPS_ARGS[@]}"
         if [[ "$USEMODULES" == false && "$EXT_GOPATH" == "" ]]; then
-          CC=o64-clang CXX=o64-clang++ GOOS=darwin GOARCH=arm64 CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" --ldflags="$LDSTRIP $V $LD" $PACK_RELPATH
+          CC=o64-clang CXX=o64-clang++ GOOS=darwin GOARCH=arm64 CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" "${DARWIN_LDARGS[@]}" $PACK_RELPATH
         fi
         ext=$(extension darwin)
-        (set -x ; CC=o64-clang CXX=o64-clang++ GOOS=darwin GOARCH=arm64 CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$LDSTRIP $V $LD" $R $BM -o "/build/$NAME-darwin-arm64$R$ext" $PACK_RELPATH)
+        (set -x ; CC=o64-clang CXX=o64-clang++ GOOS=darwin GOARCH=arm64 CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" "${DARWIN_LDARGS[@]}" $R $BM -o "/build/$NAME-darwin-arm64$R$ext" $PACK_RELPATH)
       fi
     fi
     if [ $XGOARCH == "." ] || [ $XGOARCH == "386" ]; then
@@ -584,10 +603,10 @@ for TARGET in $TARGETS; do
         echo "Compiling for darwin$PLATFORM_SUFFIX/386..."
         CC=o32-clang CXX=o32-clang++ HOST=i386-apple-darwin15 PREFIX=/usr/local xgo-build-deps /deps "${DEPS_ARGS[@]}"
         if [[ "$USEMODULES" == false && "$EXT_GOPATH" == "" ]]; then
-          CC=o32-clang CXX=o32-clang++ GOOS=darwin GOARCH=386 CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" --ldflags="$LDSTRIP $V $LD" $PACK_RELPATH
+          CC=o32-clang CXX=o32-clang++ GOOS=darwin GOARCH=386 CGO_ENABLED=1 go get $V $X $TP $VCS "${T[@]}" "${DARWIN_LDARGS[@]}" $PACK_RELPATH
         fi
         ext=$(extension darwin)
-        (set -x ; CC=o32-clang CXX=o32-clang++ GOOS=darwin GOARCH=386 CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" --ldflags="$LDSTRIP $V $LD" $BM -o "/build/$NAME-darwin-386$ext" $PACK_RELPATH)
+        (set -x ; CC=o32-clang CXX=o32-clang++ GOOS=darwin GOARCH=386 CGO_ENABLED=1 go build $V $X $TP $VCS $MOD "${T[@]}" "${DARWIN_LDARGS[@]}" $BM -o "/build/$NAME-darwin-386$ext" $PACK_RELPATH)
       else
         echo "Go version too high, skipping darwin$PLATFORM_SUFFIX/386..."
       fi
