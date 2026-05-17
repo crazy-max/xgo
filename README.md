@@ -55,6 +55,7 @@ docker buildx bake
 # Tests
 BASE_IMAGE=xgo:local docker buildx bake test-c
 BASE_IMAGE=xgo:local docker buildx bake test-cpp
+BASE_IMAGE=xgo:local docker buildx bake test-gopath
 BASE_IMAGE=xgo:local docker buildx bake test-gorm
 
 # Create xgo artifacts in ./dist

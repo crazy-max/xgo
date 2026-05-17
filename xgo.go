@@ -230,7 +230,8 @@ func compile(image string, config *ConfigFlags, flags *BuildFlags, folder string
 	// If a local build was requested, find the import path and mount all GOPATH sources
 	locals, mounts, paths := []string{}, []string{}, []string{}
 	var usesModules bool
-	if strings.HasPrefix(config.Repository, string(filepath.Separator)) || strings.HasPrefix(config.Repository, ".") {
+	local := strings.HasPrefix(config.Repository, string(filepath.Separator)) || strings.HasPrefix(config.Repository, ".")
+	if local {
 		if fileExists(filepath.Join(config.Repository, "go.mod")) {
 			usesModules = true
 		}
@@ -327,12 +328,12 @@ func compile(image string, config *ConfigFlags, flags *BuildFlags, folder string
 		"-e", fmt.Sprintf("FLAG_HIDEWINDOW=%v", flags.HideWindow),
 		"-e", "TARGETS=" + strings.Replace(strings.Join(config.Targets, " "), "*", ".", -1),
 	}
+	if *goProxy != "" {
+		args = append(args, []string{"-e", fmt.Sprintf("GOPROXY=%s", *goProxy)}...)
+	}
 	if usesModules {
 		args = append(args, []string{"-e", "GO111MODULE=on"}...)
 		args = append(args, []string{"-v", build.Default.GOPATH + ":/go"}...)
-		if *goProxy != "" {
-			args = append(args, []string{"-e", fmt.Sprintf("GOPROXY=%s", *goProxy)}...)
-		}
 
 		// Map this repository to the /source folder
 		absRepository, err := filepath.Abs(config.Repository)
@@ -348,7 +349,7 @@ func compile(image string, config *ConfigFlags, flags *BuildFlags, folder string
 			args = append(args, []string{"-e", "FLAG_MOD=vendor"}...)
 			log.Printf("INFO: Using vendored Go module dependencies")
 		}
-	} else {
+	} else if local {
 		args = append(args, []string{"-e", "GO111MODULE=off"}...)
 		for i := 0; i < len(locals); i++ {
 			args = append(args, []string{"-v", fmt.Sprintf("%s:%s:ro", locals[i], mounts[i])}...)
