@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1
 
-ARG GO_VERSION="1.26"
+ARG GO_VERSION="1.26.3"
+ARG XGO_GO_VERSION="1.26"
 ARG OSXCROSS_VERSION="26.1"
 ARG GHQ_VERSION="1.9.0"
 ARG XX_VERSION="1.9.0"
@@ -8,7 +9,7 @@ ARG ALPINE_VERSION="3.23"
 ARG PLATFORMS="linux/386 linux/amd64 linux/arm64 linux/arm/v5 linux/arm/v6 linux/arm/v7 linux/mips linux/mipsle linux/mips64 linux/mips64le linux/ppc64le linux/riscv64 linux/s390x windows/386 windows/amd64"
 
 FROM --platform=$BUILDPLATFORM tonistiigi/xx:${XX_VERSION} AS xx
-FROM --platform=$BUILDPLATFORM golang:1.25-alpine${ALPINE_VERSION} AS base
+FROM --platform=$BUILDPLATFORM golang:${XGO_GO_VERSION}-alpine${ALPINE_VERSION} AS base
 COPY --from=xx / /
 ENV CGO_ENABLED=0
 RUN apk add --no-cache file git
