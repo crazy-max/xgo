@@ -25,6 +25,7 @@ jobs:
         case:
           - c
           - cpp
+          - foundation
           - gorm
           - ffmerger
     steps:

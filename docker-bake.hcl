@@ -118,6 +118,14 @@ target "test-cpp" {
   }
 }
 
+target "test-foundation" {
+  inherits = ["test"]
+  args = {
+    PROJECT = "./foundation"
+    BRANCH = ""
+  }
+}
+
 target "test-ffmerger" {
   inherits = ["test"]
   args = {
