@@ -102,6 +102,14 @@ target "test-gorm" {
   }
 }
 
+target "test-gopath" {
+  inherits = ["test"]
+  args = {
+    PROJECT = "./gopath"
+    BRANCH = ""
+  }
+}
+
 target "test-c" {
   inherits = ["test"]
   args = {
