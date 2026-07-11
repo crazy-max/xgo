@@ -4,7 +4,6 @@
 [![Test Status](https://img.shields.io/github/actions/workflow/status/crazy-max/xgo/test.yml?branch=master&label=test&logo=github&style=flat-square)](https://github.com/crazy-max/xgo/actions?query=workflow%3Atest)
 [![Docker Stars](https://img.shields.io/docker/stars/crazymax/xgo.svg?style=flat-square&logo=docker)](https://hub.docker.com/r/crazymax/xgo/)
 [![Docker Pulls](https://img.shields.io/docker/pulls/crazymax/xgo.svg?style=flat-square&logo=docker)](https://hub.docker.com/r/crazymax/xgo/)
-[![Go Report Card](https://goreportcard.com/badge/github.com/crazy-max/xgo)](https://goreportcard.com/report/github.com/crazy-max/xgo)
 
 [![Become a sponsor](https://img.shields.io/badge/sponsor-crazy--max-181717.svg?logo=github&style=flat-square)](https://github.com/sponsors/crazy-max)
 [![Donate Paypal](https://img.shields.io/badge/donate-paypal-00457c.svg?logo=paypal&style=flat-square)](https://www.paypal.me/crazyws)
