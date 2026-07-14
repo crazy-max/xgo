@@ -1,0 +1,287 @@
+name: update-go
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 9 * * *'
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  update:
+    runs-on: ubuntu-24.04
+    environment: update-go # secrets are gated by this environment
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      -
+        name: GitHub auth token from GitHub App
+        id: write-app
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.XGO_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.XGO_BOT_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+          permission-contents: write
+          permission-pull-requests: write
+          permission-workflows: write
+      -
+        name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          token: ${{ steps.write-app.outputs.token }}
+          fetch-depth: 0
+          persist-credentials: false
+      -
+        name: Update Go versions
+        id: update
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            const sourceUrl = 'https://hub.docker.com/v2/repositories/crazymax/goxx/tags?page_size=100';
+            const sourceDisplayUrl = 'https://hub.docker.com/r/crazymax/goxx/tags';
+
+            function parseGoVersion(value) {
+              const match = value.match(/^(\d+)\.(\d+)\.(\d+)$/);
+              if (!match) {
+                return null;
+              }
+              return {
+                value,
+                major: Number(match[1]),
+                minor: Number(match[2]),
+                patch: Number(match[3]),
+                majorMinor: `${match[1]}.${match[2]}`,
+              };
+            }
+
+            function compareVersions(a, b) {
+              return a.major - b.major || a.minor - b.minor || a.patch - b.patch;
+            }
+
+            function formatList(values) {
+              const quoted = values.map(value => `\`${value}\``);
+              if (quoted.length === 0) {
+                return 'nothing';
+              }
+              if (quoted.length === 1) {
+                return quoted[0];
+              }
+              if (quoted.length === 2) {
+                return `${quoted[0]} and ${quoted[1]}`;
+              }
+              return `${quoted.slice(0, -1).join(', ')}, and ${quoted.at(-1)}`;
+            }
+
+            function unique(values) {
+              return [...new Set(values)];
+            }
+
+            function sortVersionValues(values) {
+              return unique(values)
+                .map(parseGoVersion)
+                .filter(version => version !== null)
+                .sort(compareVersions)
+                .map(version => version.value);
+            }
+
+            function workspacePath(relativePath) {
+              return path.join(process.env.GITHUB_WORKSPACE, relativePath);
+            }
+
+            function readFile(relativePath) {
+              return fs.readFileSync(workspacePath(relativePath), 'utf8');
+            }
+
+            function writeFile(relativePath, content) {
+              fs.writeFileSync(workspacePath(relativePath), content, 'utf8');
+            }
+
+            function eolFor(content) {
+              return content.includes('\r\n') ? '\r\n' : '\n';
+            }
+
+            function formatVersionLines(versions, indent, eol) {
+              return versions.map(version => `${indent}${version.value}`).join(eol) + eol;
+            }
+
+            function replaceRequired(content, pattern, replacer, relativePath, field) {
+              const match = content.match(pattern);
+              if (!match) {
+                throw new Error(`Missing ${field} in ${relativePath}`);
+              }
+              return content.replace(pattern, replacer);
+            }
+
+            async function fetchGoxxTags() {
+              const tags = [];
+              let url = sourceUrl;
+              while (url) {
+                const response = await fetch(url);
+                if (!response.ok) {
+                  throw new Error(`Failed to fetch ${url}: ${response.status} ${response.statusText}`);
+                }
+                const page = await response.json();
+                if (!Array.isArray(page.results)) {
+                  throw new Error(`Unexpected Docker Hub tags response from ${url}`);
+                }
+                tags.push(...page.results.map(tag => tag.name));
+                url = page.next;
+              }
+              return tags;
+            }
+
+            async function resolveGoVersions() {
+              const tags = await fetchGoxxTags();
+              const versions = unique(tags)
+                .map(parseGoVersion)
+                .filter(version => version !== null)
+                .sort(compareVersions);
+              const releaseLines = unique(versions.map(version => version.majorMinor));
+              if (releaseLines.length < 2) {
+                throw new Error(`Expected at least two Go release lines from ${sourceDisplayUrl}`);
+              }
+              const previousLine = releaseLines.at(-2);
+              const currentLine = releaseLines.at(-1);
+              const previousVersions = versions.filter(version => version.majorMinor === previousLine);
+              const currentVersions = versions.filter(version => version.majorMinor === currentLine);
+              if (previousVersions.length === 0 || currentVersions.length === 0) {
+                throw new Error(`Could not resolve previous and current Go release lines from ${sourceDisplayUrl}`);
+              }
+              return {
+                buildVersions: [...previousVersions, ...currentVersions],
+                latestCurrent: currentVersions.at(-1),
+                latestPrevious: previousVersions.at(-1),
+              };
+            }
+
+            const {
+              buildVersions,
+              latestCurrent,
+              latestPrevious,
+            } = await resolveGoVersions();
+
+            core.info(`Resolved Go versions from ${sourceDisplayUrl}: ${JSON.stringify(buildVersions.map(version => version.value))}`);
+            core.info(`Latest current: ${latestCurrent.value}`);
+            core.info(`Latest previous: ${latestPrevious.value}`);
+
+            const changedFiles = [];
+            const previousValues = [];
+            const updatedValues = [];
+
+            function updateFile(relativePath, update) {
+              const content = readFile(relativePath);
+              const updated = update(content);
+              if (updated !== content) {
+                writeFile(relativePath, updated);
+                changedFiles.push(relativePath);
+                core.info(`Updated ${relativePath}`);
+              } else {
+                core.info(`${relativePath} is already up to date`);
+              }
+            }
+
+            updateFile('Dockerfile', content => {
+              let updated = replaceRequired(
+                content,
+                /^(ARG GO_VERSION=")([^"]+)(")$/m,
+                (_, prefix, current, suffix) => {
+                  previousValues.push(current);
+                  if (current !== latestCurrent.value) {
+                    updatedValues.push(latestCurrent.value);
+                  }
+                  return `${prefix}${latestCurrent.value}${suffix}`;
+                },
+                'Dockerfile',
+                'GO_VERSION build argument'
+              );
+              updated = replaceRequired(
+                updated,
+                /^(ARG XGO_GO_VERSION=")([^"]+)(")$/m,
+                (_, prefix, current, suffix) => {
+                  previousValues.push(current);
+                  if (current !== latestCurrent.majorMinor) {
+                    updatedValues.push(latestCurrent.value);
+                  }
+                  return `${prefix}${latestCurrent.majorMinor}${suffix}`;
+                },
+                'Dockerfile',
+                'XGO_GO_VERSION build argument'
+              );
+              return updated;
+            });
+
+            updateFile('.github/workflows/image.yml', content => {
+              const eol = eolFor(content);
+              return replaceRequired(
+                content,
+                /(          INPUT_GO-VERSIONS: \|\r?\n)(?:            \d+\.\d+\.\d+\r?\n)+/m,
+                (match, prefix) => {
+                  const currentVersions = match.match(/\d+\.\d+\.\d+/g) || [];
+                  previousValues.push(...currentVersions);
+                  updatedValues.push(...buildVersions.map(version => version.value).filter(version => !currentVersions.includes(version)));
+                  return `${prefix}${formatVersionLines(buildVersions, '            ', eol)}`;
+                },
+                '.github/workflows/image.yml',
+                'INPUT_GO-VERSIONS matrix input'
+              );
+            });
+
+            updateFile('.github/workflows/test.yml', content => {
+              const eol = eolFor(content);
+              return replaceRequired(
+                content,
+                /(        go_version:\r?\n)(?:          - \d+\.\d+\.\d+\r?\n)+(        case:)/m,
+                (match, prefix, suffix) => {
+                  const currentVersions = match.match(/\d+\.\d+\.\d+/g) || [];
+                  const desiredVersions = [latestPrevious, latestCurrent];
+                  previousValues.push(...currentVersions);
+                  updatedValues.push(...desiredVersions.map(version => version.value).filter(version => !currentVersions.includes(version)));
+                  return `${prefix}${formatVersionLines(desiredVersions, '          - ', eol)}${suffix}`;
+                },
+                '.github/workflows/test.yml',
+                'go_version test matrix'
+              );
+            });
+
+            if (changedFiles.length === 0) {
+              core.info('No workspace changes needed for Go versions');
+            }
+
+            const titleVersions = sortVersionValues(updatedValues);
+            const titleTarget = titleVersions.length > 0 ? titleVersions.join(', ') : latestCurrent.value;
+            core.setOutput('title', `chore(deps): update Go to ${titleTarget}`);
+            core.setOutput('versions', titleTarget);
+            core.setOutput('before', formatList(unique(previousValues)));
+            core.setOutput('files', formatList(unique(changedFiles)));
+            core.setOutput('source-url', sourceDisplayUrl);
+      -
+        name: Create pull request
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          base: master
+          branch: deps/go-version
+          token: ${{ steps.write-app.outputs.token }}
+          commit-message: ${{ steps.update.outputs.title }}
+          title: ${{ steps.update.outputs.title }}
+          signoff: true
+          sign-commits: true
+          delete-branch: true
+          body: |
+            This updates xgo's Go inputs to ${{ steps.update.outputs.versions }} based on published crazymax/goxx image tags.
+
+            The source of truth for this update is ${{ steps.update.outputs.source-url }}.
