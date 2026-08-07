@@ -88,7 +88,7 @@ jobs:
   build:
     needs:
       - prepare
-    uses: docker/github-builder/.github/workflows/bake.yml@c4a1b216d96a8c85b45a9974b37857828274c808 # v1.13.0
+    uses: docker/github-builder/.github/workflows/bake.yml@a492c6d04fd3315f67230809b44d60cc0acd50b3 # v1.16.0
     permissions:
       contents: read # required to fetch the repository content
       packages: write # required to push to GHCR
