@@ -20,8 +20,8 @@ jobs:
       fail-fast: false
       matrix:
         go_version:
-          - 1.25.12
-          - 1.26.5
+          - 1.25.13
+          - 1.26.6
         case:
           - c
           - cpp
