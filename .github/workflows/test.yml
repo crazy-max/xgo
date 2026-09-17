@@ -32,7 +32,7 @@ jobs:
     steps:
       -
         name: Build xgo
-        uses: docker/bake-action@d3418bd7d0e9324001bca92fa8ba175ea7e6dc9b # v7.3.0
+        uses: docker/bake-action@018cb6412ab401ebaa809aa5f85966b74628600f # v7.4.0
         with:
           targets: image
           set: |
@@ -42,7 +42,7 @@ jobs:
             *.cache-from=type=gha,scope=go-${{ matrix.go_version }}-linux-amd64
       -
         name: Test ${{ matrix.case }} for go ${{ matrix.go_version }}
-        uses: docker/bake-action@d3418bd7d0e9324001bca92fa8ba175ea7e6dc9b # v7.3.0
+        uses: docker/bake-action@018cb6412ab401ebaa809aa5f85966b74628600f # v7.4.0
         with:
           targets: test-${{ matrix.case }}
         env:
